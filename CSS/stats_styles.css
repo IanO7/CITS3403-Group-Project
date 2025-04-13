@@ -1,0 +1,244 @@
+/* General Styling */
+body {
+    margin: 0;
+    overflow-y: auto; /* Allow vertical scrolling */
+    background: linear-gradient(to bottom, #f8f9fa, #e9ecef);
+    font-family: 'Roboto', sans-serif;
+    color: #343a40;
+}
+
+[data-bs-theme="dark"] body {
+    background: linear-gradient(to bottom, #1e1e2f, #2a2a40);
+    color: #f8f9fa;
+}
+
+/* Info Box Styling */
+.info-box {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    background: rgba(255, 255, 255, 0.9);
+    color: #343a40;
+    padding: 10px;
+    border-radius: 5px;
+    font-family: Arial, sans-serif;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+/* Placeholder for Globe */
+.globe-placeholder {
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+/* Profile Card Styling */
+.profile-card {
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    background-color: #ffffff;
+    overflow: hidden;
+    color: #343a40;
+}
+
+[data-bs-theme="dark"] .profile-card {
+    background-color: #2e2e3e;
+    color: #f8f9fa;
+}
+
+.profile-img {
+    width: 100%;
+    max-width: 150px;
+    border-radius: 50%;
+    margin: 20px auto;
+}
+
+.user-name {
+    color: #ffcc00;
+    font-weight: bold;
+}
+
+/* Section Title Styling */
+.section-title {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: #495057;
+    margin-bottom: 20px;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+[data-bs-theme="dark"] .section-title {
+    color: #ffcc00;
+}
+
+.section-title::after {
+    content: '';
+    display: block;
+    width: 50px;
+    height: 3px;
+    background: #ffcc00;
+    margin: 10px auto 0;
+    border-radius: 5px;
+}
+
+/* Taste Card Styling */
+.taste-card {
+    background: #ffffff;
+    border-radius: 15px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    transition: transform 0.2s ease-in-out;
+    color: #495057;
+}
+
+[data-bs-theme="dark"] .taste-card {
+    background: #2e2e3e;
+    color: #f8f9fa;
+}
+
+
+/* Taste Title Styling */
+.taste-title {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #495057;
+    margin-bottom: 10px;
+}
+
+/* Progress Bar Styling */
+.custom-progress {
+    height: 25px;
+    position: relative;
+    background-color: #e9ecef;
+    border-radius: 15px;
+    overflow: visible; /* Allow the emoji to grow outside the progress bar */
+}
+
+[data-bs-theme="dark"] .custom-progress {
+    background-color: #3a3a4a;
+}
+
+.progress-bar {
+    border-radius: 15px;
+}
+
+.progress-emoji {
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 1.5rem;
+    font-weight: bold;
+    transition: transform 0.3s ease-in-out, font-size 0.3s ease-in-out; /* Smooth scaling */
+}
+
+/* Hover Effect for Progress Bar */
+.custom-progress:hover .progress-emoji {
+    transform: translate(-50%, -50%) scale(2); /* Scale emoji to 3x size */
+    font-size: 2rem; /* Optional: Adjust font size for better scaling */
+    z-index: 10; /* Ensure the emoji appears above other elements */
+}
+
+/* Statistics Card Styling */
+.stat-card {
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    background-color: #ffffff;
+    transition: transform 0.2s ease-in-out;
+    color: #495057;
+}
+
+[data-bs-theme="dark"] .stat-card {
+    background-color: #2e2e3e;
+    color: #f8f9fa;
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+}
+
+/* Chart Placeholder Styling */
+.chart-placeholder {
+    height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #e9ecef;
+    border-radius: 10px;
+    color: #6c757d;
+    font-size: 1.2rem;
+}
+
+/* Badge Card Styling */
+.badge-card {
+    background: #ffffff;
+    border-radius: 15px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    transition: transform 0.2s ease-in-out;
+    text-align: center;
+    color: #495057;
+}
+
+.badge-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+}
+
+.badge-img {
+    width: 80px;
+    height: 80px;
+    margin-bottom: 10px;
+    border-radius: 50%;
+    background-color: #f8f9fa;
+    padding: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.badge-title {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #343a40;
+    margin-bottom: 5px;
+}
+
+.badge-description {
+    font-size: 0.9rem;
+    color: #6c757d;
+}
+
+/* Timeline Styling */
+.timeline {
+    position: relative;
+    margin: 20px 0;
+    padding: 0;
+    list-style: none;
+}
+
+.timeline-item {
+    margin-bottom: 20px;
+    position: relative;
+}
+
+.timeline-date {
+    font-size: 1rem;
+    font-weight: bold;
+    color: #495057;
+    margin-bottom: 5px;
+}
+
+.timeline-content {
+    background: #ffffff;
+    border-radius: 10px;
+    padding: 15px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    color: #495057;
+}
