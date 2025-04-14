@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<link rel="stylesheet" href="index.css" />
+		<script type="module" crossorigin src="/assets/index-8hWE0FuZ.js"></script>
+		<link rel="stylesheet" crossorigin href="/assets/index-CZUD2h_D.css">
+	</head>
+	<body>
+		<div id="root"></div>
+		<script>
+			window.global = window;
+		</script>
+		<script async src="https://www.googletagmanager.com/gtag/js?id=G-1WELH5BMCL"></script>
+		<script>
+			window.dataLayer = window.dataLayer || [];
+			function gtag() {
+				dataLayer.push(arguments);
+			}
+			gtag("js", new Date());
+
+			gtag("config", "G-1WELH5BMCL");
+		</script>
+	</body>
+</html>

@@ -5,6 +5,7 @@ body {
     background: linear-gradient(to bottom, #f8f9fa, #e9ecef);
     font-family: 'Roboto', sans-serif;
     color: #343a40;
+    padding-top: 60px; /* Prevent content overlap with navbar */
 }
 
 [data-bs-theme="dark"] body {
@@ -241,4 +242,82 @@ body {
     padding: 15px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
     color: #495057;
+}
+
+/* Floating Navbar Styles */
+.floating-navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
+    background-color: rgba(255, 255, 255, 0.9);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 20px;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.navbar-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.navbar-logo {
+    display: flex;
+    align-items: center;
+}
+
+.navbar-logo-img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+}
+
+.navbar-links {
+    display: flex;
+    gap: 20px;
+}
+
+.navbar-link {
+    color: #333;
+    font-weight: bold;
+    text-transform: uppercase;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.navbar-link:hover {
+    color: #007bff;
+}
+
+.navbar-button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-weight: bold;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.navbar-button:hover {
+    background-color: #0056b3;
+}
+
+/* Additional Navbar Styling for Mobile */
+.navbar-toggler {
+    border: none;
+}
+
+.navbar-toggler-icon {
+    background-image: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='%23333' viewBox='0 0 30 30'%3E%3Cpath stroke='rgba%280, 0, 0, 0.5%29' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E");
 }
