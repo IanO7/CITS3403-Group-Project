@@ -1,0 +1,77 @@
+.bento-box-visual {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* Two columns */
+    grid-template-rows: auto; /* Rows will adjust dynamically */
+    gap: 10px;
+    max-width: 400px;
+    margin: 0 auto;
+    border: 5px solid #333;
+    border-radius: 10px;
+    padding: 10px;
+    background-color: #f5f5f5;
+}
+
+.bento-compartment {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid #ccc;
+    border-radius: 8px;
+    background-color: #fff;
+    text-align: center;
+    overflow: hidden;
+}
+
+.bento-compartment.rice {
+    grid-row: span 2; /* Adjust based on percentage */
+    grid-column: span 1;
+    background-color: #fffbe7;
+}
+
+.bento-compartment.vegetables {
+    grid-row: span 1; /* Adjust based on percentage */
+    grid-column: span 1;
+    background-color: #e7ffe7;
+}
+
+.bento-compartment.protein {
+    grid-row: span 3; /* Adjust based on percentage */
+    grid-column: span 1;
+    background-color: #ffe7e7;
+}
+
+.bento-compartment.dessert {
+    grid-row: span 2; /* Adjust based on percentage */
+    grid-column: span 1;
+    background-color: #fbe7ff;
+}
+
+.bento-icon {
+    width: 80%; /* Adjust icon size */
+    transition: transform 0.3s ease;
+}
+
+.bento-compartment:hover .bento-icon {
+    transform: scale(1.1);
+}
+
+.bento-compartment::after {
+    content: attr(data-label);
+    position: absolute;
+    bottom: 5px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: rgba(0, 0, 0, 0.7);
+    color: #fff;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 12px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+}
+
+.bento-compartment:hover::after {
+    opacity: 1;
+}
