@@ -30,29 +30,10 @@
             <!-- Dark Mode Toggle -->
             <div class="form-check form-switch">
                 <input class="form-check-input" type="checkbox" id="theme-toggle">
-                <label class="form-check-label" for="theme-toggle">
-                    <img src="../Images/crescent-moon-icon.png" alt="Dark Mode" style="width: 20px; height: 20px;">
-                </label>
             </div>
         </div>
     </nav>
 
-    <script>
-        const themeToggle = document.getElementById('theme-toggle');
-        const htmlElement = document.documentElement;
-
-        // Load the saved theme from localStorage
-        const savedTheme = localStorage.getItem('theme') || 'light';
-        htmlElement.setAttribute('data-bs-theme', savedTheme);
-        themeToggle.checked = savedTheme === 'dark';
-
-        // Toggle theme and save to localStorage
-        themeToggle.addEventListener('change', () => {
-            const newTheme = themeToggle.checked ? 'dark' : 'light';
-            htmlElement.setAttribute('data-bs-theme', newTheme);
-            localStorage.setItem('theme', newTheme);
-        });
-    </script>
 
     <div class="container mt-5">
         <h1 class="text-center mb-4">My Friends' Reviews</h1>
@@ -165,6 +146,6 @@
 
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ENjdO4Dr2bkBIFxQpeoA6bZ4p6U8p1LQp4Lg9gIap6iw5yJh0c6f1dKti9GPBXpC" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.js"></script>
+    <script src="../JS/dark_mode.js"></script>
 </body>
 </html>

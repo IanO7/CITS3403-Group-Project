@@ -20,6 +20,7 @@
 
     <!-- Custom Globe Script -->
     <script src="../JS/globe.js" defer></script> 
+    <script src="../JS/dark_mode.js"></script>
 
 </head>
 <body>
@@ -38,9 +39,6 @@
             <!-- Dark Mode Toggle -->
             <div class="form-check form-switch">
                 <input class="form-check-input" type="checkbox" id="theme-toggle">
-                <label class="form-check-label" for="theme-toggle">
-                    <img src="../Images/crescent-moon-icon.png" alt="Dark Mode" style="width: 20px; height: 20px;">
-                </label>
             </div>
         </div>
     </nav>
@@ -54,21 +52,5 @@
     <!-- Globe Container -->
     <div id="chartdiv"></div>
 
-    <script>
-        const themeToggle = document.getElementById('theme-toggle');
-        const htmlElement = document.documentElement;
-
-        // Load the saved theme from localStorage
-        const savedTheme = localStorage.getItem('theme') || 'light';
-        htmlElement.setAttribute('data-bs-theme', savedTheme);
-        themeToggle.checked = savedTheme === 'dark';
-
-        // Toggle theme and save to localStorage
-        themeToggle.addEventListener('change', () => {
-            const newTheme = themeToggle.checked ? 'dark' : 'light';
-            htmlElement.setAttribute('data-bs-theme', newTheme);
-            localStorage.setItem('theme', newTheme);
-        });
-    </script>
 </body>
 </html>
