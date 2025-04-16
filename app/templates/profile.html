@@ -1,0 +1,19 @@
+{% extends "base.html" %} {% block title %} Profile {% endblock %} 
+
+{% block content %}
+
+<div id= "profileHeader"></div>
+    <div id="profileSub"> </div>
+
+
+    <div id="profileContainer"> 
+        <div id="content"> </div>
+    </div>
+      
+
+    <script 
+        type="text/javascript" 
+        src="{{ url_for('static', filename='index.js') }}"
+    ></script> 
+
+{% endblock %}
