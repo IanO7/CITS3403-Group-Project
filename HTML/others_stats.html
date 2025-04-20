@@ -1,0 +1,56 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OZFoody | Global Stats</title>
+
+    <!-- Bootstrap Setup -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/t/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="/CSS/stats_styles.css">
+    <link rel="stylesheet" href="/CSS/globe_styles.css"> <!-- Ensure this path is correct -->
+    <link rel="stylesheet" href="../CSS/general_styles.css">
+    
+    <!-- amCharts Scripts -->
+    <script src="https://www.amcharts.com/lib/4/core.js"></script>
+    <script src="https://www.amcharts.com/lib/4/maps.js"></script>
+    <script src="https://www.amcharts.com/lib/4/geodata/worldLow.js"></script>
+    <script src="https://www.amcharts.com/lib/4/themes/animated.js"></script>
+
+    <!-- Custom Globe Script -->
+    <script src="../JS/globe.js" defer></script> 
+    <script src="../JS/dark_mode.js"></script>
+
+</head>
+<body>
+    <!-- Floating Navbar -->
+    <nav class="floating-navbar">
+        <div class="navbar-container">
+            <a class="navbar-logo" href="#">
+                <img src="../Images/logo.png" alt="Logo" class="navbar-logo-img">
+            </a>
+            <div class="navbar-links">
+                <a href="others_stats.html" class="navbar-link">Other Stats</a>
+                <a href="my_stats.html" class="navbar-link">My Stats</a>
+                <a href="my_friends.html" class="navbar-link">My Friends</a>
+            </div>
+
+            <!-- Dark Mode Toggle -->
+            <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" id="theme-toggle">
+            </div>
+        </div>
+    </nav>
+
+    <!-- Info Box -->
+    <div class="info-box">
+        <h1>Global Food Stats 🌍</h1>
+        <p>Explore global food statistics on the interactive globe below.</p>
+    </div>
+
+    <!-- Globe Container -->
+    <div id="chartdiv"></div>
+
+</body>
+</html>
