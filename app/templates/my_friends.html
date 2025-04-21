@@ -112,30 +112,8 @@
             </button>
         </div>
     </div>
-
-    <style>
-        .reaction-buttons button {
-            background-color: #007bff; /* Blue background */
-            color: black; /* White text */
-            border: none; /* Remove default border */
-            padding: 10px 15px; /* Add padding */
-            border-radius: 5px; /* Rounded corners */
-            font-size: 14px; /* Adjust font size */
-            margin: 5px; /* Add spacing between buttons */
-            cursor: pointer; /* Pointer cursor on hover */
-            transition: background-color 0.3s ease; /* Smooth hover effect */
-        }
-
-        .reaction-buttons button:hover {
-            background-color: #0056b3; /* Darker blue on hover */
-        }
-
-        .reaction-buttons button i {
-            margin-right: 5px; /* Add spacing between icon and text */
-        }
-    </style>
-
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ENjdO4Dr2bkBIFxQpeoA6bZ4p6U8p1LQp4Lg9gIap6iw5yJh0c6f1dKti9GPBXpC" crossorigin="anonymous"></script>
     <script src="{{ url_for('static', filename='JS/dark_mode.js') }}"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
 {% endblock %}

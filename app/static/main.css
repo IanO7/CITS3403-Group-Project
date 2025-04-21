@@ -130,5 +130,88 @@ body {
 }
 
 
+/* Styles for #chartdiv (others_stats.html) */
+#chartdiv {
+    width: 100%;
+    height: 500px;
+    margin-top: 20px;
+}
 
+/* Styles for reaction buttons (my_friends.html) */
+.reaction-buttons button {
+    background-color: #007bff; /* Blue background */
+    color: black; /* White text */
+    border: none; /* Remove default border */
+    padding: 10px 15px; /* Add padding */
+    border-radius: 5px; /* Rounded corners */
+    font-size: 14px; /* Adjust font size */
+    margin: 5px; /* Add spacing between buttons */
+    cursor: pointer; /* Pointer cursor on hover */
+    transition: background-color 0.3s ease; /* Smooth hover effect */
+}
+
+.reaction-buttons button:hover {
+    background-color: #0056b3; /* Darker blue on hover */
+}
+
+.reaction-buttons button i {
+    margin-right: 5px; /* Add spacing between icon and text */
+}
+
+/* Styles for progress bars (my_stats.html) */
+.progress.custom-progress {
+    position: relative;
+    height: 20px;
+    background-color: #f5f5f5;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.progress.custom-progress .progress-bar {
+    height: 100%;
+    border-radius: 10px;
+}
+
+.progress.custom-progress .progress-emoji {
+    position: absolute;
+    top: -25px;
+    font-size: 20px;
+}
+
+/* Styles for bento box visualization (my_stats.html) */
+.bento-box-visual {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+}
+
+.bento-compartment {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #f5f5f5;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    position: relative;
+    overflow: hidden;
+}
+
+.bento-compartment img {
+    width: 50px;
+    height: 50px;
+}
+
+.bento-compartment[data-label]:hover::after {
+    content: attr(data-label);
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: rgba(0, 0, 0, 0.7);
+    color: #fff;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 12px;
+    white-space: nowrap;
+}
   
