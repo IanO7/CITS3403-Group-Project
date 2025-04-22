@@ -1,3 +1,4 @@
+import flask
 from flask import Flask 
 from flask_sqlalchemy import SQLAlchemy 
 from os import path
@@ -10,6 +11,9 @@ def create_app():
     app.config['SECRET KEY'] = "able" 
     app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{DB_NAME}'
     db.init_app(app)
+        # secure signing for sessions & flash messages
+    app.config['SECRET_KEY'] = 'replace-with-a-random-secret'
+
 
 
     from .views import views 
