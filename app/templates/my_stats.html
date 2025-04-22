@@ -1,0 +1,217 @@
+{% extends "base.html" %}
+{% block title %}My Stats{% endblock %}
+
+{% block content %}
+    <!-- Floating Navbar is handled by base.html -->
+
+    <div class="container-fluid">
+        <!-- Profile Card -->
+        <div class="card profile-card mb-4">
+            <div class="row g-0 align-items-center">
+                <div class="col-md-4 text-center">
+                    <img src="{{ url_for('static', filename='Images/profile-placeholder.png') }}"
+                         alt="Profile Picture"
+                         class="profile-img">
+                </div>
+                <div class="col-md-8">
+                    <div class="card-body">
+                        <h1 class="card-title">
+                          Welcome back, <span class="user-name">{{ user.username }}</span>
+                        </h1>
+                        <p class="card-text">Here’s a summary of your food journey so far!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Personal Food Statistics -->
+        <div class="container-fluid">
+            <h3 class="section-title">Your Taste:</h3>
+            <div class="row">
+                <div class="col-md-6 mb-4">
+                    <div class="taste-card">
+                        <p class="taste-title">🌶️ Spiciness</p>
+                        <div class="progress custom-progress">
+                            <div class="progress-bar bg-danger"
+                                 role="progressbar"
+                                 style="width: {{ stats.spiciness | default(0) }}%;"
+                                 aria-valuenow="{{ stats.spiciness }}"
+                                 aria-valuemin="0"
+                                 aria-valuemax="100"></div>
+                            <span class="progress-emoji"
+                                  style="left: {{ stats.spiciness }}%;">🌶️</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6 mb-4">
+                    <div class="taste-card">
+                        <p class="taste-title">🤤 Deliciousness</p>
+                        <div class="progress custom-progress">
+                            <div class="progress-bar bg-success"
+                                 role="progressbar"
+                                 style="width: {{ stats.deliciousness }}%;"
+                                 aria-valuenow="{{ stats.deliciousness }}"
+                                 aria-valuemin="0"
+                                 aria-valuemax="100"></div>
+                            <span class="progress-emoji"
+                                  style="left: {{ stats.deliciousness }}%;">🤤</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6 mb-4">
+                    <div class="taste-card">
+                        <p class="taste-title">💰 Value</p>
+                        <div class="progress custom-progress">
+                            <div class="progress-bar bg-warning"
+                                 role="progressbar"
+                                 style="width: {{ stats.value }}%;"
+                                 aria-valuenow="{{ stats.value }}"
+                                 aria-valuemin="0"
+                                 aria-valuemax="100"></div>
+                            <span class="progress-emoji"
+                                  style="left: {{ stats.value }}%;">💰</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6 mb-4">
+                    <div class="taste-card">
+                        <p class="taste-title">🍽️ Plating</p>
+                        <div class="progress custom-progress">
+                            <div class="progress-bar bg-info"
+                                 role="progressbar"
+                                 style="width: {{ stats.plating }}%;"
+                                 aria-valuenow="{{ stats.plating }}"
+                                 aria-valuemin="0"
+                                 aria-valuemax="100"></div>
+                            <span class="progress-emoji"
+                                  style="left: {{ stats.plating }}%;">🍽️</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Personal App Statistics -->
+        <div class="container-fluid mt-5">
+            <h3 class="section-title">Personal App Statistics:</h3>
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="card stat-card">
+                        <div class="card-body">
+                            <h5 class="card-title text-center">🍴 Food Eaten/Reviewed</h5>
+                            <div class="chart-placeholder">
+                                <p class="text-center">Chart Placeholder</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="card stat-card">
+                        <div class="card-body">
+                            <h5 class="card-title text-center">🌍 Favorite Cuisine</h5>
+                            <div class="chart-placeholder">
+                                <p class="text-center">Chart Placeholder</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="card stat-card">
+                        <div class="card-body">
+                            <h5 class="card-title text-center">⭐ Average Rating</h5>
+                            <div class="chart-placeholder">
+                                <p class="text-center">Chart Placeholder</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Gamified Badges Section -->
+        <div class="container-fluid mt-5">
+            <h3 class="section-title">Achievements & Badges</h3>
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="badge-card">
+                        <img src="{{ url_for('static', filename='Image Sources/chilli-master.png') }}"
+                             alt="Spice Master Badge" class="badge-img">
+                        <p class="badge-title">Spice Master</p>
+                        <p class="badge-description">Reviewed 50 spicy dishes!</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="badge-card">
+                        <img src="{{ url_for('static', filename='Image Sources/plating-perfectionist.png') }}"
+                             alt="Plating Perfectionist Badge" class="badge-img">
+                        <p class="badge-title">Plating Perfectionist</p>
+                        <p class="badge-description">Rated 30 dishes for plating!</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="badge-card">
+                        <img src="{{ url_for('static', filename='Image Sources/deliciousness-guru.png') }}"
+                             alt="Deliciousness Guru Badge" class="badge-img">
+                        <p class="badge-title">Deliciousness Guru</p>
+                        <p class="badge-description">Rated 100 dishes for taste!</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="badge-card">
+                        <img src="{{ url_for('static', filename='Image Sources/value-hunter.png') }}"
+                             alt="Value Hunter Badge" class="badge-img">
+                        <p class="badge-title">Value Hunter</p>
+                        <p class="badge-description">Rated 20 dishes for value!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bento Box Visualization -->
+        <div class="container-fluid mt-5">
+            <h3 class="section-title">Your Bento Box</h3>
+            <div class="bento-box-visual">
+                <div class="bento-compartment rice" data-label="Rice Eaten: {{ stats.rice or 20 }}%">
+                    <img src="{{ url_for('static', filename='Images/rice-icon.png') }}"
+                         alt="Rice" class="bento-icon">
+                </div>
+                <div class="bento-compartment vegetables" data-label="Vegetables Eaten: {{ stats.vegetables or 30 }}%">
+                    <img src="{{ url_for('static', filename='Images/vegetables-icon.png') }}"
+                         alt="Vegetables" class="bento-icon">
+                </div>
+                <div class="bento-compartment protein" data-label="Protein Eaten: {{ stats.protein or 20 }}%">
+                    <img src="{{ url_for('static', filename='Images/protein-icon.png') }}"
+                         alt="Protein" class="bento-icon">
+                </div>
+                <div class="bento-compartment dessert" data-label="Dessert Eaten: {{ stats.dessert or 30 }}%">
+                    <img src="{{ url_for('static', filename='Images/dessert-icon.png') }}"
+                         alt="Dessert" class="bento-icon">
+                </div>
+            </div>
+        </div>
+
+        <script>
+            const bentoData = {
+                rice: {{ stats.rice or 20 }}
+                vegetables: {{ stats.vegetables or 30 }},
+                protein: {{ stats.protein or 20 }},
+                dessert: {{ stats.dessert or 30 }}
+            };
+            const maxPercentage = 100;
+            const maxRows = 8;
+
+            document.querySelectorAll('.bento-compartment').forEach(compartment => {
+                const type = compartment.classList[1];
+                const percentage = bentoData[type];
+                const rowSpan = Math.ceil((percentage / maxPercentage) * maxRows);
+                compartment.style.gridRow = `span ${rowSpan}`;
+                compartment.setAttribute('data-label',
+                  `${type.charAt(0).toUpperCase() + type.slice(1)} Eaten: ${percentage}%`);
+            });
+        </script>
+{% endblock %}

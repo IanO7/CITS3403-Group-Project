@@ -1,0 +1,21 @@
+{% extends "base.html" %} {% block title %} post {% endblock %} 
+
+{% block content %}
+<form method="POST">
+    <h3 class="center"> New Post </h3>
+    <div class="form-group">
+        <input type="text" name="restaurant" id="restaurant" placeholder="Restaurant Name" required><br>
+        <input type="text" name="price" placeholder="Price" required><br>
+        <input type="number" name="rating" placeholder="Rating (1-5)" min="1" max="5" required><br>
+        <input type="text" name="review" placeholder="Review" required><br>
+        <input type="text" name="image" placeholder="Image URL (optional)"><br>
+        <button type="submit">Post</button>
+    </div>
+</form>
+
+<script 
+    type="text/javascript" 
+    src="{{ url_for('static', filename='index.js') }}"
+></script> 
+
+{% endblock %}
