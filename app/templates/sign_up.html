@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}Sign Up{% endblock %}
+
+{% block content %}
+<form method="POST" class="mt-4">
+  <h3>Create an Account</h3><br>
+  <input name="username"    placeholder="Username" required><br>
+  <input name="email" type="email" placeholder="Email"    required><br>
+  <input name="password" type="password" placeholder="Password" required><br><br>
+  <button type="submit" class="btn btn-primary">Sign Up</button>
+</form>
+{% endblock %}
