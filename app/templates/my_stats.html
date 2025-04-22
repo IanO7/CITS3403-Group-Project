@@ -1,220 +1,113 @@
 {% extends "base.html" %}
-{% block title %}My Stats{% endblock %}
+{% block title %}My Stats Dashboard{% endblock %}
 
 {% block content %}
-<link rel="stylesheet" href="{{ url_for('static', filename='general_styles.css') }}"/>
-    <!-- Floating Navbar is handled by base.html -->
+<link rel="stylesheet" href="{{ url_for('static', filename='general_styles.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
 
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
-
-    <div class="container-fluid">
-        <!-- Profile Card -->
-        <div class="card profile-card mb-4">
-            <div class="row g-0 align-items-center">
-                <div class="col-md-4 text-center">
-                    <img src="{{ url_for('static', filename='Images/profile-placeholder.png') }}"
-                         alt="Profile Picture"
-                         class="profile-img">
-                </div>
-                <div class="col-md-8">
-                    <div class="card-body">
-                        <h1 class="card-title">
-                          Welcome back, <span class="user-name">{{ user.username }}</span>
-                        </h1>
-                        <p class="card-text">Here’s a summary of your food journey so far!</p>
-                    </div>
-                </div>
+<div class="dashboard-container">
+    <!-- Welcome Section -->
+    <div class="dashboard-header">
+        <div class="profile-info">
+            <img src="{{ url_for('static', filename='Images/profile-placeholder.png') }}" alt="Profile Picture" class="profile-img">
+            <div>
+                <h1>Welcome back, <span class="user-name">{{ user.username }}</span>!</h1>
+                <p>Your personalized food journey dashboard.</p>
             </div>
         </div>
+    </div>
 
-        <!-- Personal Food Statistics -->
-        <div class="container-fluid">
-            <h3 class="section-title">Your Taste:</h3>
-            <div class="row">
-                <div class="col-md-6 mb-4">
-                    <div class="taste-card">
-                        <p class="taste-title">🌶️ Spiciness</p>
-                        <div class="progress custom-progress">
-                            <div class="progress-bar bg-danger"
-                                 role="progressbar"
-                                 style="width: {{ stats.spiciness | default(0) }}%;"
-                                 aria-valuenow="{{ stats.spiciness }}"
-                                 aria-valuemin="0"
-                                 aria-valuemax="100"></div>
-                            <span class="progress-emoji"
-                                  style="left: {{ stats.spiciness }}%;">🌶️</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-md-6 mb-4">
-                    <div class="taste-card">
-                        <p class="taste-title">🤤 Deliciousness</p>
-                        <div class="progress custom-progress">
-                            <div class="progress-bar bg-success"
-                                 role="progressbar"
-                                 style="width: {{ stats.deliciousness }}%;"
-                                 aria-valuenow="{{ stats.deliciousness }}"
-                                 aria-valuemin="0"
-                                 aria-valuemax="100"></div>
-                            <span class="progress-emoji"
-                                  style="left: {{ stats.deliciousness }}%;">🤤</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-md-6 mb-4">
-                    <div class="taste-card">
-                        <p class="taste-title">💰 Value</p>
-                        <div class="progress custom-progress">
-                            <div class="progress-bar bg-warning"
-                                 role="progressbar"
-                                 style="width: {{ stats.value }}%;"
-                                 aria-valuenow="{{ stats.value }}"
-                                 aria-valuemin="0"
-                                 aria-valuemax="100"></div>
-                            <span class="progress-emoji"
-                                  style="left: {{ stats.value }}%;">💰</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-md-6 mb-4">
-                    <div class="taste-card">
-                        <p class="taste-title">🍽️ Plating</p>
-                        <div class="progress custom-progress">
-                            <div class="progress-bar bg-info"
-                                 role="progressbar"
-                                 style="width: {{ stats.plating }}%;"
-                                 aria-valuenow="{{ stats.plating }}"
-                                 aria-valuemin="0"
-                                 aria-valuemax="100"></div>
-                            <span class="progress-emoji"
-                                  style="left: {{ stats.plating }}%;">🍽️</span>
-                        </div>
-                    </div>
-                </div>
+    <!-- Statistics Section -->
+    <div class="stats-grid">
+        <!-- Taste Stats -->
+        <div class="card stat-card">
+            <h3 class="card-title">🌶️ Spiciness</h3>
+            <div class="progress custom-progress">
+                <div class="progress-bar bg-danger" style="width: {{ stats.spiciness | default(0) }}%;"></div>
             </div>
+            <p>{{ stats.spiciness | default(0) }}% spicy dishes rated</p>
         </div>
 
-        <!-- Personal App Statistics -->
-        <div class="container-fluid mt-5">
-            <h3 class="section-title">Personal App Statistics:</h3>
-            <div class="row">
-                <div class="col-md-4">
-                    <div class="card stat-card">
-                        <div class="card-body">
-                            <h5 class="card-title text-center">🍴 Food Eaten/Reviewed</h5>
-                            <div class="chart-placeholder">
-                                <p class="text-center">Chart Placeholder</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-md-4">
-                    <div class="card stat-card">
-                        <div class="card-body">
-                            <h5 class="card-title text-center">🌍 Favorite Cuisine</h5>
-                            <div class="chart-placeholder">
-                                <p class="text-center">Chart Placeholder</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-md-4">
-                    <div class="card stat-card">
-                        <div class="card-body">
-                            <h5 class="card-title text-center">⭐ Average Rating</h5>
-                            <div class="chart-placeholder">
-                                <p class="text-center">Chart Placeholder</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+        <div class="card stat-card">
+            <h3 class="card-title">🤤 Deliciousness</h3>
+            <div class="progress custom-progress">
+                <div class="progress-bar bg-success" style="width: {{ stats.deliciousness | default(0) }}%;"></div>
             </div>
+            <p>{{ stats.deliciousness | default(0) }}% delicious dishes rated</p>
         </div>
 
-        <!-- Gamified Badges Section -->
-        <div class="container-fluid mt-5">
-            <h3 class="section-title">Achievements & Badges</h3>
-            <div class="row">
-                <div class="col-md-3">
-                    <div class="badge-card">
-                        <img src="{{ url_for('static', filename='Image Sources/chilli-master.png') }}"
-                             alt="Spice Master Badge" class="badge-img">
-                        <p class="badge-title">Spice Master</p>
-                        <p class="badge-description">Reviewed 50 spicy dishes!</p>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="badge-card">
-                        <img src="{{ url_for('static', filename='Image Sources/plating-perfectionist.png') }}"
-                             alt="Plating Perfectionist Badge" class="badge-img">
-                        <p class="badge-title">Plating Perfectionist</p>
-                        <p class="badge-description">Rated 30 dishes for plating!</p>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="badge-card">
-                        <img src="{{ url_for('static', filename='Image Sources/deliciousness-guru.png') }}"
-                             alt="Deliciousness Guru Badge" class="badge-img">
-                        <p class="badge-title">Deliciousness Guru</p>
-                        <p class="badge-description">Rated 100 dishes for taste!</p>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="badge-card">
-                        <img src="{{ url_for('static', filename='Image Sources/value-hunter.png') }}"
-                             alt="Value Hunter Badge" class="badge-img">
-                        <p class="badge-title">Value Hunter</p>
-                        <p class="badge-description">Rated 20 dishes for value!</p>
-                    </div>
-                </div>
+        <div class="card stat-card">
+            <h3 class="card-title">💰 Value</h3>
+            <div class="progress custom-progress">
+                <div class="progress-bar bg-warning" style="width: {{ stats.value | default(0) }}%;"></div>
             </div>
+            <p>{{ stats.value | default(0) }}% value-rated dishes</p>
         </div>
 
-        <!-- Bento Box Visualization -->
-        <div class="container-fluid mt-5">
-            <h3 class="section-title">Your Bento Box</h3>
-            <div class="bento-box-visual">
-                <div class="bento-compartment rice" data-label="Rice Eaten: {{ stats.rice or 20 }}%">
-                    <img src="{{ url_for('static', filename='Images/rice-icon.png') }}"
-                         alt="Rice" class="bento-icon">
-                </div>
-                <div class="bento-compartment vegetables" data-label="Vegetables Eaten: {{ stats.vegetables or 30 }}%">
-                    <img src="{{ url_for('static', filename='Images/vegetables-icon.png') }}"
-                         alt="Vegetables" class="bento-icon">
-                </div>
-                <div class="bento-compartment protein" data-label="Protein Eaten: {{ stats.protein or 20 }}%">
-                    <img src="{{ url_for('static', filename='Images/protein-icon.png') }}"
-                         alt="Protein" class="bento-icon">
-                </div>
-                <div class="bento-compartment dessert" data-label="Dessert Eaten: {{ stats.dessert or 30 }}%">
-                    <img src="{{ url_for('static', filename='Images/dessert-icon.png') }}"
-                         alt="Dessert" class="bento-icon">
-                </div>
+        <div class="card stat-card">
+            <h3 class="card-title">🍽️ Plating</h3>
+            <div class="progress custom-progress">
+                <div class="progress-bar bg-info" style="width: {{ stats.plating | default(0) }}%;"></div>
+            </div>
+            <p>{{ stats.plating | default(0) }}% plating-rated dishes</p>
+        </div>
+    </div>
+
+    <!-- Charts Section -->
+    <div class="charts-grid">
+        <div class="card chart-card">
+            <h3 class="card-title">🍴 Food Eaten/Reviewed</h3>
+            <canvas id="foodChart"></canvas>
+        </div>
+        <div class="card chart-card">
+            <h3 class="card-title">🌍 Favorite Cuisine</h3>
+            <canvas id="cuisineChart"></canvas>
+        </div>
+        <div class="card chart-card">
+            <h3 class="card-title">⭐ Average Rating</h3>
+            <canvas id="ratingChart"></canvas>
+        </div>
+    </div>
+
+    <!-- Achievements Section -->
+    <div class="achievements-section">
+        <h2>Achievements & Badges</h2>
+        <div class="badges-grid">
+            <div class="badge-card">
+                <img src="{{ url_for('static', filename='Image Sources/chilli-master.png') }}" alt="Spice Master Badge">
+                <p>Spice Master</p>
+            </div>
+            <div class="badge-card">
+                <img src="{{ url_for('static', filename='Image Sources/plating-perfectionist.png') }}" alt="Plating Perfectionist Badge">
+                <p>Plating Perfectionist</p>
+            </div>
+            <div class="badge-card">
+                <img src="{{ url_for('static', filename='Image Sources/deliciousness-guru.png') }}" alt="Deliciousness Guru Badge">
+                <p>Deliciousness Guru</p>
+            </div>
+            <div class="badge-card">
+                <img src="{{ url_for('static', filename='Image Sources/value-hunter.png') }}" alt="Value Hunter Badge">
+                <p>Value Hunter</p>
             </div>
         </div>
+    </div>
+</div>
 
-        <script>
-            const bentoData = {
-                rice: {{ stats.rice or 20 }}
-                vegetables: {{ stats.vegetables or 30 }},
-                protein: {{ stats.protein or 20 }},
-                dessert: {{ stats.dessert or 30 }}
-            };
-            const maxPercentage = 100;
-            const maxRows = 8;
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // Example Chart.js setup
+    const foodChartCtx = document.getElementById('foodChart').getContext('2d');
+    const foodChart = new Chart(foodChartCtx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Spicy', 'Delicious', 'Value', 'Plating'],
+            datasets: [{
+                data: [{{ stats.spiciness }}, {{ stats.deliciousness }}, {{ stats.value }}, {{ stats.plating }}],
+                backgroundColor: ['#DF6F1B', '#5F8D3B', '#8E5F2B', '#6E3A14']
+            }]
+        }
+    });
 
-            document.querySelectorAll('.bento-compartment').forEach(compartment => {
-                const type = compartment.classList[1];
-                const percentage = bentoData[type];
-                const rowSpan = Math.ceil((percentage / maxPercentage) * maxRows);
-                compartment.style.gridRow = `span ${rowSpan}`;
-                compartment.setAttribute('data-label',
-                  `${type.charAt(0).toUpperCase() + type.slice(1)} Eaten: ${percentage}%`);
-            });
-        </script>
+    // Add similar setups for cuisineChart and ratingChart
+</script>
 {% endblock %}

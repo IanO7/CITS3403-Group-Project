@@ -214,4 +214,192 @@ body {
     font-size: 12px;
     white-space: nowrap;
 }
-  
+
+/* Tailwind-inspired utility classes for stats pages */
+
+/* Typography */
+.text-heading {
+    font-family: 'Lobster', serif;
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #6E3A14; /* Headline text color */
+}
+
+.text-subheading {
+    font-family: 'Lobster', serif;
+    font-size: 1.25rem;
+    font-weight: bold;
+    color: #8E5F2B; /* Subheading text color */
+}
+
+.text-label {
+    font-family: 'Arial', sans-serif;
+    font-size: 0.875rem;
+    font-weight: normal;
+    color: #5E512B; /* Olive green */
+}
+
+.text-value {
+    font-family: 'Arial', sans-serif;
+    font-size: 1rem;
+    font-weight: bold;
+    color: #DF6F1B; /* Orange accent */
+}
+
+/* Card Layouts */
+.card {
+    background-color: #FFFFFF; /* White background */
+    border-radius: 0.5rem; /* Rounded corners */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+    padding: 1.5rem; /* Inner padding */
+    margin-bottom: 1.5rem; /* Spacing between cards */
+    display: flex;
+    flex-direction: column;
+    gap: 1rem; /* Spacing between elements */
+}
+
+.card-header {
+    font-size: 1.25rem;
+    font-weight: bold;
+    color: #6E3A14; /* Headline text color */
+}
+
+.card-body {
+    font-size: 1rem;
+    color: #5E512B; /* Olive green */
+}
+
+/* Grid Layouts */
+.grid-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* Responsive grid */
+    gap: 1.5rem; /* Spacing between grid items */
+    padding: 1rem; /* Outer padding */
+}
+
+/* Progress Bars */
+.progress-bar {
+    position: relative;
+    height: 1rem;
+    background-color: #F6E7DA; /* Soft peach background */
+    border-radius: 0.5rem;
+    overflow: hidden;
+}
+
+.progress-bar-fill {
+    height: 100%;
+    border-radius: 0.5rem;
+}
+
+.progress-bar-fill.spiciness {
+    background-color: #DF6F1B; /* Orange accent */
+}
+
+.progress-bar-fill.deliciousness {
+    background-color: #5F8D3B; /* Button green */
+}
+
+.progress-bar-fill.value {
+    background-color: #8E5F2B; /* Warm golden brown */
+}
+
+.progress-bar-fill.plating {
+    background-color: #6E3A14; /* Headline text */
+}
+
+/* Chart Container */
+.chart-container {
+    width: 100%;
+    height: 500px;
+    margin-top: 1.5rem;
+    background-color: #FFFFFF; /* White background */
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+    padding: 1rem; /* Inner padding */
+}
+
+/* Badges */
+.badge {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    background-color: #F6E7DA; /* Soft peach background */
+    border-radius: 0.5rem;
+    padding: 1rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+}
+
+.badge img {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+}
+
+.badge-title {
+    font-size: 1rem;
+    font-weight: bold;
+    color: #6E3A14; /* Headline text */
+}
+
+.badge-description {
+    font-size: 0.875rem;
+    color: #5E512B; /* Olive green */
+}
+
+/* Dashboard Layout */
+.dashboard-container {
+    padding: 2rem;
+    background-color: #f7efe8;
+}
+
+.dashboard-header {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.profile-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.profile-img {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: 3px solid #5E512B;
+}
+
+.stats-grid, .charts-grid, .badges-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.card {
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 1.5rem;
+    text-align: center;
+}
+
+.chart-card canvas {
+    max-width: 100%;
+    height: 200px;
+}
+
+.badge-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1rem;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}

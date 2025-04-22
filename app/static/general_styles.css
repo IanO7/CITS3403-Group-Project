@@ -1,6 +1,9 @@
 /* Finalized global styles for all pages go here. */
 /* Page-specific or pending styles are in separate CSS files. */
 
+
+
+
 /* Custom scrollbar styling for WebKit browsers */
 ::-webkit-scrollbar {
     width: 12px; /* Width of the scrollbar */
@@ -22,3 +25,123 @@
     background-color: #005a9e; /* Darker color on hover */
 }
 
+/* Header Styling */
+.position-relative {
+    background-color: #0078d7; /* Modern blue background */
+    color: white; /* Text color */
+    padding: 20px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+}
+
+.text_main {
+    font-family: 'Lobster', cursive; /* Stylish font for the header title */
+    font-size: 2.5rem;
+    color: white;
+    text-align: center;
+}
+
+.d-flex {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+form .form-control {
+    padding: 8px 12px;
+    border: 1px solid #ccc;
+    border-radius: 20px;
+    outline: none;
+    font-size: 1rem;
+    width: 250px;
+    transition: border-color 0.3s ease;
+}
+
+form .form-control:focus {
+    border-color: #005a9e; /* Highlight border on focus */
+}
+
+.ms-3 a {
+    color: white;
+    text-decoration: none;
+    font-size: 1rem;
+    margin-right: 10px;
+    transition: color 0.3s ease;
+}
+
+.ms-3 a:hover {
+    color: #f0f0f0; /* Lighter color on hover */
+}
+
+/* Updated Header and Navigation Bar Styling */
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    background: linear-gradient(90deg, #0078d7, #005a9e); /* Sleek gradient background */
+    color: white; /* Text color */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Slightly stronger shadow for depth */
+    position: sticky; /* Navbar stays at the top */
+    top: 0;
+    z-index: 1000;
+}
+
+header .logo {
+    font-family: 'Orbitron', sans-serif; /* Futuristic font for the logo */
+    font-size: 2rem;
+    color: white;
+    text-decoration: none;
+    letter-spacing: 2px; /* Adds a modern touch */
+}
+
+header .search-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+header .search-bar input[type="text"] {
+    padding: 10px 15px;
+    border: 1px solid #ccc;
+    border-radius: 25px;
+    outline: none;
+    font-size: 1rem;
+    width: 300px;
+    transition: all 0.3s ease;
+    background-color: #f9f9f9;
+}
+
+header .search-bar input[type="text"]:focus {
+    border-color: #00b4d8; /* Bright accent color on focus */
+    background-color: #ffffff;
+    box-shadow: 0 0 8px rgba(0, 180, 216, 0.5); /* Glow effect */
+}
+
+header .nav-links {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+header .nav-links a {
+    color: white;
+    text-decoration: none;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 8px 15px;
+    border-radius: 20px;
+    transition: all 0.3s ease;
+    background: rgba(255, 255, 255, 0.1); /* Subtle background for links */
+}
+
+header .nav-links a:hover {
+    color: #00b4d8; /* Bright accent color on hover */
+    background: rgba(255, 255, 255, 0.2); /* Slightly brighter background on hover */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Hover shadow effect */
+}
+
+header .nav-links a i {
+    font-size: 1.2rem; /* Icon size */
+}
