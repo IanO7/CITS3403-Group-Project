@@ -72,49 +72,27 @@ form .form-control:focus {
     color: #f0f0f0; /* Lighter color on hover */
 }
 
-/* Updated Header and Navigation Bar Styling */
+/* Sleek and Modern Navbar Styling */
 header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 15px 20px;
-    background: linear-gradient(90deg, #0078d7, #005a9e); /* Sleek gradient background */
-    color: white; /* Text color */
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Slightly stronger shadow for depth */
-    position: sticky; /* Navbar stays at the top */
-    top: 0;
+    padding: 15px 30px;
+    background: linear-gradient(135deg, #6c63ff, #8a85ff); /* Gradient background */
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2); /* Stronger shadow for depth */
+    border-radius: 30px; /* Rounded corners for a modern look */
+    position: sticky;
+    top: 10px;
     z-index: 1000;
+    margin: 20px 40px; /* Adds spacing around the navbar */
 }
 
 header .logo {
-    font-family: 'Orbitron', sans-serif; /* Futuristic font for the logo */
+    font-family: 'Orbitron', sans-serif;
     font-size: 2rem;
     color: white;
     text-decoration: none;
-    letter-spacing: 2px; /* Adds a modern touch */
-}
-
-header .search-bar {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-header .search-bar input[type="text"] {
-    padding: 10px 15px;
-    border: 1px solid #ccc;
-    border-radius: 25px;
-    outline: none;
-    font-size: 1rem;
-    width: 300px;
-    transition: all 0.3s ease;
-    background-color: #f9f9f9;
-}
-
-header .search-bar input[type="text"]:focus {
-    border-color: #00b4d8; /* Bright accent color on focus */
-    background-color: #ffffff;
-    box-shadow: 0 0 8px rgba(0, 180, 216, 0.5); /* Glow effect */
+    letter-spacing: 1.5px;
 }
 
 header .nav-links {
@@ -129,19 +107,31 @@ header .nav-links a {
     font-size: 1rem;
     display: flex;
     align-items: center;
-    gap: 5px;
-    padding: 8px 15px;
-    border-radius: 20px;
+    gap: 10px;
+    padding: 10px 20px;
+    border-radius: 25px;
     transition: all 0.3s ease;
-    background: rgba(255, 255, 255, 0.1); /* Subtle background for links */
+    background: rgba(255, 255, 255, 0.1); /* Transparent background for links */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
 }
 
 header .nav-links a:hover {
-    color: #00b4d8; /* Bright accent color on hover */
-    background: rgba(255, 255, 255, 0.2); /* Slightly brighter background on hover */
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Hover shadow effect */
+    background: rgba(255, 255, 255, 0.2); /* Brighter background on hover */
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2); /* Stronger shadow on hover */
+    transform: translateY(-2px); /* Slight lift effect */
 }
 
 header .nav-links a i {
-    font-size: 1.2rem; /* Icon size */
+    font-size: 1.5rem; /* Icon size */
+    color: #ffd700; /* Gold color for icons */
+}
+
+header .nav-links a.active {
+    background: white; /* Highlight active link */
+    color: #6c63ff;
+    box-shadow: 0 6px 15px rgba(108, 99, 255, 0.3); /* Glow effect */
+}
+
+header .nav-links a.active i {
+    color: #6c63ff; /* Match icon color with active link */
 }
