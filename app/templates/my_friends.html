@@ -2,64 +2,106 @@
 {% block title %}My Friends{% endblock %}
 
 {% block content %}
-    <div class="container mt-5">
-        <h1 class="text-center mb-4">My Friends' Reviews</h1>
+<div class="container mt-5">
+    <h1 class="text-center mb-4">My Friends' Reviews</h1>
 
-        <div id="friendsCarousel" class="carousel slide" data-bs-ride="carousel">
-            <div class="carousel-inner">
-                {% for note in notes %}
-                <div class="carousel-item {% if loop.first %}active{% endif %}">
-                    <div class="card mb-4 shadow-sm">
-                        <div class="card-body">
-                            <div class="d-flex align-items-center mb-3">
-                                <img src="{{ note.user.profile_image or url_for('static', filename='Images/default-avatar.png') }}"
-                                     alt="Friend Avatar"
-                                     class="me-3"
-                                     style="width:50px;height:50px;border-radius:10px;">
-                                <h5 class="card-title mb-0">{{ note.user.username }}</h5>
-                            </div>
-                            <p class="card-text">{{ note.review }}</p>
-                            {% if note.image %}
-                            <img src="{{ note.image }}"
-                                 alt="Dish Image"
-                                 class="post-image"
-                                 style="width:100%;height:300px;object-fit:cover;border-radius:10px;">
-                            {% endif %}
-                            <div class="row text-center mt-3">
-                                <div class="col">
-                                    <h6>Plating</h6>
-                                    <div class="progress" style="height:10px;">
-                                        <div class="progress-bar bg-success"
-                                             role="progressbar"
-                                             style="width:{{ note.rating * 20 }}%;"
-                                             aria-valuenow="{{ note.rating * 20 }}"
-                                             aria-valuemin="0"
-                                             aria-valuemax="100"></div>
+    <div id="friendsCarousel" class="carousel slide" data-bs-ride="carousel">
+        <div class="carousel-inner">
+            {% for group in reviews|batch(3, '') %}
+            <div class="carousel-item {% if loop.first %}active{% endif %}">
+                <div class="row">
+                    {% for review in group %}
+                    {% if review %}
+                    <div class="col-md-4 d-flex">
+                        <div class="card shadow-sm rounded-4 w-100 d-flex flex-column mb-4" style="min-height: 500px;">
+                            <div class="card-body d-flex flex-column">
+                                <div class="d-flex align-items-center mb-3">
+                                    <img src="{{ url_for('static', filename='food.jpg') }}"
+                                        alt="Profile Avatar"
+                                        class="profileImageSmall"> 
+                                    <h5 class="card-title mb-1 p-3"> {{ review.user.username }} </h5>
+                                </div>
+
+                                <p class="card-text">{{ review.Review }}</p>
+
+                                {% if review.image %}
+                                <img src="{{ review.image }}"
+                                     alt="Dish Image"
+                                     class="post-image my-2"
+                                     style="width:100%;height:200px;object-fit:cover;border-radius:10px;">
+                                {% endif %}
+
+                                <div class="mt-auto">
+                                    <div class="row text-center mt-auto pt-3">
+                                        <div class="col">
+                                            <h6>Deliciousness</h6>
+                                            <div class="progress" style="height:10px;">
+                                                <div class="progress-bar bg-warning"
+                                                     role="progressbar"
+                                                     style="width: {{ review.Deliciousness or 0 }}%;"
+                                                     aria-valuenow="{{ review.Deliciousness or 0 }}"
+                                                     aria-valuemin="0"
+                                                     aria-valuemax="100"></div>
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <h6>Spiciness</h6>
+                                            <div class="progress" style="height:10px;">
+                                                <div class="progress-bar bg-danger"
+                                                     role="progressbar"
+                                                     style="width: {{ review.Spiciness or 0 }}%;"
+                                                     aria-valuenow="{{ review.Spiciness or 0 }}"
+                                                     aria-valuemin="0"
+                                                     aria-valuemax="100"></div>
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <h6>Value</h6>
+                                            <div class="progress" style="height:10px;">
+                                                <div class="progress-bar bg-success"
+                                                     role="progressbar"
+                                                     style="width: {{ review.Value or 0 }}%;"
+                                                     aria-valuenow="{{ review.Value or 0 }}"
+                                                     aria-valuemin="0"
+                                                     aria-valuemax="100"></div>
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <h6>Plating</h6>
+                                            <div class="progress" style="height:10px;">
+                                                <div class="progress-bar bg-info"
+                                                     role="progressbar"
+                                                     style="width: {{ review.Plating or 0 }}%;"
+                                                     aria-valuenow="{{ review.Plating or 0 }}"
+                                                     aria-valuemin="0"
+                                                     aria-valuemax="100"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="reaction-buttons d-flex justify-content-around mt-auto p-3">
+                                        <button class="btn btn-outline-primary "><i class="bi bi-hand-thumbs-up"></i> Like</button>
+                                        <button class="btn btn-outline-secondary "><i class="bi bi-chat"></i> Comment</button>
+                                        <button class="btn btn-outline-success btn-sm"><i class="bi bi-share"></i> Share</button>
                                     </div>
                                 </div>
-                                <!-- Add Spiciness, Value for Money, Taste similarly if you store them -->
-                            </div>
-                            <div class="reaction-buttons">
-                                <button><i class="bi bi-hand-thumbs-up"></i> Like</button>
-                                <button><i class="bi bi-chat"></i> Comment</button>
-                                <button><i class="bi bi-share"></i> Share</button>
                             </div>
                         </div>
                     </div>
+                    {% endif %}
+                    {% endfor %}
                 </div>
-                {% endfor %}
             </div>
-
-            <button class="carousel-control-prev" type="button" data-bs-target="#friendsCarousel" data-bs-slide="prev">
-                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                <span class="visually-hidden">Previous</span>
-            </button>
-            <button class="carousel-control-next" type="button" data-bs-target="#friendsCarousel" data-bs-slide="next">
-                <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                <span class="visually-hidden">Next</span>
-            </button>
-        </div>
+            {% endfor %}
+        </div> 
     </div>
-
-    <script src="{{ url_for('static', filename='JS/dark_mode.js') }}"></script>
+</div>
+<button class="carousel-control-prev" type="button" data-bs-target="#friendsCarousel" data-bs-slide="prev">
+    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+    <span class="visually-hidden">Previous</span>
+</button>
+<button class="carousel-control-next" type="button" data-bs-target="#friendsCarousel" data-bs-slide="next">
+    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+    <span class="visually-hidden">Next</span>
+</button>
 {% endblock %}
