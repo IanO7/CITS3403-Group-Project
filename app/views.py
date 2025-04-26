@@ -70,6 +70,19 @@ def friends():
     user = current_user()
     if not user:
         return redirect(url_for('auth.login'))
-    # all notes except the current user's
+    # Fetch all notes except the current user's
     notes = Note.query.filter(Note.user_id != user.id).all()
     return render_template('my_friends.html', notes=notes)
+
+@views.route('/like/<int:note_id>', methods=['POST'])
+def like(note_id):
+    user = current_user()
+    if not user:
+        return {'success': False, 'error': 'User not authenticated'}, 401
+
+    note = Note.query.get(note_id)
+    if note:
+        note.likes += 1
+        db.session.commit()
+        return {'success': True, 'likes': note.likes}, 200  # Return updated likes count
+    return {'success': False, 'error': 'Note not found'}, 404

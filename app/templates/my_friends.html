@@ -11,141 +11,46 @@
 
     <!-- Reviews Section -->
     <div class="staggered-grid">
-        <!-- Friend's Review Card 1 -->
+        {% for note in notes %}
         <div class="review-card-modern">
             <div class="review-header-modern">
-                <img src="{{ url_for('static', filename='Image Sources/deliciousness-guru.png') }}" alt="Friend Avatar" class="friend-avatar-modern">
-                <div>
-                    <h5 class="friend-name-modern">John Doe</h5>
-                    <p class="review-date-modern">Reviewed on April 20, 2025</p>
-                </div>
-            </div>
-            <p class="review-text-modern">John reviewed a dish and absolutely loved it! The flavors were incredible, and the presentation was top-notch.</p>
-            <img src="{{ url_for('static', filename='Image Sources/deliciousness-guru.png') }}" alt="Dish Image" class="review-image-modern">
-            <div class="review-stats-modern">
-                <div class="stat-modern">
-                    <h6>🍽️ Plating</h6>
-                    <div class="progress custom-progress">
-                        <div class="progress-bar bg-success" style="width: 80%;"></div>
-                    </div>
-                </div>
-                <div class="stat-modern">
-                    <h6>🌶️ Spiciness</h6>
-                    <div class="progress custom-progress">
-                        <div class="progress-bar bg-danger" style="width: 60%;"></div>
-                    </div>
-                </div>
-                <div class="stat-modern">
-                    <h6>💰 Value</h6>
-                    <div class="progress custom-progress">
-                        <div class="progress-bar bg-warning" style="width: 90%;"></div>
-                    </div>
-                </div>
-                <div class="stat-modern">
-                    <h6>🤤 Taste</h6>
-                    <div class="progress custom-progress">
-                        <div class="progress-bar bg-primary" style="width: 75%;"></div>
-                    </div>
-                </div>
+                <h5>{{ note.restaurant }}</h5>
+                <p>{{ note.review }}</p>
             </div>
             <div class="review-actions-modern">
-                <button class="action-button-modern"><i class="bi bi-hand-thumbs-up"></i> Like <span class="action-count">12</span></button>
-                <button class="action-button-modern"><i class="bi bi-chat"></i> Comment <span class="action-count">5</span></button>
-                <button class="action-button-modern"><i class="bi bi-share"></i> Share</button>
+                <button class="action-button-modern like-button" data-note-id="{{ note.id }}">
+                    <i class="bi bi-hand-thumbs-up"></i> Like <span class="action-count">{{ note.likes }}</span>
+                </button>
             </div>
         </div>
-
-        <!-- Friend's Review Card 2 -->
-        <div class="review-card-modern">
-            <div class="review-header-modern">
-                <img src="{{ url_for('static', filename='Image Sources/value-hunter.png') }}" alt="Friend Avatar" class="friend-avatar-modern">
-                <div>
-                    <h5 class="friend-name-modern">Jane Smith</h5>
-                    <p class="review-date-modern">Reviewed on April 18, 2025</p>
-                </div>
-            </div>
-            <p class="review-text-modern">Jane found a hidden gem! The dish was affordable yet packed with flavor. Highly recommended!</p>
-            <img src="{{ url_for('static', filename='Image Sources/value-hunter.png') }}" alt="Dish Image" class="review-image-modern">
-            <div class="review-stats-modern">
-                <div class="stat-modern">
-                    <h6>🍽️ Plating</h6>
-                    <div class="progress custom-progress">
-                        <div class="progress-bar bg-success" style="width: 70%;"></div>
-                    </div>
-                </div>
-                <div class="stat-modern">
-                    <h6>🌶️ Spiciness</h6>
-                    <div class="progress custom-progress">
-                        <div class="progress-bar bg-danger" style="width: 50%;"></div>
-                    </div>
-                </div>
-                <div class="stat-modern">
-                    <h6>💰 Value</h6>
-                    <div class="progress custom-progress">
-                        <div class="progress-bar bg-warning" style="width: 95%;"></div>
-                    </div>
-                </div>
-                <div class="stat-modern">
-                    <h6>🤤 Taste</h6>
-                    <div class="progress custom-progress">
-                        <div class="progress-bar bg-primary" style="width: 85%;"></div>
-                    </div>
-                </div>
-            </div>
-            <div class="review-actions-modern">
-                <button class="action-button-modern"><i class="bi bi-hand-thumbs-up"></i> Like <span class="action-count">20</span></button>
-                <button class="action-button-modern"><i class="bi bi-chat"></i> Comment <span class="action-count">8</span></button>
-                <button class="action-button-modern"><i class="bi bi-share"></i> Share</button>
-            </div>
-        </div>
-
-        <!-- Friend's Review Card 3 -->
-        <div class="review-card-modern">
-            <div class="review-header-modern">
-                <img src="{{ url_for('static', filename='Image Sources/plating-perfectionist.png') }}" alt="Friend Avatar" class="friend-avatar-modern">
-                <div>
-                    <h5 class="friend-name-modern">Emily Johnson</h5>
-                    <p class="review-date-modern">Reviewed on April 15, 2025</p>
-                </div>
-            </div>
-            <p class="review-text-modern">Emily was blown away by the artistic plating of this dish. A true masterpiece!</p>
-            <img src="{{ url_for('static', filename='Image Sources/plating-perfectionist.png') }}" alt="Dish Image" class="review-image-modern">
-            <div class="review-stats-modern">
-                <div class="stat-modern">
-                    <h6>🍽️ Plating</h6>
-                    <div class="progress custom-progress">
-                        <div class="progress-bar bg-success" style="width: 95%;"></div>
-                    </div>
-                </div>
-                <div class="stat-modern">
-                    <h6>🌶️ Spiciness</h6>
-                    <div class="progress custom-progress">
-                        <div class="progress-bar bg-danger" style="width: 40%;"></div>
-                    </div>
-                </div>
-                <div class="stat-modern">
-                    <h6>💰 Value</h6>
-                    <div class="progress custom-progress">
-                        <div class="progress-bar bg-warning" style="width: 80%;"></div>
-                    </div>
-                </div>
-                <div class="stat-modern">
-                    <h6>🤤 Taste</h6>
-                    <div class="progress custom-progress">
-                        <div class="progress-bar bg-primary" style="width: 90%;"></div>
-                    </div>
-                </div>
-            </div>
-            <div class="review-actions-modern">
-                <button class="action-button-modern"><i class="bi bi-hand-thumbs-up"></i> Like <span class="action-count">30</span></button>
-                <button class="action-button-modern"><i class="bi bi-chat"></i> Comment <span class="action-count">12</span></button>
-                <button class="action-button-modern"><i class="bi bi-share"></i> Share</button>
-            </div>
-        </div>
+        {% endfor %}
     </div>
 </div>
 
 <!-- Bootstrap and Custom Scripts -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="{{ url_for('static', filename='JS/dark_mode.js') }}"></script>
+<script>
+    document.querySelectorAll('.like-button').forEach(button => {
+        button.addEventListener('click', () => {
+            const noteId = button.getAttribute('data-note-id');
+            fetch(`/like/${noteId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const likeCount = button.querySelector('.action-count');
+                    likeCount.textContent = data.likes;  // Update the likes count
+                } else {
+                    console.error(data.error);
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        });
+    });
+</script>
 {% endblock %}
