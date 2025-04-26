@@ -1,7 +1,7 @@
-{% extends "base.html" %}
-{% block title %} Profile {% endblock %}
+{% extends "base.html" %} {% block title %} Profile {% endblock %} 
 
 {% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='general_styles.css') }}"/>
 
 <div id= "profileHeader"></div>
     <div id="profileSub"> </div>
@@ -10,9 +10,11 @@
     <div id="profileContainer"> 
         <div id="content"> </div>
     </div>
-</div>
-{% else %}
-    <p class="text-muted text-center mt-5">You haven't posted any reviews yet.</p>
-{% endif %}
+      
+
+    <script 
+        type="text/javascript" 
+        src="{{ url_for('static', filename='index.js') }}"
+    ></script> 
 
 {% endblock %}

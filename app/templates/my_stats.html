@@ -2,47 +2,20 @@
 {% block title %}My Stats Dashboard{% endblock %}
 
 {% block content %}
-    <!-- Floating Navbar is handled by base.html -->
+<link rel="stylesheet" href="{{ url_for('static', filename='general_styles.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
 
-    <div class="container-fluid">
-        <!-- Profile Card -->
-        <div class="card profile-card mb-4">
-            <div class="row g-0 align-items-center">
-                <div class="col-md-4 text-center">
-                    <img src="{{ url_for('static', filename='Images/profile-placeholder.png') }}"
-                         alt="Profile Picture"
-                         class="profile-img">
-                </div>
-                <div class="col-md-8">
-                    <div class="card-body">
-                        <h1 class="card-title">
-                          Welcome back, <span class="user-name">{{ user.username }}</span>
-                        </h1>
-                        <p class="card-text">Here’s a summary of your food journey so far!</p>
-                    </div>
-                </div>
+<div class="dashboard-container">
+    <!-- Welcome Section -->
+    <div class="dashboard-header">
+        <div class="profile-info">
+            <img src="{{ url_for('static', filename='Images/profile-placeholder.png') }}" alt="Profile Picture" class="profile-img">
+            <div>
+                <h1>Welcome back, <span class="user-name">{{ user.username }}</span>!</h1>
+                <p>Your personalized food journey dashboard.</p>
             </div>
         </div>
-
-        <!-- Personal Food Statistics -->
-        <div class="container-fluid">
-            <h3 class="section-title">Your Taste:</h3>
-            <div class="row">
-                <div class="col-md-6 mb-4">
-                    <div class="taste-card">
-                        <p class="taste-title">🌶️ Spiciness</p>
-                        <div class="progress custom-progress">
-                            <div class="progress-bar bg-danger"
-                                 role="progressbar"
-                                 style="width: {{ stats.spiciness | default(0) }}%;"
-                                 aria-valuenow="{{ stats.spiciness }}"
-                                 aria-valuemin="0"
-                                 aria-valuemax="100"></div>
-                            <span class="progress-emoji"
-                                  style="left: {{ stats.spiciness }}%;">🌶️</span>
-                        </div>
-                    </div>
-                </div>
+    </div>
 
     <!-- Statistics Section -->
     <div class="stats-grid">

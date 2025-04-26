@@ -2,6 +2,7 @@
 {% block title %}Log In{% endblock %}
 
 {% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='general_styles.css') }}"/>
 <form method="POST" class="mt-4">
   <h3>Log In</h3><br>
   <input name="email"    type="email"    placeholder="Email"    required><br>
@@ -9,3 +10,4 @@
   <button type="submit" class="btn btn-success">Log In</button>
 </form>
 {% endblock %}
+
