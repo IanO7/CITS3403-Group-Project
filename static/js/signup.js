@@ -1,14 +1,23 @@
 function handleSignup(e) {
     e.preventDefault();
   
+    const email = document.querySelector('input[type="email"]').value;
     const password = document.getElementById('password').value;
     const confirmPassword = document.getElementById('confirm-password').value;
   
+    // Check email format
+    if (!isValidEmail(email)) {
+      alert("Please enter a valid email address!");
+      return;
+    }
+  
+    // Check password strength
     if (!isPasswordSecure(password)) {
       alert("Password must meet all security rules.");
       return;
     }
   
+    // Check password confirmation
     if (password !== confirmPassword) {
       alert("Passwords do not match!");
       return;
@@ -17,6 +26,7 @@ function handleSignup(e) {
     alert("Signup successful! (backend connection needed)");
   }
   
+  // ✅ Password strength checker
   function isPasswordSecure(password) {
     const rules = [
       { regex: /.{8,}/, elementId: 'length-rule' },
@@ -43,6 +53,14 @@ function handleSignup(e) {
     return allValid;
   }
   
+  // ✅ Email format checker
+  function isValidEmail(email) {
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[a-zA-Z]{2,}$/
+    // This regex checks for a valid email format;
+    return emailPattern.test(email);
+  }
+  
+  // ✅ Toggle password visibility
   function togglePassword(inputId) {
     const input = document.getElementById(inputId);
     if (input.type === "password") {
@@ -52,8 +70,7 @@ function handleSignup(e) {
     }
   }
   
-  
-  
+  // ✅ Setup live password checking on typing
   document.addEventListener('DOMContentLoaded', function() {
     const passwordInput = document.getElementById('password');
     passwordInput.addEventListener('input', function() {
