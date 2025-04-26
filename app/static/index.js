@@ -1,6 +1,8 @@
-const pass_profileName = "eye"
+/*const pass_profileName = "eye"
 const pass_profileImage = "static/download.jpg"
 var pass_post = [{resturant:"Bubble Tea", price:"$10", rating: "5", review:"very good, nice atmosphere", image:"static/food.jpg"}, {resturant:"coffe and cake", price:"$100", rating: "1", review:"very bad, terrible atmosphere"}, {resturant:"Bubble Tea", price:"$10", rating: "5", review:"very good, nice atmosphere", image:"static/food.jpg"}] 
+*/ 
+
 
 createProfilePage()
 pullPosts()
@@ -14,7 +16,7 @@ function createProfilePage(){
     profileImage.classList.add("profileImage")
 
     let profileName = document.createElement("h1");
-    profileName.innerHTML = pass_profileName; 
+    profileName.innerHTML = user; 
 
     let addPost = document.createElement("button"); 
     addPost.textContent = "+";
