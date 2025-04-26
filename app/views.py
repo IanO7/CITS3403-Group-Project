@@ -1,4 +1,3 @@
- 
 from flask import Blueprint, render_template, request, redirect, url_for, session
 from .models import Note, User
 from . import db
@@ -50,14 +49,16 @@ def my_stats():
     if not user:
         return redirect(url_for('auth.login'))
 
-    notes = user.notes
-    # dummy example – replace with real logic
+    notes = user.notes  # Get all notes (reviews) by the current user
+
+    # Calculate averages for each category
     stats = {
-      'spiciness'    : sum(n.rating for n in notes)//len(notes) if notes else 0,
-      'deliciousness': 70,
-      'value'        : 60,
-      'plating'      : 80
+        'spiciness': sum(n.rating for n in notes) / len(notes) if notes else 0,
+        'deliciousness': sum(n.rating for n in notes) / len(notes) if notes else 0,
+        'value': sum(n.price for n in notes) / len(notes) if notes else 0,
+        'plating': sum(n.rating for n in notes) / len(notes) if notes else 0
     }
+
     return render_template('my_stats.html', user=user, stats=stats)
 
 @views.route('/global_stats')
