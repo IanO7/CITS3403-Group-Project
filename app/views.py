@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, redirect, url_for, session
+from flask import Blueprint, render_template, request, redirect, url_for, session, jsonify, abort
 from .models import Note, User
 from . import db
 
@@ -74,15 +74,82 @@ def friends():
     notes = Note.query.filter(Note.user_id != user.id).all()
     return render_template('my_friends.html', notes=notes)
 
+#updated so that only one user can like a post once
+
 @views.route('/like/<int:note_id>', methods=['POST'])
 def like(note_id):
     user = current_user()
     if not user:
-        return {'success': False, 'error': 'User not authenticated'}, 401
+        return jsonify(success=False, error='User not authenticated'), 401
+
+    # Grab (or init) the list of note-IDs this user has liked in this session
+    liked = session.get('liked_notes', [])
+
+    # If they've already liked it once, do nothing
+    if note_id in liked:
+        return jsonify(success=False, error='Already liked'), 400
 
     note = Note.query.get(note_id)
-    if note:
-        note.likes += 1
+    if not note:
+        return jsonify(success=False, error='Note not found'), 404
+
+    # First time like: increment, commit, then record in session
+    note.likes += 1
+    db.session.commit()
+
+    liked.append(note_id)
+    session['liked_notes'] = liked
+
+    return jsonify(success=True, likes=note.likes), 200
+
+#adding edit and delete functionality
+@views.route('/edit_post/<int:note_id>', methods=['GET','POST'])
+def edit_post(note_id):
+    user = current_user()
+    if not user:
+        return redirect(url_for('auth.login'))
+
+    note = Note.query.get_or_404(note_id)
+    if note.user_id != user.id:
+        abort(403)  # forbidden
+
+    if request.method == 'POST':
+        note.restaurant = request.form['restaurant']
+        note.price      = int(request.form['price'])
+        note.rating     = int(request.form['rating'])
+        note.review     = request.form['review']
+        note.image      = request.form['image']
         db.session.commit()
-        return {'success': True, 'likes': note.likes}, 200  # Return updated likes count
-    return {'success': False, 'error': 'Note not found'}, 404
+        return redirect(url_for('views.profile'))
+
+    return render_template('editPost.html', note=note)
+
+
+@views.route('/delete_post/<int:note_id>', methods=['POST'])
+def delete_post(note_id):
+    user = current_user()
+    if not user:
+        return redirect(url_for('auth.login'))
+
+    note = Note.query.get_or_404(note_id)
+    if note.user_id != user.id:
+        abort(403)
+
+    db.session.delete(note)
+    db.session.commit()
+    return redirect(url_for('views.profile'))
+
+#adding landing page
+@views.route('/landing')
+def landing():
+    notes = Note.query.order_by(Note.id.desc()).limit(10).all()
+    return render_template('landing.html', notes=notes)
+
+@views.route('/api/reviews')
+def api_reviews():
+    offset = int(request.args.get('offset', 0))
+    notes = Note.query.order_by(Note.id.desc()).offset(offset).limit(10).all()
+    return jsonify([
+        {'restaurant': n.restaurant, 'review': n.review, 'user': n.user.username}
+        for n in notes
+    ])
