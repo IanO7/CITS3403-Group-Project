@@ -21,4 +21,5 @@ class Note(db.Model):
     image      = db.Column(db.String(200))
     user_id    = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     user       = db.relationship('User', backref='notes')
+    likes      = db.Column(db.Integer, default=0)  # New column for likes
 

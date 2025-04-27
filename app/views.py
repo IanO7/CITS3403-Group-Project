@@ -1,4 +1,3 @@
- 
 from flask import Blueprint, render_template, request, redirect, url_for, session
 from .models import Note, User
 from . import db
@@ -50,14 +49,16 @@ def my_stats():
     if not user:
         return redirect(url_for('auth.login'))
 
-    notes = user.notes
-    # dummy example – replace with real logic
+    notes = user.notes  # Get all notes (reviews) by the current user
+
+    # Calculate averages for each category
     stats = {
-      'spiciness'    : sum(n.rating for n in notes)//len(notes) if notes else 0,
-      'deliciousness': 70,
-      'value'        : 60,
-      'plating'      : 80
+        'spiciness': sum(n.rating for n in notes) / len(notes) if notes else 0,
+        'deliciousness': sum(n.rating for n in notes) / len(notes) if notes else 0,
+        'value': sum(n.price for n in notes) / len(notes) if notes else 0,
+        'plating': sum(n.rating for n in notes) / len(notes) if notes else 0
     }
+
     return render_template('my_stats.html', user=user, stats=stats)
 
 @views.route('/global_stats')
@@ -69,6 +70,19 @@ def friends():
     user = current_user()
     if not user:
         return redirect(url_for('auth.login'))
-    # all notes except the current user's
+    # Fetch all notes except the current user's
     notes = Note.query.filter(Note.user_id != user.id).all()
     return render_template('my_friends.html', notes=notes)
+
+@views.route('/like/<int:note_id>', methods=['POST'])
+def like(note_id):
+    user = current_user()
+    if not user:
+        return {'success': False, 'error': 'User not authenticated'}, 401
+
+    note = Note.query.get(note_id)
+    if note:
+        note.likes += 1
+        db.session.commit()
+        return {'success': True, 'likes': note.likes}, 200  # Return updated likes count
+    return {'success': False, 'error': 'Note not found'}, 404
