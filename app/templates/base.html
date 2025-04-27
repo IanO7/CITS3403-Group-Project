@@ -17,7 +17,8 @@
 </head>
 <body>
     <header>
-        <a href="#" class="logo">OzFoody</a>
+        <a href="{{ url_for('views.landing') }}" class="logo">OzFoody</a>
+
         <nav class="nav-links">
             {% if session.user_id %}
                 <a href="{{ url_for('views.profile') }}" class="active">

@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}Welcome to OzFoody{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='general_styles.css') }}"/>
+
+<!-- Hero Section -->
+<div class="landing-hero text-center py-5 bg-light">
+  <h1 class="display-4">Welcome to OzFoody</h1>
+  <p class="lead">Discover and share real restaurant reviews from our community.</p>
+</div>
+
+<!-- Reviews Section -->
+<section id="reviews" class="py-4">
+  <div class="container">
+    <h2 class="mb-4">Latest Community Reviews</h2>
+    <div class="row g-3">
+      {% for note in notes %}
+        <div class="col-md-6">
+          <div class="card review-card p-3 h-100">
+            {% if note.image %}
+              {% if note.image.startswith('http') %}
+                <img src="{{ note.image }}" class="card-img-top mb-3" alt="{{ note.restaurant }}">
+              {% else %}
+                <img src="{{ url_for('static', filename=note.image) }}" class="card-img-top mb-3" alt="{{ note.restaurant }}">
+              {% endif %}
+            {% endif %}
+            <div class="card-body">
+              <h5 class="card-title">{{ note.restaurant }}</h5>
+              <p class="card-text">{{ note.review }}</p>
+            </div>
+            <div class="card-footer text-muted">
+              — {{ note.user.username }}
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+
+      {% if notes|length == 0 %}
+        <div class="col-12 text-center">
+          <p>No reviews yet. <a href="{{ url_for('views.new_post') }}">Be the first to review!</a></p>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+<style>
+  .landing-hero { background-color: #f7efe8; }
+  .review-card { background: #fff; border-radius: 0.5rem; }
+  .review-card img { max-height: 200px; object-fit: cover; }
+</style>
+{% endblock %}
