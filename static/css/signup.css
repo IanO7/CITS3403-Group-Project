@@ -1,0 +1,124 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+  body {
+    background: #F6E7DA;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    font-family: 'Lato', sans-serif;
+  }
+  .signup-container {
+    background: white;
+    padding: 2rem;
+    border-radius: 1.25rem;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+  }
+  h1 {
+    font-size: 2rem;
+    margin-bottom: 1.5rem;
+    color: #333;
+    font-family: 'Lobster', cursive;
+  }
+  .signup-form input {
+    width: 100%;
+    padding: 0.75rem;
+    margin: 0.5rem 0;
+    border: 1px solid #ddd;
+    border-radius: 0.5rem;
+    font-size: 1rem;
+    padding-right: 2.5rem;
+  }
+  .signup-button {
+    width: 100%;
+    background: #5F8D3B;
+    color: white;
+    border: none;
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.3s ease;
+    margin-top: 0.5rem;
+  }
+  .signup-button:hover {
+    background: #5E512B;
+  }
+  .login-line {
+    margin-top: 1.5rem;
+    font-size: 0.9rem;
+    color: #444;
+  }
+  .login-line a {
+    color: #4285F4;
+    text-decoration: none;
+    font-weight: bold;
+  }
+  .login-line a:hover {
+    text-decoration: underline;
+  }
+  .footer {
+    margin-top: 1rem;
+    font-size: 0.8rem;
+    color: #888;
+  }
+  .password-field {
+    position: relative;
+    margin-bottom: 0.5rem;
+  }
+  
+  .password-field input {
+    width: 100%;
+    padding: 0.75rem;
+    padding-right: 2.5rem; /* make space for the eye */
+    border: 1px solid #ddd;
+    border-radius: 0.5rem;
+    font-size: 1rem;
+  }
+  
+  .toggle-password {
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    transform: translateY(-50%);
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .eye-icon {
+    width: 20px;
+    height: 20px;
+  }
+  input:focus {
+    outline: 2px solid #5F8D3B;
+  }
+  
+  
+  .password-rules {
+    text-align: left;
+    font-size: 0.85rem;
+    margin-top: 0.5rem;
+    margin-bottom: 1rem;
+    color: #555;
+  }
+  .password-rules li {
+    margin-bottom: 0.25rem;
+  }
+  .password-rules li.valid {
+    color: green;
+  }
+  .password-rules li.invalid {
+    color: red;
+  }
+  
