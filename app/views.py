@@ -4,6 +4,10 @@ from . import db
 
 views = Blueprint('views', __name__)
 
+def get_user_notes(user):
+    """Fetch all notes for a given user."""
+    return Note.query.filter_by(user_id=user.id).all()
+    
 def current_user():
     uid = session.get('user_id')
     return User.query.get(uid) if uid else None
@@ -73,15 +77,17 @@ def my_stats():
     if not user:
         return redirect(url_for('auth.login'))
 
-    notes = getReviews(user)
-    stats = {
-        'spiciness': sum(n.rating for n in notes) / len(notes) if notes else 0,
-        'deliciousness': sum(n.rating for n in notes) / len(notes) if notes else 0,
-        'value': sum(n.price for n in notes) / len(notes) if notes else 0,
-        'plating': sum(n.rating for n in notes) / len(notes) if notes else 0
-    }
-    return render_template('my_stats.html', user=user, stats=stats)
+    notes = get_user_notes(user)
+    total = len(notes) or 1  # avoid division by zero
 
+    stats = {
+        'spiciness':     sum(n.Spiciness     for n in notes) / total,
+        'deliciousness': sum(n.Deliciousness for n in notes) / total,
+        'value':         sum(n.Value         for n in notes) / total,
+        'plating':       sum(n.Plating       for n in notes) / total
+    }
+
+    return render_template('my_stats.html', user=user, stats=stats)
 @views.route('/global_stats')
 def global_stats():
     return render_template('others_stats.html')
