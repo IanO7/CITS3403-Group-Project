@@ -1,59 +1,96 @@
 {% extends "base.html" %}
-{% block title %}Profile{% endblock %}
+{% block title %} Profile {% endblock %}
 
 {% block content %}
-<link rel="stylesheet" href="{{ url_for('static', filename='general_styles.css') }}"/>
-
-<!-- Profile Header with New Review Button -->
-<div class="d-flex justify-content-between align-items-center my-4">
-  <div class="d-flex align-items-center">
-    <img src="{{ user.profile_image or url_for('static', filename='Images/profile-placeholder.png') }}"
-         alt="Profile Picture"
-         class="profile-img me-3">
-    <h2 class="mb-0">{{ user.username }}</h2>
-  </div>
-  <a href="{{ url_for('views.new_post') }}" class="btn btn-success">
-    + New Review
-  </a>
+<div id="profileHeader" class="container mt-2">
+    <img src="{{  url_for('static', filename='download.jpg') }}" class="profileImage"> 
 </div>
 
-<!-- User Posts Grid -->
-<div class="row g-4">
-  {% for note in notes %}
-    <div class="col-md-6 col-lg-4">
-      <div class="card h-100">
-        {% if note.image %}
-          {% if note.image.startswith('http') %}
-            <img src="{{ note.image }}" class="card-img-top" alt="{{ note.restaurant }}">
-          {% else %}
-            <img src="{{ url_for('static', filename=note.image) }}" class="card-img-top" alt="{{ note.restaurant }}">
-          {% endif %}
-        {% endif %}
-        <div class="card-body">
-          <h5 class="card-title">{{ note.restaurant }}</h5>
-          <p class="card-text">{{ note.review }}</p>
+<div id="profileSub" class="container mt-1">
+    <h1> {{ user.username }} </h1>
+    <button class="addPost" onclick="location.href='/new_post'"> + </button>
+</div>
+
+{% if reviews %}
+<div id="userPosts" >
+    <div id="Posts" class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4">
+        {% for review in reviews %}
+        <div class="col">
+            <div class="card mb-4 shadow-sm rounded-4 h-100" style="min-height: 500px;">
+                <div class="card-body d-flex flex-column">
+                    <div class="d-flex align-items-center mb-3 w-100">
+                        <img src="{{  url_for('static', filename='download.jpg') }}"
+                             alt="Profile Avatar"
+                             class="profileImageSmall"> 
+                            <h5 class="card-title mb-1 p-3">{{ user.username }}</h5>
+                    </div>
+                    <p class="card-text">{{ review.Review }}</p>
+                    {% if review.image %}
+                    <img src="{{ review.image }}"
+                         alt="Dish Image"
+                         class="post-image"
+                         style="width:100%;height:300px;object-fit:cover;border-radius:10px;">
+                    {% endif %}
+                    <div class="row text-center mt-auto pt-3">
+                        <div class="col">
+                            <h6>Deliciousness</h6>
+                            <div class="progress" style="height:10px;">
+                                <div class="progress-bar bg-warning"
+                                     role="progressbar"
+                                     style="width: {{ review.Deliciousness | default(0, true) }}%;"
+                                     aria-valuenow="{{ review.Deliciousness }}"
+                                     aria-valuemin="0"
+                                     aria-valuemax="100"></div>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <h6>Spiciness</h6>
+                            <div class="progress" style="height:10px;">
+                                <div class="progress-bar bg-danger"
+                                    role="progressbar"
+                                    style="width: {{ review.Spiciness }}%;"
+                                    aria-valuenow="{{ review.Spiciness }}"
+                                    aria-valuemin="0"
+                                    aria-valuemax="100"></div>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <h6>Value</h6>
+                            <div class="progress" style="height:10px;">
+                                <div class="progress-bar bg-success"
+                                     role="progressbar"
+                                     style="width: {{ review.Value }}%;"
+                                     aria-valuenow="{{ review.Value }}"
+                                     aria-valuemin="0"
+                                     aria-valuemax="100"></div>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <h6>Plating</h6>
+                            <div class="progress" style="height:10px;">
+                                <div class="progress-bar bg-info"
+                                     role="progressbar"
+                                     style="width: {{ review.Plating }}%;"
+                                     aria-valuenow="{{ review.Plating }}"
+                                     aria-valuemin="0"
+                                     aria-valuemax="100"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="reaction-buttons d-flex justify-content-around mt-auto p-3">
+                    <button class="btn btn-outline-primary"><i class="bi bi-hand-thumbs-up"></i> Like</button>
+                    <button class="btn btn-outline-secondary"><i class="bi bi-chat"></i> Comment</button>
+                    <button class="btn btn-outline-success"><i class="bi bi-share"></i> Share</button>
+                </div>
+            </div>
         </div>
-        <ul class="list-group list-group-flush">
-          <li class="list-group-item">Price: ${{ note.price }}</li>
-          <li class="list-group-item">Rating: {{ note.rating }} / 5</li>
-        </ul>
-        <div class="card-body">
-          <a href="{{ url_for('views.edit_post', note_id=note.id) }}" class="btn btn-secondary btn-sm">Edit</a>
-          <form action="{{ url_for('views.delete_post', note_id=note.id) }}" method="POST" class="d-inline">
-            <button type="submit" class="btn btn-danger btn-sm">Delete</button>
-          </form>
-        </div>
-      </div>
+       
+        {% endfor %}
     </div>
-  {% endfor %}
 </div>
-
-<!-- No Posts Message -->
-{% if notes|length == 0 %}
-  <div class="text-center my-5">
-    <p>You haven’t posted any reviews yet.</p>
-    <a href="{{ url_for('views.new_post') }}" class="btn btn-primary">Add Your First Review</a>
-  </div>
+{% else %}
+    <p class="text-muted text-center mt-5">You haven't posted any reviews yet.</p>
 {% endif %}
 
 {% endblock %}
