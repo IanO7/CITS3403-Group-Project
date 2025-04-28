@@ -3,13 +3,15 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 
 class Note(db.Model):
-    id         = db.Column(db.Integer, primary_key=True)
-    restaurant = db.Column(db.String(100), nullable=False)
-    price      = db.Column(db.Integer, nullable=False)
-    rating     = db.Column(db.Integer, nullable=False)
-    review     = db.Column(db.String(200), nullable=False)
-    image      = db.Column(db.String(200))
-    user_id    = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    id              = db.Column(db.Integer, primary_key=True)
+    Resturaunt      = db.Column(db.String(100), nullable = False)
+    Spiciness       = db.Column(db.Integer, nullable=False)
+    Deliciousness   = db.Column(db.Integer, nullable = False)
+    Value           = db.Column(db.Integer, nullable=False)
+    Plating         = db.Column(db.Integer, nullable=False)
+    Review          = db.Column(db.String(1000), nullable=False)
+    image           = db.Column(db.String(200))
+    user_id         = db.Column(db.Integer, db.ForeignKey('user.id'))
     
     likes      = db.Column(db.Integer, default=0)  # New column for likes
 

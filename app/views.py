@@ -30,17 +30,16 @@ def profile():
         return redirect(url_for('auth.login'))
 
     reviews = getReviews(user)
-    review_data = [
-        {
-            'restaurant': r.restaurant,
-            'price': r.price,
-            'rating': r.rating,
-            'review': r.review,
-            'image': r.image,
-            'likes': r.likes or 0,
-        }
-        for r in reviews
-    ]
+    review_data = [{
+        "Resturaunt" : r.Resturaunt, 
+        "Spiciness" : r.Spiciness,
+        "Deliciousness" : r.Deliciousness, 
+        "Value" : r.Value, 
+        "Plating" : r.Plating, 
+        "Review" : r.Review, 
+        "image" : r.image, 
+        "user_id" : user.id, 
+    } for r in reviews]
     return render_template('profile.html', user=user, reviews=review_data)
 
 @views.route('/new_post', methods=['GET','POST'])
@@ -50,28 +49,18 @@ def new_post():
         return redirect(url_for('auth.login'))
 
     if request.method == 'POST':
-        restaurant = request.form.get('restaurant')
-        price_str   = request.form.get('price')
-        rating_str  = request.form.get('rating')
-        review_text = request.form.get('review')
-        image_url   = request.form.get('image')
-
-        if not restaurant or not price_str or not rating_str or not review_text:
-            abort(400, description='Missing required form fields')
-        try:
-            price  = int(price_str)
-            rating = int(rating_str)
-        except ValueError:
-            abort(400, description='Price and rating must be integers')
-
+        
         note = Note(
-            restaurant=restaurant,
-            price=price,
-            rating=rating,
-            review=review_text,
-            image=image_url,
+            Resturaunt=request.form['Resturaunt'],
+            Spiciness=int(request.form['Spiciness']),
+            Deliciousness=int(request.form['Deliciousness']),
+            Value=int(request.form['Value']),
+            Plating=int(request.form['Plating']),
+            Review=request.form['Review'],
+            image=request.form['image'],
             user_id=user.id
         )
+
         db.session.add(note)
         db.session.commit()
         return redirect(url_for('views.profile'))
