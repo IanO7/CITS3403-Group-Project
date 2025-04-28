@@ -3,11 +3,15 @@
 
 {% block content %}
 <link rel="stylesheet" href="{{ url_for('static', filename='general_styles.css') }}"/>
+
 <form method="POST" class="mt-4">
   <h3>Create an Account</h3><br>
-  <input name="username"    placeholder="Username" required><br>
-  <input name="email" type="email" placeholder="Email"    required><br>
-  <input name="password" type="password" placeholder="Password" required><br><br>
-  <button type="submit" class="btn btn-primary">Sign Up</button>
+
+  <input name="username" placeholder="Username" required><br>
+  <input name="email" type="email" placeholder="Email" required><br>
+  <input name="password" type="password" placeholder="Password" required><br>
+  <input name="confirm_password" type="password" placeholder="Confirm Password" required><br><br>
+
+  <button type="submit" class="btn btn-primary">Sign Up</button>
 </form>
 {% endblock %}

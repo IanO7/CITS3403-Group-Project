@@ -24,7 +24,12 @@ def profile():
     user = current_user()
     if not user:
         return redirect(url_for('auth.login'))
-    return render_template('profile.html', user=user, notes=user.notes)
+
+    # Explicitly query notes because User.notes relationship isn't defined
+    from .models import Note
+    notes = Note.query.filter_by(user_id=user.id).all()
+
+    return render_template('profile.html', user=user, notes=notes)
 
 @views.route('/new_post', methods=['GET','POST'])
 def new_post():
@@ -66,6 +71,22 @@ def new_post():
     return render_template('newPost.html')
 
 @views.route('/my_stats')
+def my_stats():
+    user = current_user()
+    if not user:
+        return redirect(url_for('auth.login'))
+
+    # Explicitly query notes because User.notes relationship isn't defined
+    from .models import Note
+    notes = Note.query.filter_by(user_id=user.id).all()
+
+    stats = {
+        'spiciness': sum(n.rating for n in notes) / len(notes) if notes else 0,
+        'deliciousness': sum(n.rating for n in notes) / len(notes) if notes else 0,
+        'value': sum(n.price for n in notes) / len(notes) if notes else 0,
+        'plating': sum(n.rating for n in notes) / len(notes) if notes else 0
+    }
+    return render_template('my_stats.html', user=user, stats=stats)
 def my_stats():
     user = current_user()
     if not user:
