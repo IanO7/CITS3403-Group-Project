@@ -1,21 +1,44 @@
 {% extends "base.html" %} {% block title %} post {% endblock %} 
 
 {% block content %}
-<form method="POST">
-    <h3 class="center"> New Post </h3>
-    <div class="form-group">
-        <input type="text" name="restaurant" id="restaurant" placeholder="Restaurant Name" required><br>
-        <input type="text" name="price" placeholder="Price" required><br>
-        <input type="number" name="rating" placeholder="Rating (1-5)" min="1" max="5" required><br>
-        <input type="text" name="review" placeholder="Review" required><br>
-        <input type="text" name="image" placeholder="Image URL (optional)"><br>
-        <button type="submit">Post</button>
-    </div>
-</form>
+<div class="d-flex justify-content-center mt-5">
+    <form method="POST" class="w-50">
+        <h3 class="text-center mb-4">New Post</h3>
+
+        <div class="mb-3">
+            <input type="text" name="Resturaunt" class="form-control" placeholder="Restaurant" required>
+        </div>
+        <div class="mb-3">
+            <label for="Spiciness" class="form-label">Spiciness</label>
+            <input type="range" name="Spiciness" id="Spiciness" class="form-range spiciness-slider" min="1" max="100" value="0" required>
+        </div>
+        <div class="mb-3">
+            <label for="Deliciousness" class="form-label">Deliciousness</label>
+            <input type="range" name="Deliciousness" class="form-range deliciousness-slider" min="1" max="100" value="0" required>
+        </div>
+        <div class="mb-3">
+            <label for="Value" class="form-label">Value</label>
+            <input type="range" name="Value" class="form-range value-slider" min="1" max="100" value="0" required>
+        </div>
+        <div class="mb-3">
+            <label for="Plating" class="form-label">Plating</label>
+            <input type="range" name="Plating" class="form-range plating-slider" min="1" max="100" value="0" required>
+        </div>
+
+        <div class="mb-3">
+            <textarea  name="Review" class="form-control" placeholder="Review"></textarea>
+        </div>
+        <div class="mb-3">
+            <input type="text" name="image" class="form-control" placeholder="Image URL (optional)">
+        </div>
+        <div class="text-center">
+            <button class="btn btn-outline-secondary" type="submit">Post</button>
+        </div>
+    </form>
+</div>
 
 <script 
     type="text/javascript" 
     src="{{ url_for('static', filename='index.js') }}"
 ></script> 
-
 {% endblock %}
