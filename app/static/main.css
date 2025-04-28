@@ -74,6 +74,19 @@ body {
     object-position: center; 
     border-radius: 0 0 10px 10px;
 }
+.spiciness-slider::-webkit-slider-runnable-track {
+    background-color: #dc3545; /* Bootstrap danger red */
+}
+.deliciousness-slider::-webkit-slider-runnable-track {
+    background-color: #ffc107; /* Bootstrap warning yellow */
+}
+.value-slider::-webkit-slider-runnable-track {
+    background-color: #198754; /* Bootstrap success green */
+}
+.plating-slider::-webkit-slider-runnable-track {
+    background-color: #0dcaf0; /* Bootstrap info blue */
+}
+
 
 .profileImage {
     width:8rem; 
