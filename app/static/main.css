@@ -19,16 +19,16 @@ body {
 
 /* Color tracks */
 .spiciness-slider::-webkit-slider-runnable-track {
-    background-color: #dc3545; /* Bootstrap danger red */
+    background-color: #dc3545; 
 }
 .deliciousness-slider::-webkit-slider-runnable-track {
-    background-color: #ffc107; /* Bootstrap warning yellow */
+    background-color: #ffc107; 
 }
 .value-slider::-webkit-slider-runnable-track {
-    background-color: #198754; /* Bootstrap success green */
+    background-color: #198754; 
 }
 .plating-slider::-webkit-slider-runnable-track {
-    background-color: #0dcaf0; /* Bootstrap info blue */
+    background-color: #0dcaf0; 
 }
 
 #profileHeader {
