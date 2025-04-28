@@ -8,6 +8,10 @@ def current_user():
     uid = session.get('user_id')
     return User.query.get(uid) if uid else None
 
+# Helper to fetch reviews for a user
+def getReviews(user):
+    return Note.query.filter_by(user_id=user.id).all()
+
 @views.route('/')
 def home():
     if session.get('user_id'):
@@ -25,11 +29,19 @@ def profile():
     if not user:
         return redirect(url_for('auth.login'))
 
-    # Explicitly query notes because User.notes relationship isn't defined
-    from .models import Note
-    notes = Note.query.filter_by(user_id=user.id).all()
-
-    return render_template('profile.html', user=user, notes=notes)
+    reviews = getReviews(user)
+    review_data = [
+        {
+            'restaurant': r.restaurant,
+            'price': r.price,
+            'rating': r.rating,
+            'review': r.review,
+            'image': r.image,
+            'likes': r.likes or 0,
+        }
+        for r in reviews
+    ]
+    return render_template('profile.html', user=user, reviews=review_data)
 
 @views.route('/new_post', methods=['GET','POST'])
 def new_post():
@@ -38,18 +50,14 @@ def new_post():
         return redirect(url_for('auth.login'))
 
     if request.method == 'POST':
-        # Accept either new or old form field names
-        restaurant = request.form.get('restaurant') or request.form.get('Resturaunt')
-        price_str   = request.form.get('price')      or request.form.get('Value')
-        rating_str  = request.form.get('rating')     or request.form.get('Spiciness')
-        review_text = request.form.get('review')     or request.form.get('Review')
-        image_url   = request.form.get('image')      or request.form.get('image_url')
+        restaurant = request.form.get('restaurant')
+        price_str   = request.form.get('price')
+        rating_str  = request.form.get('rating')
+        review_text = request.form.get('review')
+        image_url   = request.form.get('image')
 
-        # Validate required fields
-        if not restaurant or not price_str or not rating_str:
+        if not restaurant or not price_str or not rating_str or not review_text:
             abort(400, description='Missing required form fields')
-
-        # Convert numeric fields
         try:
             price  = int(price_str)
             rating = int(rating_str)
@@ -76,23 +84,7 @@ def my_stats():
     if not user:
         return redirect(url_for('auth.login'))
 
-    # Explicitly query notes because User.notes relationship isn't defined
-    from .models import Note
-    notes = Note.query.filter_by(user_id=user.id).all()
-
-    stats = {
-        'spiciness': sum(n.rating for n in notes) / len(notes) if notes else 0,
-        'deliciousness': sum(n.rating for n in notes) / len(notes) if notes else 0,
-        'value': sum(n.price for n in notes) / len(notes) if notes else 0,
-        'plating': sum(n.rating for n in notes) / len(notes) if notes else 0
-    }
-    return render_template('my_stats.html', user=user, stats=stats)
-def my_stats():
-    user = current_user()
-    if not user:
-        return redirect(url_for('auth.login'))
-
-    notes = user.notes
+    notes = getReviews(user)
     stats = {
         'spiciness': sum(n.rating for n in notes) / len(notes) if notes else 0,
         'deliciousness': sum(n.rating for n in notes) / len(notes) if notes else 0,
@@ -113,7 +105,6 @@ def friends():
     notes = Note.query.filter(Note.user_id != user.id).all()
     return render_template('my_friends.html', notes=notes)
 
-# Ensure one like per session per note
 @views.route('/like/<int:note_id>', methods=['POST'])
 def like(note_id):
     user = current_user()
@@ -130,7 +121,6 @@ def like(note_id):
 
     note.likes = (note.likes or 0) + 1
     db.session.commit()
-
     liked.append(note_id)
     session['liked_notes'] = liked
     return jsonify(success=True, likes=note.likes), 200
@@ -146,11 +136,11 @@ def edit_post(note_id):
         abort(403)
 
     if request.method == 'POST':
-        note.restaurant = request.form.get('restaurant') or request.form.get('Resturaunt')
-        note.price      = int(request.form.get('price')     or request.form.get('Value'))
-        note.rating     = int(request.form.get('rating')    or request.form.get('Spiciness'))
-        note.review     = request.form.get('review')        or request.form.get('Review')
-        note.image      = request.form.get('image')         or request.form.get('image_url')
+        note.restaurant = request.form.get('restaurant')
+        note.price      = int(request.form.get('price'))
+        note.rating     = int(request.form.get('rating'))
+        note.review     = request.form.get('review')
+        note.image      = request.form.get('image')
         db.session.commit()
         return redirect(url_for('views.profile'))
 
