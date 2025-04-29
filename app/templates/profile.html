@@ -79,7 +79,10 @@
                     </div>
                 </div>
                 <div class="reaction-buttons d-flex justify-content-around mt-auto p-3">
-                    <button class="btn btn-outline-primary"><i class="bi bi-hand-thumbs-up"></i> Like</button>
+                    <button class="btn btn-outline-primary like-button" data-note-id="{{ review.id }}">
+                        <i class="bi bi-hand-thumbs-up"></i> Like 
+                        <span class="action-count">{{ review.likes }}</span>
+                    </button>
                     <button class="btn btn-outline-secondary"><i class="bi bi-chat"></i> Comment</button>
                     <button class="btn btn-outline-success"><i class="bi bi-share"></i> Share</button>
                 </div>
@@ -92,5 +95,24 @@
 {% else %}
     <p class="text-muted text-center mt-5">You haven't posted any reviews yet.</p>
 {% endif %}
+
+<script>
+    document.querySelectorAll('.like-button').forEach(button => {
+        button.addEventListener('click', () => {
+            const noteId = button.getAttribute('data-note-id');
+            fetch(`/like/${noteId}`, { method: 'POST' })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const likeCount = button.querySelector('.action-count');
+                        likeCount.textContent = data.likes;
+                    } else {
+                        console.error(data.error);
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+        });
+    });
+</script>
 
 {% endblock %}

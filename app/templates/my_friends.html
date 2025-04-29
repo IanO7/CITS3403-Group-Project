@@ -6,76 +6,185 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='general_styles.css') }}">
 <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
 
-<style>
-  /* Limit image size so it doesn't overlap buttons */
-  .review-image-modern img {
-    max-height: 150px;
-    width: auto;
-    display: block;
-    margin: 0 auto 1rem;
-    object-fit: cover;
-  }
-  .review-card-modern {
-    overflow: hidden;
-  }
-</style>
-
 <div class="container mt-5">
-    <h1 class="text-center mb-4 text-heading">Friends' Reviews</h1>
+    <h1 class="text-center mb-4 text-heading">Friends</h1>
 
-    <!-- Reviews Section -->
-    <div class="staggered-grid">
-        {% for note in notes %}
-        <div class="review-card-modern">
-            {# Image display: external URLs or static paths #}
-            {% if note.image %}
-            <div class="review-image-modern">
-                {% if note.image.startswith('http') %}
-                <img src="{{ note.image }}" alt="{{ note.restaurant }}">
-                {% else %}
-                <img src="{{ url_for('static', filename=note.image) }}" alt="{{ note.restaurant }}">
+    <!-- Users to Follow -->
+    <div class="users-to-follow">
+        <h2 class="text-center">Users to Follow</h2>
+        <ul class="list-group" id="users-to-follow-list">
+            {% for user in all_users %}
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                <span>{{ user.username }}</span>
+                <button class="btn btn-success follow-button" data-user-id="{{ user.id }}">Follow</button>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <!-- Followed Friends -->
+    <div class="followed-friends mt-5">
+        <h2 class="text-center">Followed Friends</h2>
+        <ul class="list-group" id="followed-friends-list">
+            {% for friend in followed_friends %}
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                <span>{{ friend.username }}</span>
+                <button class="btn btn-danger unfollow-button" data-user-id="{{ friend.id }}">Unfollow</button>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <!-- Posts Section -->
+    <div class="posts-section mt-5">
+        <h2 class="text-center">Posts from Followed Friends</h2>
+        <div class="staggered-grid" id="posts-section">
+            {% for note in notes %}
+            <div class="review-card-modern">
+                {% if note.image %}
+                <div class="review-image-modern">
+                    {% if note.image.startswith('http') %}
+                    <img src="{{ note.image }}" alt="{{ note.Resturaunt }}">
+                    {% else %}
+                    <img src="{{ url_for('static', filename=note.image) }}" alt="{{ note.Resturaunt }}">
+                    {% endif %}
+                </div>
                 {% endif %}
-            </div>
-            {% endif %}
 
-            <div class="review-header-modern">
-                <h5>{{ note.restaurant }}</h5>
-                <p>{{ note.review }}</p>
+                <div class="review-header-modern">
+                    <h5>{{ note.Resturaunt }}</h5>
+                    <p>{{ note.Review }}</p>
+                </div>
+                <div class="review-actions-modern">
+                    <button class="action-button-modern like-button" data-note-id="{{ note.id }}">
+                        <i class="bi bi-hand-thumbs-up"></i> Like <span class="action-count">{{ note.likes }}</span>
+                    </button>
+                </div>
             </div>
-            <div class="review-actions-modern">
-                <button class="action-button-modern like-button" data-note-id="{{ note.id }}">
-                    <i class="bi bi-hand-thumbs-up"></i> Like <span class="action-count">{{ note.likes }}</span>
-                </button>
-            </div>
+            {% endfor %}
         </div>
-        {% endfor %}
     </div>
 </div>
 
-<!-- Bootstrap and Custom Scripts -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<script src="{{ url_for('static', filename='JS/dark_mode.js') }}"></script>
 <script>
-    document.querySelectorAll('.like-button').forEach(button => {
+    // Follow a user
+    document.querySelectorAll('.follow-button').forEach(button => {
         button.addEventListener('click', () => {
-            const noteId = button.getAttribute('data-note-id');
-            fetch(`/like/${noteId}`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    const likeCount = button.querySelector('.action-count');
-                    likeCount.textContent = data.likes;  // Update the likes count
-                } else {
-                    console.error(data.error);
-                }
-            })
-            .catch(error => console.error('Error:', error));
+            const userId = button.getAttribute('data-user-id');
+            fetch(`/follow/${userId}`, { method: 'POST' })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        updateFriendsPage(); // Refresh the page sections dynamically
+                    } else {
+                        console.error(data.error);
+                    }
+                })
+                .catch(error => console.error('Error:', error));
         });
     });
+
+    // Unfollow a user
+    document.querySelectorAll('.unfollow-button').forEach(button => {
+        button.addEventListener('click', () => {
+            const userId = button.getAttribute('data-user-id');
+            fetch(`/unfollow/${userId}`, { method: 'POST' })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        updateFriendsPage(); // Refresh the page sections dynamically
+                    } else {
+                        console.error(data.error);
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+        });
+    });
+
+    // Update the friends page dynamically
+    function updateFriendsPage() {
+        fetch('/friends')
+            .then(response => response.text())
+            .then(html => {
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+
+                // Update the users-to-follow list
+                const usersToFollowList = doc.querySelector('#users-to-follow-list').innerHTML;
+                document.querySelector('#users-to-follow-list').innerHTML = usersToFollowList;
+
+                // Update the followed-friends list
+                const followedFriendsList = doc.querySelector('#followed-friends-list').innerHTML;
+                document.querySelector('#followed-friends-list').innerHTML = followedFriendsList;
+
+                // Update the posts section
+                const postsSection = doc.querySelector('#posts-section').innerHTML;
+                document.querySelector('#posts-section').innerHTML = postsSection;
+
+                // Reattach event listeners to the new buttons
+                attachEventListeners();
+            })
+            .catch(error => console.error('Error updating the page:', error));
+    }
+
+    // Reattach event listeners to dynamically loaded buttons
+    function attachEventListeners() {
+        document.querySelectorAll('.follow-button').forEach(button => {
+            button.addEventListener('click', () => {
+                const userId = button.getAttribute('data-user-id');
+                fetch(`/follow/${userId}`, { method: 'POST' })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            updateFriendsPage();
+                        } else {
+                            console.error(data.error);
+                        }
+                    })
+                    .catch(error => console.error('Error:', error));
+            });
+        });
+
+        document.querySelectorAll('.unfollow-button').forEach(button => {
+            button.addEventListener('click', () => {
+                const userId = button.getAttribute('data-user-id');
+                fetch(`/unfollow/${userId}`, { method: 'POST' })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            updateFriendsPage();
+                        } else {
+                            console.error(data.error);
+                        }
+                    })
+                    .catch(error => console.error('Error:', error));
+            });
+        });
+
+        document.querySelectorAll('.like-button').forEach(button => {
+            button.addEventListener('click', () => {
+                const noteId = button.getAttribute('data-note-id');
+                fetch(`/like/${noteId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const likeCount = button.querySelector('.action-count');
+                        likeCount.textContent = data.likes; // Update the likes count
+                    } else {
+                        console.error(data.error);
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+            });
+        });
+    }
+
+    // Attach initial event listeners
+    attachEventListeners();
 </script>
 {% endblock %}

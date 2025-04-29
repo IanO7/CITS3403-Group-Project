@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, request, redirect, url_for, session, jsonify, abort
-from .models import Note, User
+from .models import Note, User, Follow
 from . import db
 
 views = Blueprint('views', __name__)
@@ -92,13 +92,23 @@ def my_stats():
 def global_stats():
     return render_template('others_stats.html')
 
-@views.route('/friends')
+@views.route('/friends', methods=['GET', 'POST'])
 def friends():
     user = current_user()
     if not user:
         return redirect(url_for('auth.login'))
-    notes = Note.query.filter(Note.user_id != user.id).all()
-    return render_template('my_friends.html', notes=notes)
+
+    # Fetch all users except the current user
+    all_users = User.query.filter(User.id != user.id).all()
+
+    # Fetch followed users
+    followed_users = [f.followed_id for f in user.following]
+    followed_friends = User.query.filter(User.id.in_(followed_users)).all()
+
+    # Fetch posts from followed users
+    notes = Note.query.filter(Note.user_id.in_(followed_users)).all()
+
+    return render_template('my_friends.html', all_users=all_users, followed_friends=followed_friends, notes=notes)
 
 @views.route('/like/<int:note_id>', methods=['POST'])
 def like(note_id):
@@ -163,3 +173,39 @@ def api_reviews():
         {'restaurant': n.restaurant, 'review': n.review, 'user': n.user.username}
         for n in notes
     ])
+
+@views.route('/follow/<int:user_id>', methods=['POST'])
+def follow(user_id):
+    user = current_user()
+    if not user:
+        return jsonify(success=False, error='User not authenticated'), 401
+
+    if user.id == user_id:
+        return jsonify(success=False, error="You can't follow yourself"), 400
+
+    followed_user = User.query.get(user_id)
+    if not followed_user:
+        return jsonify(success=False, error='User not found'), 404
+
+    if Follow.query.filter_by(follower_id=user.id, followed_id=user_id).first():
+        return jsonify(success=False, error='Already following'), 400
+
+    follow = Follow(follower_id=user.id, followed_id=user_id)
+    db.session.add(follow)
+    db.session.commit()
+    return jsonify(success=True), 200
+
+
+@views.route('/unfollow/<int:user_id>', methods=['POST'])
+def unfollow(user_id):
+    user = current_user()
+    if not user:
+        return jsonify(success=False, error='User not authenticated'), 401
+
+    follow = Follow.query.filter_by(follower_id=user.id, followed_id=user_id).first()
+    if not follow:
+        return jsonify(success=False, error='Not following'), 400
+
+    db.session.delete(follow)
+    db.session.commit()
+    return jsonify(success=True), 200
