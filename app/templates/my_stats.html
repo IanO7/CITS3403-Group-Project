@@ -55,6 +55,15 @@
         </div>
     </div>
 
+    <!-- Overall Average Rating -->
+    <div class="card stat-card mt-4">
+        <h3 class="card-title">⭐ Overall Average Rating</h3>
+        <div class="progress custom-progress">
+            <div class="progress-bar bg-primary" style="width: {{ overall_average_rating | default(0) }}%;"></div>
+        </div>
+        <p>{{ overall_average_rating | default(0) }}% average rating across all reviews</p>
+    </div>
+
     <!-- Charts Section -->
     <div class="charts-grid">
         <div class="card chart-card">
@@ -68,29 +77,6 @@
         <div class="card chart-card">
             <h3 class="card-title">⭐ Average Rating</h3>
             <canvas id="ratingChart"></canvas>
-        </div>
-    </div>
-
-    <!-- Achievements Section -->
-    <div class="achievements-section">
-        <h2>Achievements & Badges</h2>
-        <div class="badges-grid">
-            <div class="badge-card">
-                <img src="{{ url_for('static', filename='Image Sources/chilli-master.png') }}" alt="Spice Master Badge">
-                <p>Spice Master</p>
-            </div>
-            <div class="badge-card">
-                <img src="{{ url_for('static', filename='Image Sources/plating-perfectionist.png') }}" alt="Plating Perfectionist Badge">
-                <p>Plating Perfectionist</p>
-            </div>
-            <div class="badge-card">
-                <img src="{{ url_for('static', filename='Image Sources/deliciousness-guru.png') }}" alt="Deliciousness Guru Badge">
-                <p>Deliciousness Guru</p>
-            </div>
-            <div class="badge-card">
-                <img src="{{ url_for('static', filename='Image Sources/value-hunter.png') }}" alt="Value Hunter Badge">
-                <p>Value Hunter</p>
-            </div>
         </div>
     </div>
 </div>

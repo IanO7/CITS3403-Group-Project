@@ -81,8 +81,9 @@ def my_stats():
         return redirect(url_for('auth.login'))
 
     notes = get_user_notes(user)
-    total = len(notes) or 1  # avoid division by zero
+    total = len(notes) or 1  # Avoid division by zero
 
+    # Calculate individual stats
     stats = {
         'spiciness':     sum(n.Spiciness     for n in notes) / total,
         'deliciousness': sum(n.Deliciousness for n in notes) / total,
@@ -90,7 +91,19 @@ def my_stats():
         'plating':       sum(n.Plating       for n in notes) / total
     }
 
-    return render_template('my_stats.html', user=user, stats=stats)
+    # Calculate the average rating for each review and then across all reviews
+    average_ratings = [
+        (n.Spiciness + n.Deliciousness + n.Value + n.Plating) / 4 for n in notes
+    ]
+    overall_average_rating = sum(average_ratings) / total
+
+    return render_template(
+        'my_stats.html',
+        user=user,
+        stats=stats,
+        overall_average_rating=overall_average_rating
+    )
+
 @views.route('/global_stats')
 def global_stats():
     return render_template('others_stats.html')
