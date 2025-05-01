@@ -1,6 +1,7 @@
 from flask import Blueprint, render_template, request, redirect, url_for, session, jsonify, abort
 from .models import Note, User, Follow
 from . import db
+from werkzeug.security import generate_password_hash, check_password_hash
 
 views = Blueprint('views', __name__)
 
@@ -109,7 +110,7 @@ def friends():
     # Fetch posts from followed users
     notes = Note.query.filter(Note.user_id.in_(followed_users)).all()
 
-    return render_template('my_friends.html', all_users=all_users, followed_users=followed_users, notes=notes)
+    return render_template('my_friends.html', user=user, all_users=all_users, followed_users=followed_users, notes=notes)
 
 @views.route('/like/<int:note_id>', methods=['POST'])
 def like(note_id):
@@ -217,3 +218,38 @@ def unfollow(user_id):
     db.session.delete(follow)
     db.session.commit()
     return jsonify(success=True), 200
+
+@views.route('/settings', methods=['GET', 'POST'])
+def settings():
+    user = current_user()
+    if not user:
+        return redirect(url_for('auth.login'))
+
+    if request.method == 'POST':
+        action = request.form.get('action')
+
+        if action == 'update_info':
+            # Update user information
+            user.username = request.form.get('username')
+            user.email = request.form.get('email')
+            db.session.commit()
+            return jsonify(success=True, message="User information updated successfully"), 200
+
+        elif action == 'update_password':
+            # Update password
+            current_password = request.form.get('current_password')
+            new_password = request.form.get('new_password')
+            if not check_password_hash(user.password, current_password):
+                return jsonify(success=False, error="Current password is incorrect"), 400
+            user.password = generate_password_hash(new_password)
+            db.session.commit()
+            return jsonify(success=True, message="Password updated successfully"), 200
+
+        elif action == 'delete_account':
+            # Delete user account
+            db.session.delete(user)
+            db.session.commit()
+            session.clear()
+            return jsonify(success=True, message="Account deleted successfully"), 200
+
+    return render_template('settings.html', user=user)

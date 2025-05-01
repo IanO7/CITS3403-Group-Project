@@ -8,19 +8,22 @@ db = SQLAlchemy()
 migrate = Migrate()
 DB_NAME = "database.db"
 
+from .views import views
+
 def create_app():
     app = Flask(__name__)
-    app.config['SECRET_KEY'] = "able"  # Secure signing for sessions & flash messages
+    app.config['SECRET_KEY'] = 'able'
     app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{DB_NAME}'
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
     db.init_app(app)
     migrate.init_app(app, db)  # Initialize Flask-Migrate
 
-    from .views import views
+    # Register blueprints
+    app.register_blueprint(views, url_prefix='/')
+
     from .auth import auth
 
-    app.register_blueprint(views, url_prefix='/')
     app.register_blueprint(auth, url_prefix='/')
 
     from .models import Note, User  # Import your models here
