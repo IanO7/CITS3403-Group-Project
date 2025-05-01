@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block title %}{{ selected_user.username }}'s Posts{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1 class="text-center mb-4">{{ selected_user.username }}'s Posts</h1>
+
+    <div class="d-flex justify-content-between mb-4">
+        <a href="{{ url_for('views.search', q=request.args.get('q', '')) }}" class="btn btn-secondary">Back to Search Results</a>
+        <a href="{{ url_for('views.friends') }}" class="btn btn-secondary">Back to Friends</a>
+    </div>
+
+    {% if posts %}
+    <div class="staggered-grid">
+        {% for post in posts %}
+        <div class="review-card-modern">
+            {% if post.image %}
+            <div class="review-image-modern">
+                {% if post.image.startswith('http') %}
+                <img src="{{ post.image }}" alt="{{ post.Resturaunt }}">
+                {% else %}
+                <img src="{{ url_for('static', filename=post.image) }}" alt="{{ post.Resturaunt }}">
+                {% endif %}
+            </div>
+            {% endif %}
+
+            <div class="review-header-modern">
+                <h5>{{ post.Resturaunt }}</h5>
+                <p>{{ post.Review }}</p>
+            </div>
+            <div class="review-actions-modern">
+                <button class="action-button-modern like-button" data-note-id="{{ post.id }}">
+                    <i class="bi bi-hand-thumbs-up"></i> Like <span class="action-count">{{ post.likes }}</span>
+                </button>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <p class="text-center text-muted">{{ selected_user.username }} hasn't posted any reviews yet.</p>
+    {% endif %}
+</div>
+<script>
+    // Like/Unlike a post and update the likes count dynamically
+    document.querySelectorAll('.like-button').forEach(button => {
+        button.addEventListener('click', () => {
+            const noteId = button.getAttribute('data-note-id');
+            fetch(`/like/${noteId}`, { method: 'POST' })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const likeCount = button.querySelector('.action-count');
+                        likeCount.textContent = data.likes; // Update the likes count dynamically
+                    } else {
+                        console.error(data.error);
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+        });
+    });
+</script>
+{% endblock %}

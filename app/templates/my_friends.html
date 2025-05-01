@@ -9,21 +9,6 @@
 <div class="container mt-5">
     <h1 class="text-center mb-4 text-heading">Friends of {{ user.username }}</h1>
 
-    <!-- Users to Follow -->
-    <div class="users-to-follow">
-        <h2 class="text-center">Users</h2>
-        <ul class="list-group" id="users-to-follow-list">
-            {% for user in all_users %}
-            <li class="list-group-item d-flex justify-content-between align-items-center">
-                <span>{{ user.username }}</span>
-                <button class="btn {% if user.id in followed_users %}btn-danger{% else %}btn-success{% endif %} follow-button" data-user-id="{{ user.id }}">
-                    {% if user.id in followed_users %}Unfollow{% else %}Follow{% endif %}
-                </button>
-            </li>
-            {% endfor %}
-        </ul>
-    </div>
-
     <!-- Posts Section -->
     <div class="posts-section mt-5">
         <h2 class="text-center">Posts from Followed Users</h2>
@@ -52,6 +37,29 @@
             </div>
             {% endfor %}
         </div>
+    </div>
+
+    <!-- Users to Follow -->
+    <div class="users-to-follow">
+        <h2 class="text-center">Users</h2>
+
+        <!-- Search Bar -->
+        <form action="{{ url_for('views.search') }}" method="GET" class="mb-3 position-relative">
+            <input type="text" name="q" id="search-input" class="form-control" placeholder="Search for a friend..." autocomplete="off" required>
+            <div id="suggestions" class="list-group position-absolute w-100" style="z-index: 1000;"></div>
+            <button type="submit" class="btn btn-primary mt-2">Search</button>
+        </form>
+
+        <ul class="list-group" id="users-to-follow-list">
+            {% for user in all_users %}
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                <span>{{ user.username }}</span>
+                <button class="btn {% if user.id in followed_users %}btn-danger{% else %}btn-success{% endif %} follow-button" data-user-id="{{ user.id }}">
+                    {% if user.id in followed_users %}Unfollow{% else %}Follow{% endif %}
+                </button>
+            </li>
+            {% endfor %}
+        </ul>
     </div>
 </div>
 
@@ -101,6 +109,38 @@
                 })
                 .catch(error => console.error('Error:', error));
         });
+    });
+
+    // Search suggestions
+    const searchInput = document.getElementById('search-input');
+    const suggestionsBox = document.getElementById('suggestions');
+
+    searchInput.addEventListener('input', () => {
+        const query = searchInput.value.trim();
+        if (query.length === 0) {
+            suggestionsBox.innerHTML = '';
+            return;
+        }
+
+        fetch(`/api/search_suggestions?q=${encodeURIComponent(query)}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    suggestionsBox.innerHTML = data.suggestions.map(username => `
+                        <a href="/search?q=${encodeURIComponent(username)}" class="list-group-item list-group-item-action">
+                            ${username}
+                        </a>
+                    `).join('');
+                }
+            })
+            .catch(error => console.error('Error:', error));
+    });
+
+    // Hide suggestions when clicking outside
+    document.addEventListener('click', (event) => {
+        if (!searchInput.contains(event.target)) {
+            suggestionsBox.innerHTML = '';
+        }
     });
 </script>
 {% endblock %}

@@ -266,3 +266,47 @@ def settings():
             return jsonify(success=True, message="Account deleted successfully"), 200
 
     return render_template('settings.html', user=user)
+
+@views.route('/search', methods=['GET'])
+def search():
+    user = current_user()
+    if not user:
+        return redirect(url_for('auth.login'))
+
+    query = request.args.get('q', '').strip()
+    if not query:
+        return redirect(url_for('views.friends'))
+
+    # Search for users whose username contains the query (case-insensitive)
+    search_results = User.query.filter(User.username.ilike(f"%{query}%")).all()
+
+    return render_template('search_results.html', user=user, query=query, search_results=search_results)
+
+
+@views.route('/user/<int:user_id>', methods=['GET'])
+def user_posts(user_id):
+    user = current_user()
+    if not user:
+        return redirect(url_for('auth.login'))
+
+    # Fetch the selected user
+    selected_user = User.query.get_or_404(user_id)
+
+    # Fetch the selected user's posts
+    posts = Note.query.filter_by(user_id=selected_user.id).all()
+
+    return render_template('user_posts.html', user=user, selected_user=selected_user, posts=posts)
+
+@views.route('/api/search_suggestions', methods=['GET'])
+def search_suggestions():
+    user = current_user()
+    if not user:
+        return jsonify(success=False, error='User not authenticated'), 401
+
+    query = request.args.get('q', '').strip()
+    if not query:
+        return jsonify(success=True, suggestions=[]), 200
+
+    # Search for users whose username contains the query (case-insensitive)
+    suggestions = User.query.filter(User.username.ilike(f"%{query}%")).limit(5).all()
+    return jsonify(success=True, suggestions=[user.username for user in suggestions]), 200
