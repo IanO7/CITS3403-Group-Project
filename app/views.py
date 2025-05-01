@@ -105,12 +105,11 @@ def friends():
 
     # Fetch followed users
     followed_users = [f.followed_id for f in user.following]
-    followed_friends = User.query.filter(User.id.in_(followed_users)).all()
 
     # Fetch posts from followed users
     notes = Note.query.filter(Note.user_id.in_(followed_users)).all()
 
-    return render_template('my_friends.html', all_users=all_users, followed_friends=followed_friends, notes=notes)
+    return render_template('my_friends.html', all_users=all_users, followed_users=followed_users, notes=notes)
 
 @views.route('/like/<int:note_id>', methods=['POST'])
 def like(note_id):
@@ -118,12 +117,12 @@ def like(note_id):
     if not user:
         return jsonify(success=False, error='User not authenticated'), 401
 
-    # Check if the user has already liked the post
-    liked_notes = session.get('liked_notes', [])
     note = Note.query.get(note_id)
     if not note:
         return jsonify(success=False, error='Note not found'), 404
 
+    # Check if the user has already liked the post
+    liked_notes = session.get('liked_notes', [])
     if note_id in liked_notes:
         # Unlike the post
         note.likes = max((note.likes or 0) - 1, 0)  # Ensure likes don't go below 0

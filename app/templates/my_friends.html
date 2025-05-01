@@ -11,25 +11,14 @@
 
     <!-- Users to Follow -->
     <div class="users-to-follow">
-        <h2 class="text-center">Users to Follow</h2>
+        <h2 class="text-center">Users</h2>
         <ul class="list-group" id="users-to-follow-list">
             {% for user in all_users %}
             <li class="list-group-item d-flex justify-content-between align-items-center">
                 <span>{{ user.username }}</span>
-                <button class="btn btn-success follow-button" data-user-id="{{ user.id }}">Follow</button>
-            </li>
-            {% endfor %}
-        </ul>
-    </div>
-
-    <!-- Followed Friends -->
-    <div class="followed-friends mt-5">
-        <h2 class="text-center">Followed Friends</h2>
-        <ul class="list-group" id="followed-friends-list">
-            {% for friend in followed_friends %}
-            <li class="list-group-item d-flex justify-content-between align-items-center">
-                <span>{{ friend.username }}</span>
-                <button class="btn btn-danger unfollow-button" data-user-id="{{ friend.id }}">Unfollow</button>
+                <button class="btn {% if user.id in followed_users %}btn-danger{% else %}btn-success{% endif %} follow-button" data-user-id="{{ user.id }}">
+                    {% if user.id in followed_users %}Unfollow{% else %}Follow{% endif %}
+                </button>
             </li>
             {% endfor %}
         </ul>
@@ -37,10 +26,10 @@
 
     <!-- Posts Section -->
     <div class="posts-section mt-5">
-        <h2 class="text-center">Posts from Followed Friends</h2>
+        <h2 class="text-center">Posts from Followed Users</h2>
         <div class="staggered-grid" id="posts-section">
             {% for note in notes %}
-            <div class="review-card-modern">
+            <div class="review-card-modern user-post" data-user-id="{{ note.user_id }}">
                 {% if note.image %}
                 <div class="review-image-modern">
                     {% if note.image.startswith('http') %}
@@ -67,15 +56,27 @@
 </div>
 
 <script>
-    // Follow a user
+    // Follow/Unfollow a user and toggle posts visibility
     document.querySelectorAll('.follow-button').forEach(button => {
         button.addEventListener('click', () => {
             const userId = button.getAttribute('data-user-id');
-            fetch(`/follow/${userId}`, { method: 'POST' })
+            const isFollowing = button.classList.contains('btn-danger');
+            const url = isFollowing ? `/unfollow/${userId}` : `/follow/${userId}`;
+            const method = 'POST';
+
+            fetch(url, { method })
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        updateFriendsPage(); // Refresh the page sections dynamically
+                        // Toggle button appearance and text
+                        button.classList.toggle('btn-success');
+                        button.classList.toggle('btn-danger');
+                        button.textContent = isFollowing ? 'Follow' : 'Unfollow';
+
+                        // Show or hide posts for the user
+                        document.querySelectorAll(`.user-post[data-user-id="${userId}"]`).forEach(post => {
+                            post.style.display = isFollowing ? 'none' : 'block';
+                        });
                     } else {
                         console.error(data.error);
                     }
@@ -84,107 +85,22 @@
         });
     });
 
-    // Unfollow a user
-    document.querySelectorAll('.unfollow-button').forEach(button => {
+    // Like/Unlike a post and update the likes count dynamically
+    document.querySelectorAll('.like-button').forEach(button => {
         button.addEventListener('click', () => {
-            const userId = button.getAttribute('data-user-id');
-            fetch(`/unfollow/${userId}`, { method: 'POST' })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        updateFriendsPage(); // Refresh the page sections dynamically
-                    } else {
-                        console.error(data.error);
-                    }
-                })
-                .catch(error => console.error('Error:', error));
-        });
-    });
-
-    // Update the friends page dynamically
-    function updateFriendsPage() {
-        fetch('/friends')
-            .then(response => response.text())
-            .then(html => {
-                const parser = new DOMParser();
-                const doc = parser.parseFromString(html, 'text/html');
-
-                // Update the users-to-follow list
-                const usersToFollowList = doc.querySelector('#users-to-follow-list').innerHTML;
-                document.querySelector('#users-to-follow-list').innerHTML = usersToFollowList;
-
-                // Update the followed-friends list
-                const followedFriendsList = doc.querySelector('#followed-friends-list').innerHTML;
-                document.querySelector('#followed-friends-list').innerHTML = followedFriendsList;
-
-                // Update the posts section
-                const postsSection = doc.querySelector('#posts-section').innerHTML;
-                document.querySelector('#posts-section').innerHTML = postsSection;
-
-                // Reattach event listeners to the new buttons
-                attachEventListeners();
-            })
-            .catch(error => console.error('Error updating the page:', error));
-    }
-
-    // Reattach event listeners to dynamically loaded buttons
-    function attachEventListeners() {
-        document.querySelectorAll('.follow-button').forEach(button => {
-            button.addEventListener('click', () => {
-                const userId = button.getAttribute('data-user-id');
-                fetch(`/follow/${userId}`, { method: 'POST' })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            updateFriendsPage();
-                        } else {
-                            console.error(data.error);
-                        }
-                    })
-                    .catch(error => console.error('Error:', error));
-            });
-        });
-
-        document.querySelectorAll('.unfollow-button').forEach(button => {
-            button.addEventListener('click', () => {
-                const userId = button.getAttribute('data-user-id');
-                fetch(`/unfollow/${userId}`, { method: 'POST' })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            updateFriendsPage();
-                        } else {
-                            console.error(data.error);
-                        }
-                    })
-                    .catch(error => console.error('Error:', error));
-            });
-        });
-
-        document.querySelectorAll('.like-button').forEach(button => {
-            button.addEventListener('click', () => {
-                const noteId = button.getAttribute('data-note-id');
-                fetch(`/like/${noteId}`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                })
+            const noteId = button.getAttribute('data-note-id');
+            fetch(`/like/${noteId}`, { method: 'POST' })
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
                         const likeCount = button.querySelector('.action-count');
-                        likeCount.textContent = data.likes; // Update the likes count
+                        likeCount.textContent = data.likes; // Update the likes count dynamically
                     } else {
                         console.error(data.error);
                     }
                 })
                 .catch(error => console.error('Error:', error));
-            });
         });
-    }
-
-    // Attach initial event listeners
-    attachEventListeners();
+    });
 </script>
 {% endblock %}

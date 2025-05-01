@@ -97,6 +97,7 @@
 {% endif %}
 
 <script>
+    // Like/Unlike a post and update the likes count dynamically
     document.querySelectorAll('.like-button').forEach(button => {
         button.addEventListener('click', () => {
             const noteId = button.getAttribute('data-note-id');
