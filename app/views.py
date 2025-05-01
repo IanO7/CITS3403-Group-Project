@@ -33,17 +33,19 @@ def profile():
     if not user:
         return redirect(url_for('auth.login'))
 
-    reviews = getReviews(user)
+    reviews = Note.query.filter_by(user_id=user.id).all()  # Fetch all notes for the user
     review_data = [{
-        "Resturaunt" : r.Resturaunt, 
-        "Spiciness" : r.Spiciness,
-        "Deliciousness" : r.Deliciousness, 
-        "Value" : r.Value, 
-        "Plating" : r.Plating, 
-        "Review" : r.Review, 
-        "image" : r.image, 
-        "user_id" : user.id, 
+        "id": r.id,
+        "Resturaunt": r.Resturaunt,
+        "Spiciness": r.Spiciness,
+        "Deliciousness": r.Deliciousness,
+        "Value": r.Value,
+        "Plating": r.Plating,
+        "Review": r.Review,
+        "image": r.image,
+        "likes": r.likes  # Include the latest likes count
     } for r in reviews]
+
     return render_template('profile.html', user=user, reviews=review_data)
 
 @views.route('/new_post', methods=['GET','POST'])
@@ -116,18 +118,25 @@ def like(note_id):
     if not user:
         return jsonify(success=False, error='User not authenticated'), 401
 
-    liked = session.get('liked_notes', [])
-    if note_id in liked:
-        return jsonify(success=False, error='Already liked'), 400
-
+    # Check if the user has already liked the post
+    liked_notes = session.get('liked_notes', [])
     note = Note.query.get(note_id)
     if not note:
         return jsonify(success=False, error='Note not found'), 404
 
-    note.likes = (note.likes or 0) + 1
+    if note_id in liked_notes:
+        # Unlike the post
+        note.likes = max((note.likes or 0) - 1, 0)  # Ensure likes don't go below 0
+        liked_notes.remove(note_id)
+    else:
+        # Like the post
+        note.likes = (note.likes or 0) + 1
+        liked_notes.append(note_id)
+
+    # Save the updated likes and session
+    session['liked_notes'] = liked_notes
     db.session.commit()
-    liked.append(note_id)
-    session['liked_notes'] = liked
+
     return jsonify(success=True, likes=note.likes), 200
 
 @views.route('/edit_post/<int:note_id>', methods=['GET','POST'])

@@ -81,7 +81,7 @@
                 <div class="reaction-buttons d-flex justify-content-around mt-auto p-3">
                     <button class="btn btn-outline-primary like-button" data-note-id="{{ review.id }}">
                         <i class="bi bi-hand-thumbs-up"></i> Like 
-                        <span class="action-count">{{ review.likes }}</span>
+                        <span class="action-count">{{ review.likes }}</span> <!-- Display the latest likes count -->
                     </button>
                     <button class="btn btn-outline-secondary"><i class="bi bi-chat"></i> Comment</button>
                     <button class="btn btn-outline-success"><i class="bi bi-share"></i> Share</button>
@@ -105,7 +105,7 @@
                 .then(data => {
                     if (data.success) {
                         const likeCount = button.querySelector('.action-count');
-                        likeCount.textContent = data.likes;
+                        likeCount.textContent = data.likes; // Update the likes count dynamically
                     } else {
                         console.error(data.error);
                     }
