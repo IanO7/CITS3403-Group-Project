@@ -67,8 +67,9 @@
     <!-- Recommended Food-->
     <div class="card stat-card mt-4">
         <h3 class="card-title">Today, I will be eating...</h3>
-        <p>ADD PLACEHOLDER HERE TO SHOW REOCMMENDED FOOD</p>
-        <input type="text" placeholder = "Search for your favourite food"></input>
+        <p id="recommended-food">Loading recommendations...</p>
+        <input type="text" id="search-food" placeholder="Search for your favourite food" class="form-control mb-3">
+        <button id="get-recommendation" class="btn btn-primary">Get Recommendation</button>
     </div>
 
     <!-- Charts Section -->
@@ -100,5 +101,31 @@
     });
 
     // Add similar setups for cuisineChart and ratingChart
+
+    document.getElementById('get-recommendation').addEventListener('click', () => {
+        const spiciness = {{ stats.spiciness | default(50) }};
+        const deliciousness = {{ stats.deliciousness | default(50) }};
+        const value = {{ stats.value | default(50) }};
+        const plating = {{ stats.plating | default(50) }};
+        const overall = {{ overall_average_rating | default(50) }};
+
+        fetch(`/recommend_food?spiciness=${spiciness}&deliciousness=${deliciousness}&value=${value}&plating=${plating}&overall=${overall}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const recommendations = data.recommendations;
+                    const recommendedFood = recommendations.map(food => `
+                        <div>
+                            <h5>${food.restaurant}</h5>
+                            <p>Spiciness: ${food.spiciness}, Deliciousness: ${food.deliciousness}, Value: ${food.value}, Plating: ${food.plating}, Overall: ${food.overall}</p>
+                        </div>
+                    `).join('');
+                    document.getElementById('recommended-food').innerHTML = recommendedFood;
+                } else {
+                    document.getElementById('recommended-food').innerText = 'No recommendations found.';
+                }
+            })
+            .catch(error => console.error('Error:', error));
+    });
 </script>
 {% endblock %}

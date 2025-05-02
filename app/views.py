@@ -2,6 +2,8 @@ from flask import Blueprint, render_template, request, redirect, url_for, sessio
 from .models import Note, User, Follow
 from . import db
 from werkzeug.security import generate_password_hash, check_password_hash
+import numpy as np
+from sklearn.neighbors import NearestNeighbors
 
 views = Blueprint('views', __name__)
 
@@ -310,3 +312,59 @@ def search_suggestions():
     # Search for users whose username contains the query (case-insensitive)
     suggestions = User.query.filter(User.username.ilike(f"%{query}%")).limit(5).all()
     return jsonify(success=True, suggestions=[user.username for user in suggestions]), 200
+
+@views.route('/recommend_food', methods=['GET'])
+def recommend_food():
+    user = current_user()
+    if not user:
+        return jsonify(success=False, error='User not authenticated'), 401
+
+    # Fetch all food items
+    food_items = Note.query.all()
+
+    # Prepare the data for KNN
+    food_data = []
+    food_ids = []
+    for food in food_items:
+        food_data.append([
+            food.Spiciness,
+            food.Deliciousness,
+            food.Value,
+            food.Plating,
+            (food.Spiciness + food.Deliciousness + food.Value + food.Plating) / 4  # Overall rating
+        ])
+        food_ids.append(food.id)
+
+    food_data = np.array(food_data)
+
+    # User's preference vector (example: adjust weights based on user preferences)
+    user_preference = np.array([
+        request.args.get('spiciness', 50, type=int),
+        request.args.get('deliciousness', 50, type=int),
+        request.args.get('value', 50, type=int),
+        request.args.get('plating', 50, type=int),
+        request.args.get('overall', 50, type=int)
+    ]).reshape(1, -1)
+
+    # Fit the KNN model
+    knn = NearestNeighbors(n_neighbors=5, metric='euclidean')
+    knn.fit(food_data)
+
+    # Find the nearest neighbors
+    distances, indices = knn.kneighbors(user_preference)
+
+    # Get the recommended food items
+    recommendations = []
+    for idx in indices[0]:
+        food = Note.query.get(food_ids[idx])
+        recommendations.append({
+            'id': food.id,
+            'restaurant': food.Resturaunt,
+            'spiciness': food.Spiciness,
+            'deliciousness': food.Deliciousness,
+            'value': food.Value,
+            'plating': food.Plating,
+            'overall': (food.Spiciness + food.Deliciousness + food.Value + food.Plating) / 4
+        })
+
+    return jsonify(success=True, recommendations=recommendations)
