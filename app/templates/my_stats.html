@@ -64,6 +64,13 @@
         <p>{{ overall_average_rating | default(0) }}% average rating across all reviews</p>
     </div>
 
+    <!-- Recommended Food-->
+    <div class="card stat-card mt-4">
+        <h3 class="card-title">Today, I will be eating...</h3>
+        <p>ADD PLACEHOLDER HERE TO SHOW REOCMMENDED FOOD</p>
+        <input type="text" placeholder = "Search for your favourite food"></input>
+    </div>
+
     <!-- Charts Section -->
     <div class="charts-grid">
         <div class="card chart-card">
@@ -73,10 +80,6 @@
         <div class="card chart-card">
             <h3 class="card-title">🌍 Favorite Cuisine</h3>
             <canvas id="cuisineChart"></canvas>
-        </div>
-        <div class="card chart-card">
-            <h3 class="card-title">⭐ Average Rating</h3>
-            <canvas id="ratingChart"></canvas>
         </div>
     </div>
 </div>
