@@ -99,11 +99,22 @@ def my_stats():
     ]
     overall_average_rating = sum(average_ratings) / total
 
+    # Determine earned badges
+    badges = [
+        {'name': 'First Post', 'earned': len(notes) > 0, 'description': 'Write your first post!'},
+        {'name': 'Spice Master', 'earned': stats['spiciness'] > 80, 'description': 'Average spiciness above 80%'},
+        {'name': 'Plating Perfectionist', 'earned': stats['plating'] > 90, 'description': 'Average plating above 90%'},
+        {'name': 'Value Hunter', 'earned': stats['value'] > 85, 'description': 'Average value above 85%'},
+        {'name': 'Food Critic', 'earned': len(notes) > 20, 'description': 'Write more than 20 reviews'},
+        {'name': 'All-Rounder', 'earned': all(stat > 75 for stat in stats.values()), 'description': 'All stats above 75%'},
+    ]
+
     return render_template(
         'my_stats.html',
         user=user,
         stats=stats,
-        overall_average_rating=overall_average_rating
+        overall_average_rating=overall_average_rating,
+        badges=badges
     )
 
 @views.route('/global_stats')

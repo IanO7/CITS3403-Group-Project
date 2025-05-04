@@ -84,6 +84,19 @@
             <canvas id="cuisineChart"></canvas>
         </div>
     </div>
+
+    <!-- Badges Section -->
+    <div class="badges-section mt-5">
+        <h2 class="text-center">Your Achievements</h2>
+        <div class="badges-container">
+            {% for badge in badges %}
+            <div class="badge-card {% if badge.earned %}earned{% else %}not-earned{% endif %}">
+                <h3>{{ badge.name }}</h3>
+                <p>{{ badge.description }}</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
 </div>
 
 <style>
@@ -131,6 +144,54 @@
     .recommendation-card p {
         font-size: 0.9rem;
         color: #555;
+    }
+
+    .badges-container {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 20px;
+    }
+
+    .badge-card {
+        width: 150px;
+        height: 150px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        border: 2px solid #ddd;
+        border-radius: 10px;
+        background-color: #f9f9f9;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .badge-card h3 {
+        font-size: 1.2rem;
+        margin-bottom: 10px;
+    }
+
+    .badge-card p {
+        font-size: 0.9rem;
+        color: #555;
+    }
+
+    .badge-card.earned {
+        border-color: #5F8D3B;
+        background-color: #eaffea;
+        box-shadow: 0 8px 15px rgba(95, 141, 59, 0.5);
+        transform: scale(1.05);
+    }
+
+    .badge-card.not-earned {
+        opacity: 0.5;
+        background-color: #f0f0f0;
+    }
+
+    .badge-card:hover {
+        transform: scale(1.1);
     }
 </style>
 

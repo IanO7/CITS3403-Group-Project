@@ -22,6 +22,7 @@ class User(db.Model):
     password = db.Column(db.String(150), nullable=False)
     Note       = db.relationship(Note, backref='user', lazy=True)
 
+    # ALways use generate_password_hash() & check_password_hash() for security => AUTOMATIC SALTING, NOT JUST HASHING ONLY!!
     def set_password(self, raw):
         self.password = generate_password_hash(raw)
     def check_password(self, raw):
