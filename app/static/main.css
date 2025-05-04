@@ -659,3 +659,31 @@ body {
     font-weight: normal;
     color: #f6e7da;
 }
+
+/* Navbar */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #6E3A14; /* Headline text color */
+    padding: 10px 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.navbar a {
+    color: #F6E7DA; /* Soft peach */
+    text-decoration: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+
+.navbar a:hover {
+    background-color: #DF6F1B; /* Orange accent */
+}
+
+.navbar a.active {
+    background-color: #5F8D3B; /* Button green */
+    font-weight: bold;
+}
