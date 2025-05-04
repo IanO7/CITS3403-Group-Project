@@ -3,6 +3,7 @@ from flask import Flask, session
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from os import path
+import os  # Import os to access environment variables
 
 db = SQLAlchemy()
 migrate = Migrate()
@@ -12,7 +13,7 @@ from .views import views
 
 def create_app():
     app = Flask(__name__)
-    app.config['SECRET_KEY'] = 'able'
+    app.config['SECRET_KEY'] = os.environ.get("able", "default_secret_key")  # Use environment variable
     app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{DB_NAME}'
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
@@ -23,7 +24,6 @@ def create_app():
     app.register_blueprint(views, url_prefix='/')
 
     from .auth import auth
-
     app.register_blueprint(auth, url_prefix='/')
 
     from .models import Note, User  # Import your models here
