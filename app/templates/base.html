@@ -19,14 +19,33 @@
     <header>
         <a href="{{ url_for('views.landing') }}" class="logo">OzFoody</a>
     </header>
-    <nav class="navbar">
-        <div class="container">
-            <a href="/" class="navbar-brand">MyApp</a>
-            <div class="navbar-links">
-                <a href="/profile" class="{% if request.endpoint == 'views.profile' %}active{% endif %}">Profile</a>
-                <a href="/my_stats" class="{% if request.endpoint == 'views.my_stats' %}active{% endif %}">My Stats</a>
-                <a href="/friends" class="{% if request.endpoint == 'views.friends' %}active{% endif %}">Friends</a>
-                <a href="/settings" class="{% if request.endpoint == 'views.settings' %}active{% endif %}">Settings</a>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/">MyApp</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'views.profile' %}active{% endif %}" href="{{ url_for('views.profile') }}">Profile</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'views.my_stats' %}active{% endif %}" href="{{ url_for('views.my_stats') }}">My Stats</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'views.friends' %}active{% endif %}" href="{{ url_for('views.friends') }}">Friends</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'views.global_stats' %}active{% endif %}" href="{{ url_for('views.global_stats') }}">Global Stats</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'views.settings' %}active{% endif %}" href="{{ url_for('views.settings') }}">Settings</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('auth.logout') }}">Logout</a>
+                    </li>
+                </ul>
             </div>
         </div>
     </nav>
