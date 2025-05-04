@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, redirect, url_for, session, jsonify, abort
+from flask import Blueprint, render_template, request, redirect, url_for, session, jsonify, abort, flash
 from .models import Note, User, Follow
 from . import db
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -180,13 +180,35 @@ def friends():
     else:
         similar_user = None
 
+    # Calculate levels for all users
+    user_levels = {}
+    for u in all_users:
+        u_notes = get_user_notes(u)
+        total = len(u_notes) or 1
+        stats = {
+            'spiciness': sum(n.Spiciness for n in u_notes) / total,
+            'deliciousness': sum(n.Deliciousness for n in u_notes) / total,
+            'value': sum(n.Value for n in u_notes) / total,
+            'plating': sum(n.Plating for n in u_notes) / total
+        }
+        badges = [
+            {'name': 'First Post', 'earned': len(u_notes) > 0},
+            {'name': 'Spice Master', 'earned': stats['spiciness'] > 80},
+            {'name': 'Plating Perfectionist', 'earned': stats['plating'] > 90},
+            {'name': 'Value Hunter', 'earned': stats['value'] > 85},
+            {'name': 'Food Critic', 'earned': len(u_notes) > 20},
+            {'name': 'All-Rounder', 'earned': all(stat > 75 for stat in stats.values())}
+        ]
+        user_levels[u.id] = sum(1 for badge in badges if badge['earned'])
+
     return render_template(
         'my_friends.html',
         user=user,
         all_users=all_users,
         followed_users=followed_users,
         notes=notes,
-        similar_user=similar_user
+        similar_user=similar_user,
+        user_levels=user_levels
     )
 
 @views.route('/like/<int:note_id>', methods=['POST'])
@@ -385,17 +407,15 @@ def user_profile(user_id):
 
 @views.route('/api/search_suggestions', methods=['GET'])
 def search_suggestions():
-    user = current_user()
-    if not user:
-        return jsonify(success=False, error='User not authenticated'), 401
-
     query = request.args.get('q', '').strip()
     if not query:
-        return jsonify(success=True, suggestions=[]), 200
+        return jsonify(success=False, suggestions=[])
 
-    # Search for users whose username contains the query (case-insensitive)
-    suggestions = User.query.filter(User.username.ilike(f"%{query}%")).limit(5).all()
-    return jsonify(success=True, suggestions=[user.username for user in suggestions]), 200
+    # Search for users whose usernames contain the query (case-insensitive)
+    suggestions = User.query.filter(User.username.ilike(f"%{query}%")).limit(10).all()
+
+    # Return a list of usernames
+    return jsonify(success=True, suggestions=[user.username for user in suggestions])
 
 @views.route('/recommend_food', methods=['GET'])
 def recommend_food():
@@ -452,3 +472,46 @@ def recommend_food():
         })
 
     return jsonify(success=True, recommendations=recommendations)
+
+@views.route('/search_users', methods=['GET'])
+def search_users():
+    user = current_user()
+    if not user:
+        return redirect(url_for('auth.login'))
+
+    query = request.args.get('q', '').strip()
+    if not query:
+        flash("Please enter a search term.", "warning")
+        return redirect(url_for('views.friends'))
+
+    # Search for users by username
+    results = User.query.filter(User.username.ilike(f"%{query}%")).all()
+
+    # Calculate levels for search results
+    user_levels = {}
+    for result in results:
+        notes = get_user_notes(result)
+        total = len(notes) or 1
+        stats = {
+            'spiciness': sum(n.Spiciness for n in notes) / total,
+            'deliciousness': sum(n.Deliciousness for n in notes) / total,
+            'value': sum(n.Value for n in notes) / total,
+            'plating': sum(n.Plating for n in notes) / total
+        }
+        badges = [
+            {'name': 'First Post', 'earned': len(notes) > 0},
+            {'name': 'Spice Master', 'earned': stats['spiciness'] > 80},
+            {'name': 'Plating Perfectionist', 'earned': stats['plating'] > 90},
+            {'name': 'Value Hunter', 'earned': stats['value'] > 85},
+            {'name': 'Food Critic', 'earned': len(notes) > 20},
+            {'name': 'All-Rounder', 'earned': all(stat > 75 for stat in stats.values())}
+        ]
+        user_levels[result.id] = sum(1 for badge in badges if badge['earned'])
+
+    return render_template(
+        'search_results.html',
+        user=user,
+        query=query,
+        results=results,
+        user_levels=user_levels
+    )
