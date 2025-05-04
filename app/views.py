@@ -337,7 +337,7 @@ def search():
 
 
 @views.route('/user/<int:user_id>', methods=['GET'])
-def user_posts(user_id):
+def user_profile(user_id):
     user = current_user()
     if not user:
         return redirect(url_for('auth.login'))
@@ -348,7 +348,29 @@ def user_posts(user_id):
     # Fetch the selected user's posts
     posts = Note.query.filter_by(user_id=selected_user.id).all()
 
-    return render_template('user_posts.html', user=user, selected_user=selected_user, posts=posts)
+    # Calculate stats for the selected user
+    total_posts = len(posts) or 1  # Avoid division by zero
+    stats = {
+        'spiciness': sum(n.Spiciness for n in posts) / total_posts,
+        'deliciousness': sum(n.Deliciousness for n in posts) / total_posts,
+        'value': sum(n.Value for n in posts) / total_posts,
+        'plating': sum(n.Plating for n in posts) / total_posts,
+    }
+
+    # Calculate the overall average rating
+    average_ratings = [
+        (n.Spiciness + n.Deliciousness + n.Value + n.Plating) / 4 for n in posts
+    ]
+    overall_average_rating = sum(average_ratings) / total_posts
+
+    return render_template(
+        'user_profile.html',
+        user=user,
+        selected_user=selected_user,
+        stats=stats,
+        overall_average_rating=overall_average_rating,
+        posts=posts
+    )
 
 @views.route('/api/search_suggestions', methods=['GET'])
 def search_suggestions():
