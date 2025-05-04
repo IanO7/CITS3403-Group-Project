@@ -125,7 +125,58 @@ def friends():
     # Fetch posts from followed users
     notes = Note.query.filter(Note.user_id.in_(followed_users)).all()
 
-    return render_template('my_friends.html', user=user, all_users=all_users, followed_users=followed_users, notes=notes)
+    # Calculate stats for the current user
+    user_notes = get_user_notes(user)
+    user_stats = {
+        'spiciness': sum(n.Spiciness for n in user_notes) / (len(user_notes) or 1),
+        'deliciousness': sum(n.Deliciousness for n in user_notes) / (len(user_notes) or 1),
+        'value': sum(n.Value for n in user_notes) / (len(user_notes) or 1),
+        'plating': sum(n.Plating for n in user_notes) / (len(user_notes) or 1),
+    }
+
+    # Prepare data for KNN
+    user_data = []
+    user_ids = []
+    for u in all_users:
+        u_notes = get_user_notes(u)
+        if u_notes:
+            stats = [
+                sum(n.Spiciness for n in u_notes) / len(u_notes),
+                sum(n.Deliciousness for n in u_notes) / len(u_notes),
+                sum(n.Value for n in u_notes) / len(u_notes),
+                sum(n.Plating for n in u_notes) / len(u_notes),
+            ]
+            user_data.append(stats)
+            user_ids.append(u.id)
+
+    # Use KNN to find the most similar user
+    if user_data:
+        user_data = np.array(user_data)
+        current_user_vector = np.array([
+            user_stats['spiciness'],
+            user_stats['deliciousness'],
+            user_stats['value'],
+            user_stats['plating'],
+        ]).reshape(1, -1)
+
+        knn = NearestNeighbors(n_neighbors=1, metric='euclidean')
+        knn.fit(user_data)
+        distances, indices = knn.kneighbors(current_user_vector)
+
+        # Get the most similar user
+        similar_user_id = user_ids[indices[0][0]]
+        similar_user = User.query.get(similar_user_id)
+    else:
+        similar_user = None
+
+    return render_template(
+        'my_friends.html',
+        user=user,
+        all_users=all_users,
+        followed_users=followed_users,
+        notes=notes,
+        similar_user=similar_user
+    )
 
 @views.route('/like/<int:note_id>', methods=['POST'])
 def like(note_id):

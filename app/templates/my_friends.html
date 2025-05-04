@@ -61,6 +61,26 @@
             {% endfor %}
         </ul>
     </div>
+
+    <!-- Recommended Friend -->
+    <div class="recommended-friend mt-5">
+        <h2 class="text-center">Recommended Friend</h2>
+        {% if similar_user %}
+        <div class="card text-center">
+            <div class="card-body">
+                <img src="{{ url_for('static', filename=similar_user.profile_photo or 'default_profile.jpg') }}" 
+                     alt="{{ similar_user.username }}" 
+                     class="rounded-circle mb-3" 
+                     style="width: 100px; height: 100px; object-fit: cover;">
+                <h5 class="card-title">{{ similar_user.username }}</h5>
+                <p class="card-text">This user has similar taste preferences to you!</p>
+                <a href="{{ url_for('views.user_posts', user_id=similar_user.id) }}" class="btn btn-primary">View Profile</a>
+            </div>
+        </div>
+        {% else %}
+        <p class="text-center text-muted">No similar friends found.</p>
+        {% endif %}
+    </div>
 </div>
 
 <script>
