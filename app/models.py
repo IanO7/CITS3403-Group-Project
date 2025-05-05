@@ -4,7 +4,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 class Note(db.Model):
     id              = db.Column(db.Integer, primary_key=True)
-    Resturaunt      = db.Column(db.String(100), nullable = False)
+    Restauraunt      = db.Column(db.String(100), nullable = False)
     Spiciness       = db.Column(db.Integer, nullable=False)
     Deliciousness   = db.Column(db.Integer, nullable = False)
     Value           = db.Column(db.Integer, nullable=False)

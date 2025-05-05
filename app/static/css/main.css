@@ -10,16 +10,24 @@
 body {
     background-color: #f7efe8;
     font-family: 'Lato', sans-serif;
+    scroll-behavior: smooth;
 }
 
 .brand-title, .hero-heading h1 {
     font-family: 'Lobster', cursive !important;
     color: #000000 !important;
-    font-size: 1.75rem;
+    font-size: 2rem;
     font-weight: bold;
     text-decoration: none;
 
 }
+
+.hero-section, .community-section {
+    width: 100%;
+    padding: 5rem 8vw;
+    margin: 0 auto;
+}
+  
 
 .text_main {
     color: #000000; 
@@ -677,6 +685,8 @@ body {
     border-radius: 0;
     box-shadow: none;
     padding: 1rem 2rem;
+    transition: all 0.3s ease-in-out;
+    z-index: 1030;
 }
 
 .navbar-brand {
