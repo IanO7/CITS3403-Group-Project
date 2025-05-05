@@ -28,7 +28,7 @@
           {% endif %}
           <div class="card-body">
             <h5 class="card-title">{{ note.restaurant }}</h5>
-            <p class="card-text">{{ note.review[:100] }}...</p>
+            <p class="card-text">{{ note.comment[:100] }}...</p>
           </div>
           <div class="card-footer text-muted">
             — {{ note.user.username }}
