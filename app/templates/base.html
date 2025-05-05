@@ -38,8 +38,8 @@
                 <a class="nav-link text-dark me-3" href="{{ url_for('views.settings') }}">Settings</a>
                 <a class="btn btn-outline-danger" href="{{ url_for('auth.logout') }}">Logout</a>
             {% else %}
-                <a class="btn btn-login me-2" href="{{ url_for('auth.login') }}">Log In</a>
-                <a class="btn btn-signup" href="{{ url_for('auth.signup') }}">Sign Up</a>
+                <a href="{{ url_for('auth.login') }}" class="auth-link">LOG IN</a> /
+                <a href="{{ url_for('auth.signup') }}" class="auth-link">SIGN UP</a>            
             {% endif %}
             </div>
         </div>

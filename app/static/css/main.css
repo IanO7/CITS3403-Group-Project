@@ -690,7 +690,6 @@ body {
 }
 
 .navbar a {
-    color: #6E3A14;
     font-size: 1rem;
     font-weight: 500;
     font-family: 'Lato', sans-serif;
@@ -715,29 +714,20 @@ body {
     margin-top: 2rem;
 }
 
-/* Buttons */
-.btn-login {
-    background-color: transparent;
-    color: #5F8D3B;
-    border: 2px solid #5F8D3B;
-    padding: 6px 14px;
-    border-radius: 8px;
-    font-weight: 600;
-  }
-  .btn-login:hover {
-    background-color: #5F8D3B;
-    color: white;
+/* LOGIN SIGNUP Buttons */
+
+.auth-link {
+    font-weight: 700;
+    font-size: 1rem;
+    color: #000;                       /* Black or dark charcoal */
+    text-decoration: none;
+    margin: 0 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
   }
   
-  .btn-signup {
-    background-color: #DF6F1B;
-    color: white;
-    border: none;
-    padding: 6px 14px;
-    border-radius: 8px;
-    font-weight: 600;
+.auth-link:hover {
+    text-decoration: underline;
   }
-  .btn-signup:hover {
-    background-color: #c65a0e;
-  }
+  
   
