@@ -45,6 +45,7 @@
                             <h5 class="card-title mb-1 p-3">{{ user.username }}</h5>
                     </div>
                     <p class="card-text">{{ review.Review }}</p>
+                    <p class="card-text"><strong>Location:</strong> {{ review.location or "Not specified" }}</p>
                     {% if review.image %}
                     <img src="{{ review.image }}"
                          alt="Dish Image"

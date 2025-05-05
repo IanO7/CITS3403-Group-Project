@@ -46,19 +46,19 @@ def profile():
         "Plating": r.Plating,
         "Review": r.Review,
         "image": r.image,
-        "likes": r.likes  # Include the latest likes count
+        "likes": r.likes,  # Include the latest likes count
+        "location": r.location  # Include the location field
     } for r in reviews]
 
     return render_template('profile.html', user=user, reviews=review_data)
 
-@views.route('/new_post', methods=['GET','POST'])
+@views.route('/new_post', methods=['GET', 'POST'])
 def new_post():
     user = current_user()
     if not user:
         return redirect(url_for('auth.login'))
 
     if request.method == 'POST':
-        
         note = Note(
             Resturaunt=request.form['Resturaunt'],
             Spiciness=int(request.form['Spiciness']),
@@ -67,6 +67,7 @@ def new_post():
             Plating=int(request.form['Plating']),
             Review=request.form['Review'],
             image=request.form['image'],
+            location=request.form.get('location'),  # Add location
             user_id=user.id
         )
 

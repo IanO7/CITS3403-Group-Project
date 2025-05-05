@@ -2,38 +2,40 @@
 
 {% block content %}
 <div class="d-flex justify-content-center mt-5">
-    <form method="POST" class="w-50">
-        <h3 class="text-center mb-4">New Post</h3>
-
-        <div class="mb-3">
-            <input type="text" name="Resturaunt" class="form-control" placeholder="Restaurant" required>
+    <form method="POST">
+        <div class="form-group">
+            <label for="Resturaunt">Restaurant Name</label>
+            <input type="text" class="form-control" id="Resturaunt" name="Resturaunt" required>
         </div>
-        <div class="mb-3">
-            <label for="Spiciness" class="form-label">Spiciness</label>
-            <input type="range" name="Spiciness" id="Spiciness" class="form-range spiciness-slider" min="1" max="100" value="0" required>
+        <div class="form-group">
+            <label for="location">Location</label>
+            <input type="text" class="form-control" id="location" name="location" placeholder="Enter the restaurant's location">
         </div>
-        <div class="mb-3">
-            <label for="Deliciousness" class="form-label">Deliciousness</label>
-            <input type="range" name="Deliciousness" class="form-range deliciousness-slider" min="1" max="100" value="0" required>
+        <div class="form-group">
+            <label for="Spiciness">Spiciness</label>
+            <input type="number" class="form-control" id="Spiciness" name="Spiciness" min="0" max="100" required>
         </div>
-        <div class="mb-3">
-            <label for="Value" class="form-label">Value</label>
-            <input type="range" name="Value" class="form-range value-slider" min="1" max="100" value="0" required>
+        <div class="form-group">
+            <label for="Deliciousness">Deliciousness</label>
+            <input type="number" class="form-control" id="Deliciousness" name="Deliciousness" min="0" max="100" required>
         </div>
-        <div class="mb-3">
-            <label for="Plating" class="form-label">Plating</label>
-            <input type="range" name="Plating" class="form-range plating-slider" min="1" max="100" value="0" required>
+        <div class="form-group">
+            <label for="Value">Value</label>
+            <input type="number" class="form-control" id="Value" name="Value" min="0" max="100" required>
         </div>
-
-        <div class="mb-3">
-            <textarea  name="Review" class="form-control" placeholder="Review"></textarea>
+        <div class="form-group">
+            <label for="Plating">Plating</label>
+            <input type="number" class="form-control" id="Plating" name="Plating" min="0" max="100" required>
         </div>
-        <div class="mb-3">
-            <input type="text" name="image" class="form-control" placeholder="Image URL (optional)">
+        <div class="form-group">
+            <label for="Review">Review</label>
+            <textarea class="form-control" id="Review" name="Review" rows="3" required></textarea>
         </div>
-        <div class="text-center">
-            <button class="btn btn-outline-secondary" type="submit">Post</button>
+        <div class="form-group">
+            <label for="image">Image URL</label>
+            <input type="text" class="form-control" id="image" name="image" placeholder="Enter an image URL">
         </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
     </form>
 </div>
 
