@@ -1,0 +1,15 @@
+# macOS system files
+.DS_Store
+
+# Python environment
+venv/
+__pycache__/
+*.pyc
+
+# Flask uploads or logs
+instance/
+*.log
+
+# VSCode settings (optional, if your team doesn't use it)
+.vscode/
+
