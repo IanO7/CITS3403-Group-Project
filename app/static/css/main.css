@@ -12,6 +12,9 @@ body {
     font-family: 'Lato', sans-serif;
 }
 
+.brand-title, .hero-heading h1 {
+    font-family: 'Lobster', cursive;
+}
 
 .text_main {
     color: #000000; 
@@ -668,11 +671,23 @@ body {
     border-bottom: 2px solid #DF6F1B;
     border-radius: 0;
     box-shadow: none;
+    padding: 1rem 2rem;
+}
+
+.navbar-brand {
+    color: #DF6F1B; /* Replace red */
+    font-family: 'Lobster', cursive;
+}
+  
+.navbar-brand:hover {
+    color: #5F8D3B;
+
 }
 
 .navbar a {
     color: #6E3A14;
-    font-weight: 600;
+    font-size: 1rem;
+    font-weight: 500;
     font-family: 'Lato', sans-serif;
     transition: color 0.2s ease;
 }
@@ -694,3 +709,30 @@ body {
     font-family: 'Lato', sans-serif;
     margin-top: 2rem;
 }
+
+/* Buttons */
+.btn-login {
+    background-color: transparent;
+    color: #5F8D3B;
+    border: 2px solid #5F8D3B;
+    padding: 6px 14px;
+    border-radius: 8px;
+    font-weight: 600;
+  }
+  .btn-login:hover {
+    background-color: #5F8D3B;
+    color: white;
+  }
+  
+  .btn-signup {
+    background-color: #DF6F1B;
+    color: white;
+    border: none;
+    padding: 6px 14px;
+    border-radius: 8px;
+    font-weight: 600;
+  }
+  .btn-signup:hover {
+    background-color: #c65a0e;
+  }
+  
