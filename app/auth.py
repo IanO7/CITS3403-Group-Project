@@ -62,3 +62,7 @@ def logout():
     session.clear()
     flash('You have been logged out.', 'info')
     return redirect(url_for('auth.login'))
+
+@auth.route('/signup')
+def signup():
+    return render_template('signup.html')
