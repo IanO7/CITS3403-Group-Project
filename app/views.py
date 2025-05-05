@@ -515,3 +515,92 @@ def search_users():
         results=results,
         user_levels=user_levels
     )
+
+@views.route('/trending_dishes', methods=['GET'])
+def trending_dishes():
+    # Fetch all dishes sorted by likes in descending order
+    dishes = Note.query.order_by(Note.likes.desc()).all()
+
+    # Prepare data for the frontend
+    trending_data = [{
+        'id': dish.id,
+        'restaurant': dish.Resturaunt,
+        'review': dish.Review,
+        'image': dish.image,
+        'likes': dish.likes,
+        'spiciness': dish.Spiciness,
+        'deliciousness': dish.Deliciousness,
+        'value': dish.Value,
+        'plating': dish.Plating
+    } for dish in dishes]
+
+    return jsonify(success=True, dishes=trending_data)
+
+@views.route('/merged_posts', methods=['GET'])
+def merged_posts():
+    user = current_user()
+    if not user:
+        return jsonify(success=False, error='User not authenticated'), 401
+
+    # Fetch posts from followed users
+    followed_users = [f.followed_id for f in user.following]
+    followed_posts = Note.query.filter(Note.user_id.in_(followed_users)).order_by(Note.likes.desc()).all()
+
+    # Fetch the highest liked post from non-followed users
+    non_followed_post = Note.query.filter(~Note.user_id.in_(followed_users)).order_by(Note.likes.desc()).all()
+
+    # Prepare data for the frontend
+    posts_data = [{
+        'id': post.id,
+        'restaurant': post.Resturaunt,
+        'review': post.Review,
+        'image': post.image,
+        'likes': post.likes,
+        'spiciness': post.Spiciness,
+        'deliciousness': post.Deliciousness,
+        'value': post.Value,
+        'plating': post.Plating,
+        'is_special': False  # Default to not special
+    } for post in followed_posts]
+
+    # Add the featured post if it exists
+    if non_followed_post:
+        posts_data.append({
+            'id': non_followed_post.id,
+            'restaurant': non_followed_post.Resturaunt,
+            'review': non_followed_post.Review,
+            'image': non_followed_post.image,
+            'likes': non_followed_post.likes,
+            'spiciness': non_followed_post.Spiciness,
+            'deliciousness': non_followed_post.Deliciousness,
+            'value': non_followed_post.Value,
+            'plating': non_followed_post.Plating,
+            'is_special': True  # Mark as special
+        })
+
+    return jsonify(success=True, posts=posts_data)
+
+@views.route('/friend_posts', methods=['GET'])
+def friend_posts():
+    user = current_user()
+    if not user:
+        return jsonify(success=False, error='User not authenticated'), 401
+
+    # Fetch posts from followed friends
+    followed_users = [f.followed_id for f in user.following]
+    friend_posts = Note.query.filter(Note.user_id.in_(followed_users)).order_by(Note.likes.desc()).all()
+
+    # Prepare data for the frontend
+    posts_data = [{
+        'id': post.id,
+        'restaurant': post.Resturaunt,
+        'review': post.Review,
+        'image': post.image,
+        'likes': post.likes,
+        'spiciness': post.Spiciness,
+        'deliciousness': post.Deliciousness,
+        'value': post.Value,
+        'plating': post.Plating
+    } for post in friend_posts]
+
+    return jsonify(success=True, posts=posts_data)
