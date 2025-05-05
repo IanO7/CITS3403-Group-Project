@@ -23,10 +23,6 @@ def getReviews(user):
 def home():
     if session.get('user_id'):
         return redirect(url_for('views.profile'))
-    return redirect(url_for('auth.login'))
-
-@views.route('/landing')
-def landing():
     notes = Note.query.order_by(Note.id.desc()).limit(10).all()
     return render_template('landing.html', notes=notes)
 
