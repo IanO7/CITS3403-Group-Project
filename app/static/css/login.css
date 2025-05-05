@@ -107,4 +107,12 @@
     font-size: 0.8rem;
     color: #888;
   }
+
+  .login-page-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+  }
+  
   

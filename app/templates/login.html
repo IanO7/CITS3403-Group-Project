@@ -10,29 +10,31 @@
 
 
 {% block content %}
-<div class="login-container">
-    <h1>OZFoody</h1>
+<div class="login-page-wrapper">
+  <div class="login-container">
+      <h1>OZFoody</h1>
 
-    <button class="google-btn" onclick="handleGoogleLogin()">
-        <img class="google-icon" src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google Icon">
-        Continue with Google
-    </button>
+      <button class="google-btn" onclick="handleGoogleLogin()">
+          <img class="google-icon" src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google Icon">
+          Continue with Google
+      </button>
 
-    <div class="separator">or</div>
+      <div class="separator">or</div>
 
-    <form class="login-form" onsubmit="handleEmailLogin(event)">
-        <input type="email" placeholder="Email" required>
-        <input type="password" placeholder="Password" required>
-        <button type="submit">Continue</button>
-    </form>
+      <form class="login-form" onsubmit="handleEmailLogin(event)">
+          <input type="email" placeholder="Email" required>
+          <input type="password" placeholder="Password" required>
+          <button type="submit">Continue</button>
+      </form>
 
-    <div class="signup-line">
-        Not a Foodymate yet? <a href="{{ url_for('auth.signup') }}">Create an account!</a>
-    </div>
+      <div class="signup-line">
+          Not a Foodymate yet? <a href="{{ url_for('auth.signup') }}">Create an account!</a>
+      </div>
 
-    <div class="footer">
-        By continuing, you agree to our Terms and Privacy Policy.
-    </div>
+      <div class="footer">
+          By continuing, you agree to our Terms and Privacy Policy.
+      </div>
+  </div>
 </div>
 {% endblock %}
 
