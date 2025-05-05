@@ -73,6 +73,18 @@
         <button id="get-recommendation" class="btn btn-primary mt-3">Get More Recommendations</button>
     </div>
 
+    <!-- Search Section -->
+    <div class="card stat-card mt-4">
+        <h3 class="card-title">🔍 Search Reviews</h3>
+        <div class="form-group">
+            <input type="text" id="search-query" class="form-control" placeholder="Search for food (e.g., 'spicy food', 'food near me')">
+        </div>
+        <button id="search-button" class="btn btn-primary mt-3">Search</button>
+        <div id="search-results" class="recommendation-box mt-3">
+            <!-- Search results will be displayed here -->
+        </div>
+    </div>
+
     <!-- Charts Section -->
     <div class="charts-grid">
         <div class="card chart-card">
@@ -261,6 +273,47 @@
 
         // Automatically fetch recommendations on page load
         fetchRecommendations();
+    });
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const searchButton = document.getElementById('search-button');
+        const searchQuery = document.getElementById('search-query');
+        const searchResults = document.getElementById('search-results');
+
+        // Handle search button click
+        searchButton.addEventListener('click', () => {
+            const query = searchQuery.value.trim();
+            if (!query) {
+                searchResults.innerHTML = '<p class="text-muted">Please enter a search term.</p>';
+                return;
+            }
+
+            // Fetch search results from the backend
+            fetch(`/api/search_reviews?q=${encodeURIComponent(query)}`)
+                .then(response => response.json())
+                .then(data => {
+                    searchResults.innerHTML = '';
+                    if (data.success && data.results.length > 0) {
+                        data.results.forEach(post => {
+                            const resultCard = `
+                                <div class="recommendation-card">
+                                    <img src="${post.image || 'https://via.placeholder.com/300'}" alt="${post.restaurant}">
+                                    <h5>${post.restaurant}</h5>
+                                    <p>${post.review}</p>
+                                    <p>Spiciness: ${post.spiciness}, Deliciousness: ${post.deliciousness}, Value: ${post.value}, Plating: ${post.plating}</p>
+                                </div>
+                            `;
+                            searchResults.innerHTML += resultCard;
+                        });
+                    } else {
+                        searchResults.innerHTML = '<p class="text-muted">No results found for your search.</p>';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching search results:', error);
+                    searchResults.innerHTML = '<p class="text-danger">An error occurred while fetching search results.</p>';
+                });
+        });
     });
 </script>
 {% endblock %}

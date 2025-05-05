@@ -617,3 +617,30 @@ def location_suggestions():
 
     # Return unique restaurant name suggestions with locations
     return jsonify(success=True, suggestions=[{'name': s[0], 'location': s[1]} for s in suggestions if s[0]])
+
+@views.route('/api/search_reviews', methods=['GET'])
+def search_reviews():
+    query = request.args.get('q', '').strip()
+    if not query:
+        return jsonify(success=False, results=[])
+
+    # Search for posts matching the query in restaurant name, review, or location
+    results = Note.query.filter(
+        (Note.Resturaunt.ilike(f"%{query}%")) |
+        (Note.Review.ilike(f"%{query}%")) |
+        (Note.location.ilike(f"%{query}%"))
+    ).all()
+
+    # Prepare data for the frontend
+    results_data = [{
+        'id': post.id,
+        'restaurant': post.Resturaunt,
+        'review': post.Review,
+        'image': post.image,
+        'spiciness': post.Spiciness,
+        'deliciousness': post.Deliciousness,
+        'value': post.Value,
+        'plating': post.Plating
+    } for post in results]
+
+    return jsonify(success=True, results=results_data)

@@ -15,19 +15,23 @@
         <div id="map" style="height: 300px; margin-top: 10px;"></div>
         <div class="form-group">
             <label for="Spiciness">Spiciness</label>
-            <input type="number" class="form-control" id="Spiciness" name="Spiciness" min="0" max="100" required>
+            <input type="range" class="form-range" id="Spiciness" name="Spiciness" min="0" max="100" value="50" oninput="updateValue('spicinessValue', this.value)">
+            <span id="spicinessValue" class="range-value">50</span>
         </div>
         <div class="form-group">
             <label for="Deliciousness">Deliciousness</label>
-            <input type="number" class="form-control" id="Deliciousness" name="Deliciousness" min="0" max="100" required>
+            <input type="range" class="form-range" id="Deliciousness" name="Deliciousness" min="0" max="100" value="50" oninput="updateValue('deliciousnessValue', this.value)">
+            <span id="deliciousnessValue" class="range-value">50</span>
         </div>
         <div class="form-group">
             <label for="Value">Value</label>
-            <input type="number" class="form-control" id="Value" name="Value" min="0" max="100" required>
+            <input type="range" class="form-range" id="Value" name="Value" min="0" max="100" value="50" oninput="updateValue('valueValue', this.value)">
+            <span id="valueValue" class="range-value">50</span>
         </div>
         <div class="form-group">
             <label for="Plating">Plating</label>
-            <input type="number" class="form-control" id="Plating" name="Plating" min="0" max="100" required>
+            <input type="range" class="form-range" id="Plating" name="Plating" min="0" max="100" value="50" oninput="updateValue('platingValue', this.value)">
+            <span id="platingValue" class="range-value">50</span>
         </div>
         <div class="form-group">
             <label for="Review">Review</label>
@@ -41,8 +45,46 @@
     </form>
 </div>
 
+<style>
+    .form-range {
+        width: 100%;
+        appearance: none;
+        height: 8px;
+        background: #ddd;
+        border-radius: 5px;
+        outline: none;
+        transition: background 0.3s;
+    }
+
+    .form-range::-webkit-slider-thumb {
+        appearance: none;
+        width: 20px;
+        height: 20px;
+        background: #007bff;
+        border-radius: 50%;
+        cursor: pointer;
+        transition: background 0.3s;
+    }
+
+    .form-range::-webkit-slider-thumb:hover {
+        background: #0056b3;
+    }
+
+    .range-value {
+        display: inline-block;
+        margin-left: 10px;
+        font-weight: bold;
+        color: #333;
+    }
+</style>
+
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script>
+    function updateValue(spanId, value) {
+        document.getElementById(spanId).textContent = value;
+    }
+</script>
 <script>
     document.addEventListener('DOMContentLoaded', () => {
         const locationInput = document.getElementById('location');
