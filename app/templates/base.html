@@ -17,6 +17,7 @@
     {% block head %}{% endblock %}
 </head>
 <body>
+    {% if not hide_navbar %}
     <header>
         <a href="{{ url_for('views.landing') }}" class="logo">OzFoody</a>
     </header>
@@ -72,6 +73,7 @@
             </div>
         </div>
     </nav>
+    {% endif %}
     <div class="container mt-4">
         {% block content %}{% endblock %}
     </div>
