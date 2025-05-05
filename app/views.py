@@ -20,7 +20,7 @@ def getReviews(user):
     return Note.query.filter_by(user_id=user.id).all()
 
 @views.route('/')
-def home():
+def landing():
     if session.get('user_id'):
         return redirect(url_for('views.profile'))
     notes = Note.query.order_by(Note.id.desc()).limit(10).all()
