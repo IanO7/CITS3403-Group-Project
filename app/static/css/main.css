@@ -13,8 +13,8 @@ body {
 }
 
 .brand-title, .hero-heading h1 {
-    font-family: 'Lobster', cursive;
-    color: #000000;
+    font-family: 'Lobster', cursive !important;
+    color: #000000 !important;
     font-size: 1.75rem;
     font-weight: bold;
     text-decoration: none;
