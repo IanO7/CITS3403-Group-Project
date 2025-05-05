@@ -1,54 +1,49 @@
-c<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sign Up - PerthFoody</title>
-  <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Lobster&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../static/css/signup.css">
-</head>
-<body>
-  <div class="signup-container">
-    <h1>Join PerthFoody</h1>
+{% extends "base.html" %}
 
-    <form class="signup-form" onsubmit="handleSignup(event)">
-      <input type="text" placeholder="Full Name" required>
-      <input type="email" placeholder="Email" required>
+{% block title %}Sign Up - PerthFoody{% endblock %}
 
-      <div class="password-field">
-        <input id="password" type="password" placeholder="Password" required>
-        <button type="button" class="toggle-password" onclick="togglePassword('password')">
-          <img src="../static/image/view.png" alt="Show Password" class="eye-icon">
-        </button>
-      </div>
-      
+{% block content %}
+<div class="signup-container">
+  <h1>Join PerthFoody</h1>
 
-      <ul class="password-rules">
-        <div id="length-rule">❌ At least 8 characters</div>
-        <div id="number-rule">❌ At least one number (0-9)</div>
-        <div id="uppercase-rule">❌ At least one uppercase letter (A-Z)</div>
-        <div id="special-rule">❌ At least one special character (!@#$%)</div>
-      </ul>
+  <form class="signup-form" onsubmit="handleSignup(event)">
+    <input type="text" placeholder="Full Name" required>
+    <input type="email" placeholder="Email" required>
 
-      <div class="password-field">
-        <input id="confirm-password" type="password" placeholder="Confirm Password" required>
-        <button type="button" class="toggle-password" onclick="togglePassword('confirm-password')">
-          <img src="../static/image/view.png" alt="Show Password" class="eye-icon">
-        </button>
-      </div>
-
-      <button type="submit" class="signup-button">Sign Up</button>
-    </form>
-
-    <div class="login-line">
-      Already have an account? <a href="../templates/login.html">Log in here!</a>
+    <div class="password-field">
+      <input id="password" type="password" placeholder="Password" required>
+      <button type="button" class="toggle-password" onclick="togglePassword('password')">
+        <img src="{{ url_for('static', filename='image/view.png') }}" alt="Show Password" class="eye-icon">
+      </button>
     </div>
 
-    <div class="footer">
-      By signing up, you agree to our Terms and Privacy Policy.
+    <ul class="password-rules">
+      <div id="length-rule">❌ At least 8 characters</div>
+      <div id="number-rule">❌ At least one number (0-9)</div>
+      <div id="uppercase-rule">❌ At least one uppercase letter (A-Z)</div>
+      <div id="special-rule">❌ At least one special character (!@#$%)</div>
+    </ul>
+
+    <div class="password-field">
+      <input id="confirm-password" type="password" placeholder="Confirm Password" required>
+      <button type="button" class="toggle-password" onclick="togglePassword('confirm-password')">
+        <img src="{{ url_for('static', filename='image/view.png') }}" alt="Show Password" class="eye-icon">
+      </button>
     </div>
+
+    <button type="submit" class="signup-button">Sign Up</button>
+  </form>
+
+  <div class="login-line">
+    Already have an account? <a href="{{ url_for('auth.login') }}">Log in here!</a>
   </div>
 
-  <script src="../static/js/signup.js"></script>
-</body>
-</html>
+  <div class="footer">
+    By signing up, you agree to our Terms and Privacy Policy.
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/signup.js') }}"></script>
+{% endblock %}
