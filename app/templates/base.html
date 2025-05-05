@@ -11,40 +11,63 @@
     <!-- Font Awesome for Icons -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
     <!-- Main CSS -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}"/>
-    <link rel="stylesheet" href="{{ url_for('static', filename='general_styles.css') }}"/>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}"/>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/general_styles.css') }}"/>
     <title>{% block title %}Home{% endblock %}</title>
+    {% block head %}{% endblock %}
 </head>
 <body>
     <header>
         <a href="{{ url_for('views.landing') }}" class="logo">OzFoody</a>
     </header>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light rounded shadow-sm p-3">
         <div class="container-fluid">
-            <a class="navbar-brand" href="/">MyApp</a>
+            <a class="navbar-brand" href="/">
+                <i class="fas fa-utensils"></i> MyApp
+            </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav">
+                <ul class="navbar-nav ms-auto">
+                    {% if session.get('user_id') %}
                     <li class="nav-item">
-                        <a class="nav-link {% if request.endpoint == 'views.profile' %}active{% endif %}" href="{{ url_for('views.profile') }}">Profile</a>
+                        <a class="nav-link" href="{{ url_for('views.profile') }}">
+                            <i class="fas fa-user"></i> Profile
+                        </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {% if request.endpoint == 'views.my_stats' %}active{% endif %}" href="{{ url_for('views.my_stats') }}">My Stats</a>
+                        <a class="nav-link" href="{{ url_for('views.friends') }}">
+                            <i class="fas fa-user-friends"></i> Friends
+                        </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {% if request.endpoint == 'views.friends' %}active{% endif %}" href="{{ url_for('views.friends') }}">Friends</a>
+                        <a class="nav-link" href="{{ url_for('views.my_stats') }}">
+                            <i class="fas fa-chart-line"></i> My Stats
+                        </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {% if request.endpoint == 'views.global_stats' %}active{% endif %}" href="{{ url_for('views.global_stats') }}">Global Stats</a>
+                        <a class="nav-link" href="{{ url_for('views.global_stats') }}">
+                            <i class="fas fa-globe"></i> Global Stats
+                        </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {% if request.endpoint == 'views.settings' %}active{% endif %}" href="{{ url_for('views.settings') }}">Settings</a>
+                        <a class="nav-link" href="{{ url_for('views.settings') }}">
+                            <i class="fas fa-cog"></i> Settings
+                        </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('auth.logout') }}">Logout</a>
+                        <a class="nav-link" href="{{ url_for('auth.logout') }}">
+                            <i class="fas fa-sign-out-alt"></i> Logout
+                        </a>
                     </li>
+                    {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('auth.login') }}">
+                            <i class="fas fa-sign-in-alt"></i> Login
+                        </a>
+                    </li>
+                    {% endif %}
                 </ul>
             </div>
         </div>
@@ -52,5 +75,6 @@
     <div class="container mt-4">
         {% block content %}{% endblock %}
     </div>
+    {% block scripts %}{% endblock %}
 </body>
 </html>
