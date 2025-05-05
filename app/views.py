@@ -605,3 +605,15 @@ def friend_posts():
     } for post in friend_posts]
 
     return jsonify(success=True, posts=posts_data)
+
+@views.route('/api/location_suggestions', methods=['GET'])
+def location_suggestions():
+    query = request.args.get('q', '').strip()
+    if not query:
+        return jsonify(success=False, suggestions=[])
+
+    # Fetch similar restaurant names and their locations
+    suggestions = Note.query.filter(Note.Resturaunt.ilike(f"%{query}%")).with_entities(Note.Resturaunt, Note.location).distinct().all()
+
+    # Return unique restaurant name suggestions with locations
+    return jsonify(success=True, suggestions=[{'name': s[0], 'location': s[1]} for s in suggestions if s[0]])

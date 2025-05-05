@@ -9,8 +9,10 @@
         </div>
         <div class="form-group">
             <label for="location">Location</label>
-            <input type="text" class="form-control" id="location" name="location" placeholder="Enter the restaurant's location">
+            <input type="text" class="form-control" id="location" name="location" placeholder="Enter a location or landmark" required>
+            <ul id="location-suggestions" class="list-group mt-2" style="display: none;"></ul>
         </div>
+        <div id="map" style="height: 300px; margin-top: 10px;"></div>
         <div class="form-group">
             <label for="Spiciness">Spiciness</label>
             <input type="number" class="form-control" id="Spiciness" name="Spiciness" min="0" max="100" required>
@@ -39,8 +41,66 @@
     </form>
 </div>
 
-<script 
-    type="text/javascript" 
-    src="{{ url_for('static', filename='index.js') }}"
-></script> 
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const locationInput = document.getElementById('location');
+        const suggestionsBox = document.getElementById('location-suggestions');
+        const map = L.map('map').setView([0, 0], 2); // Default map view
+        const marker = L.marker([0, 0]).addTo(map);
+
+        // Add OpenStreetMap tiles
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        let debounceTimeout;
+
+        // Fetch location suggestions from Nominatim with debouncing
+        locationInput.addEventListener('input', () => {
+            const query = locationInput.value.trim();
+            if (query.length < 3) {
+                suggestionsBox.style.display = 'none';
+                return;
+            }
+
+            // Debounce to prevent excessive API calls
+            clearTimeout(debounceTimeout);
+            debounceTimeout = setTimeout(() => {
+                fetch(`https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&namedetails=1&q=${encodeURIComponent(query)}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        suggestionsBox.innerHTML = '';
+                        if (data.length > 0) {
+                            data.forEach(location => {
+                                const displayName = location.namedetails?.name || location.display_name;
+                                const li = document.createElement('li');
+                                li.textContent = displayName;
+                                li.classList.add('list-group-item');
+                                li.addEventListener('click', () => {
+                                    locationInput.value = displayName;
+                                    suggestionsBox.style.display = 'none';
+                                    map.setView([location.lat, location.lon], 15);
+                                    marker.setLatLng([location.lat, location.lon]);
+                                });
+                                suggestionsBox.appendChild(li);
+                            });
+                            suggestionsBox.style.display = 'block';
+                        } else {
+                            suggestionsBox.style.display = 'none';
+                        }
+                    })
+                    .catch(error => console.error('Error fetching location suggestions:', error));
+            }, 300); // 300ms debounce delay
+        });
+
+        // Hide suggestions when clicking outside
+        document.addEventListener('click', (event) => {
+            if (!locationInput.contains(event.target) && !suggestionsBox.contains(event.target)) {
+                suggestionsBox.style.display = 'none';
+            }
+        });
+    });
+</script>
 {% endblock %}
