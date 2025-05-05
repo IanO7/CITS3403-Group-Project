@@ -65,6 +65,23 @@ def login():
 
     return render_template('login.html')
 
+'''
+@auth.route('/login/google/callback')
+def google_callback():
+    token = oauth.google.authorize_access_token()
+    user_info = oauth.google.parse_id_token(token)
+    email = user_info.get('email')
+
+    user = User.query.filter_by(email=email).first()
+    if not user:
+        user = User(username=email.split('@')[0], email=email)
+        db.session.add(user)
+        db.session.commit()
+
+    login_user(user)
+    return redirect(url_for('views.profile'))
+'''
+
 
 @auth.route('/logout')
 def logout():
