@@ -10,6 +10,6 @@ __pycache__/
 instance/
 *.log
 
-# VSCode settings (optional, if your team doesn't use it)
+# VSCode settings 
 .vscode/
 
