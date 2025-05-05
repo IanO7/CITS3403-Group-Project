@@ -1,0 +1,747 @@
+/* colours 
+- #F6E7DA soft peach background
+- #6E3A14 headline text 
+- #DF6F1B orange accent 
+- #8E5F2B warm golden brown 
+- #5E512B olive green 
+- #5F8D3B button green 
+*/ 
+
+body {
+    background-color: #f7efe8;
+    font-family: 'Lato', sans-serif;
+    scroll-behavior: smooth;
+}
+
+.brand-title, .hero-heading h1 {
+    font-family: 'Lobster', cursive !important;
+    color: #000000 !important;
+    font-size: 2rem;
+    font-weight: bold;
+    text-decoration: none;
+
+}
+
+.hero-section, .community-section {
+    width: 100%;
+    padding: 5rem 8vw;
+    margin: 0 auto;
+}
+  
+
+.text_main {
+    color: #000000; 
+    font-family: 'Lobster', serif;
+
+}
+
+#profileHeader {
+    text-align: center;
+    font-family: 'Lobster', serif;
+
+}
+
+#profileSub {
+    display: flex;
+    justify-content: center;   
+    align-items: center;      
+    gap: 1rem;              
+    flex-wrap: wrap; 
+
+}
+
+#profileContainer {
+    display: flex;
+    box-sizing: border-box;
+    width: 100%; 
+    align-items: center;
+    flex-direction: column;
+}
+
+#content {
+    width: 100%; 
+    display: grid;
+    margin: 0 auto; 
+    max-width: 1200px;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); 
+    gap: 20px; 
+    padding: 10px;
+    box-sizing: border-box;
+}
+
+.post {
+    border-radius: 10px;
+    width: 100%; 
+    min-height: 400px;
+    font-size: 20px;
+    font-weight: bold;
+    text-align: left;
+    background-color: white;
+    color: black;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    overflow: hidden;
+}
+
+.postImage {
+    width: 100%;
+    aspect-ratio: 2.5 / 1;
+    object-fit: cover;
+    object-position: center; 
+    border-radius: 0 0 10px 10px;
+}
+.spiciness-slider::-webkit-slider-runnable-track {
+    background-color: #dc3545; /* Bootstrap danger red */
+}
+.deliciousness-slider::-webkit-slider-runnable-track {
+    background-color: #ffc107; /* Bootstrap warning yellow */
+}
+.value-slider::-webkit-slider-runnable-track {
+    background-color: #198754; /* Bootstrap success green */
+}
+.plating-slider::-webkit-slider-runnable-track {
+    background-color: #0dcaf0; /* Bootstrap info blue */
+}
+
+
+.profileImage {
+    width:8rem; 
+    height:8rem; 
+    object-fit: cover;
+    object-position: top;
+    border-radius: 50%;
+    border:4px solid #5E512B; 
+}
+
+.addPost {
+    width: 30px;
+    height: 30px;
+    background-color: #5F8D3B;
+    color: white;
+    border: none;
+    font-size: 24px;
+    font-weight: bold;
+    border-radius: 8px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 999;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.4); /* Overlay background */
+}
+  
+.modal-content {
+    background-color: #fff;
+    margin: 10% auto;
+    padding: 20px;
+    border-radius: 10px;
+    width: 500px;
+    position: relative;
+}
+  
+.close {
+    position: absolute;
+    top: 8px;
+    right: 12px;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+
+/* Styles for #chartdiv (others_stats.html) */
+#chartdiv {
+    width: 100%;
+    height: 500px;
+    margin-top: 20px;
+}
+
+/* Styles for reaction buttons (my_friends.html) */
+.reaction-buttons button {
+    background-color: #007bff; /* Blue background */
+    color: black; /* White text */
+    border: none; /* Remove default border */
+    padding: 10px 15px; /* Add padding */
+    border-radius: 5px; /* Rounded corners */
+    font-size: 14px; /* Adjust font size */
+    margin: 5px; /* Add spacing between buttons */
+    cursor: pointer; /* Pointer cursor on hover */
+    transition: background-color 0.3s ease; /* Smooth hover effect */
+}
+
+.reaction-buttons button:hover {
+    background-color: #0056b3; /* Darker blue on hover */
+}
+
+.reaction-buttons button i {
+    margin-right: 5px; /* Add spacing between icon and text */
+}
+
+/* Styles for progress bars (my_stats.html) */
+.progress.custom-progress {
+    position: relative;
+    height: 20px;
+    background-color: #f5f5f5;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.progress.custom-progress .progress-bar {
+    height: 100%;
+    border-radius: 10px;
+}
+
+.progress.custom-progress .progress-emoji {
+    position: absolute;
+    top: -25px;
+    font-size: 20px;
+}
+
+/* Styles for bento box visualization (my_stats.html) */
+.bento-box-visual {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+}
+
+.bento-compartment {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #f5f5f5;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    position: relative;
+    overflow: hidden;
+}
+
+.bento-compartment img {
+    width: 50px;
+    height: 50px;
+}
+
+.bento-compartment[data-label]:hover::after {
+    content: attr(data-label);
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: rgba(0, 0, 0, 0.7);
+    color: #fff;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 12px;
+    white-space: nowrap;
+}
+
+/* Tailwind-inspired utility classes for stats pages */
+
+/* Typography */
+.text-heading {
+    font-family: 'Lobster', serif;
+    font-size: 2rem;
+    font-weight: bold;
+    color: #6e3a14;
+    margin-bottom: 1rem;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.text-subheading {
+    font-family: 'Lobster', serif;
+    font-size: 1.25rem;
+    font-weight: bold;
+    color: #8E5F2B; /* Subheading text color */
+}
+
+.text-label {
+    font-family: 'Arial', sans-serif;
+    font-size: 0.875rem;
+    font-weight: normal;
+    color: #5E512B; /* Olive green */
+}
+
+.text-value {
+    font-family: 'Arial', sans-serif;
+    font-size: 1rem;
+    font-weight: bold;
+    color: #DF6F1B; /* Orange accent */
+}
+
+/* Card Layouts */
+.card {
+    background-color: #FFFFFF; /* White background */
+    border-radius: 0.5rem; /* Rounded corners */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+    padding: 1.5rem; /* Inner padding */
+    margin-bottom: 1.5rem; /* Spacing between cards */
+    display: flex;
+    flex-direction: column;
+    gap: 1rem; /* Spacing between elements */
+}
+
+.card-header {
+    font-size: 1.25rem;
+    font-weight: bold;
+    color: #6E3A14; /* Headline text color */
+}
+
+.card-body {
+    font-size: 1rem;
+    color: #5E512B; /* Olive green */
+}
+
+/* Grid Layouts */
+.grid-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* Responsive grid */
+    gap: 1.5rem; /* Spacing between grid items */
+    padding: 1rem; /* Outer padding */
+}
+
+/* Progress Bars */
+.progress-bar {
+    position: relative;
+    height: 1rem;
+    background-color: #F6E7DA; /* Soft peach background */
+    border-radius: 0.5rem;
+    overflow: hidden;
+}
+
+.progress-bar-fill {
+    height: 100%;
+    border-radius: 0.5rem;
+}
+
+.progress-bar-fill.spiciness {
+    background-color: #DF6F1B; /* Orange accent */
+}
+
+.progress-bar-fill.deliciousness {
+    background-color: #5F8D3B; /* Button green */
+}
+
+.progress-bar-fill.value {
+    background-color: #8E5F2B; /* Warm golden brown */
+}
+
+.progress-bar-fill.plating {
+    background-color: #6E3A14; /* Headline text */
+}
+
+/* Chart Container */
+.chart-container {
+    width: 100%;
+    height: 500px;
+    margin-top: 1.5rem;
+    background-color: #FFFFFF; /* White background */
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+    padding: 1rem; /* Inner padding */
+}
+
+/* Badges */
+.badge {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    background-color: #F6E7DA; /* Soft peach background */
+    border-radius: 0.5rem;
+    padding: 1rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+}
+
+.badge img {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+}
+
+.badge-title {
+    font-size: 1rem;
+    font-weight: bold;
+    color: #6E3A14; /* Headline text */
+}
+
+.badge-description {
+    font-size: 0.875rem;
+    color: #5E512B; /* Olive green */
+}
+
+/* Dashboard Layout */
+.dashboard-container {
+    padding: 2rem;
+    background-color: #f7efe8;
+}
+
+.dashboard-header {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.profile-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.profile-img {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: 3px solid #5E512B;
+}
+
+.stats-grid, .charts-grid, .badges-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.card {
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 1.5rem;
+    text-align: center;
+}
+
+.chart-card canvas {
+    max-width: 100%;
+    height: 200px;
+}
+
+.badge-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1rem;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Reviews Grid */
+.reviews-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+    padding: 1rem;
+}
+
+/* Review Card */
+.review-card {
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.review-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
+}
+
+/* Review Header */
+.review-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.friend-avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #5E512B;
+}
+
+.friend-name {
+    font-size: 1.25rem;
+    font-weight: bold;
+    color: #6E3A14;
+}
+
+.review-date {
+    font-size: 0.875rem;
+    color: #8E5F2B;
+}
+
+/* Review Text */
+.review-text {
+    font-size: 1rem;
+    color: #5E512B;
+    line-height: 1.5;
+}
+
+/* Review Image */
+.review-image {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 10px;
+}
+
+/* Review Stats */
+.review-stats {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.stat {
+    flex: 1;
+    text-align: center;
+}
+
+.stat h6 {
+    font-size: 0.875rem;
+    color: #6E3A14;
+    margin-bottom: 0.5rem;
+}
+
+/* Review Actions */
+.review-actions {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.action-button {
+    flex: 1;
+    background-color: #5F8D3B;
+    color: #ffffff;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 5px;
+    font-size: 0.875rem;
+    font-weight: bold;
+    text-align: center;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.action-button:hover {
+    background-color: #4a6f2d;
+}
+
+.action-button i {
+    margin-right: 0.5rem;
+}
+
+/* Staggered Grid Layout */
+.staggered-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
+    padding: 1rem;
+}
+
+/* Modern Review Card */
+.review-card-modern {
+    background: linear-gradient(135deg, #ffffff, #f6e7da);
+    border-radius: 15px;
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.review-card-modern:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 12px 20px rgba(0, 0, 0, 0.15);
+}
+
+/* Review Header */
+.review-header-modern {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.friend-avatar-modern {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid #df6f1b;
+    box-shadow: 0 0 10px rgba(223, 111, 27, 0.5);
+}
+
+.friend-name-modern {
+    font-size: 1.25rem;
+    font-weight: bold;
+    color: #6e3a14;
+}
+
+.review-date-modern {
+    font-size: 0.875rem;
+    color: #8e5f2b;
+}
+
+/* Review Text */
+.review-text-modern {
+    font-size: 1rem;
+    color: #5e512b;
+    line-height: 1.6;
+}
+
+/* Review Image */
+.review-image-modern {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 10px;
+    transition: transform 0.3s ease;
+}
+
+.review-image-modern:hover {
+    transform: scale(1.05);
+}
+
+/* Review Stats */
+.review-stats-modern {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.stat-modern {
+    flex: 1;
+    text-align: center;
+}
+
+.stat-modern h6 {
+    font-size: 0.875rem;
+    color: #6e3a14;
+    margin-bottom: 0.5rem;
+}
+
+/* Review Actions */
+.review-actions-modern {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.action-button-modern {
+    flex: 1;
+    background-color: #5f8d3b;
+    color: #ffffff;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 5px;
+    font-size: 0.875rem;
+    font-weight: bold;
+    text-align: center;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.action-button-modern:hover {
+    background-color: #4a6f2d;
+    transform: scale(1.05);
+}
+
+.action-count {
+    font-size: 0.75rem;
+    font-weight: normal;
+    color: #f6e7da;
+}
+
+/* Navbar */
+.navbar {
+    background-color: #F6E7DA; /* Soft peach */
+    border-bottom: 2px solid #DF6F1B;
+    border-radius: 0;
+    box-shadow: none;
+    padding: 1rem 2rem;
+    transition: all 0.3s ease-in-out;
+    z-index: 1030;
+}
+
+.navbar-brand {
+    color: #DF6F1B; /* Replace red */
+    font-family: 'Lobster', cursive;
+}
+  
+.navbar-brand:hover {
+    color: #5F8D3B;
+
+}
+
+.navbar a {
+    font-size: 1rem;
+    font-weight: 500;
+    font-family: 'Lato', sans-serif;
+    transition: color 0.2s ease;
+}
+
+.navbar a:hover {
+    color: #DF6F1B;
+}
+
+.navbar a.active {
+    color: #5F8D3B;
+    font-weight: bold;
+}
+
+.footer {
+    text-align: center;
+    padding: 1rem;
+    font-family: 'Lato', sans-serif;
+    margin-top: 2rem;
+}
+
+/* LOGIN SIGNUP Buttons */
+
+.auth-link {
+    font-weight: 700;
+    font-size: 1rem;
+    color: #000;                       /* Black or dark charcoal */
+    text-decoration: none;
+    margin: 0 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  
+.auth-link:hover {
+    text-decoration: underline;
+  }
+  
+.main-wrapper {
+    width: 100%;
+    padding: 0;
+    margin: 0;
+}
+
+  

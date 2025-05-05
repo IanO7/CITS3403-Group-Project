@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}OzFoody - Discover Perth's Tastiest Places{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/landing.css') }}">
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="landing-hero fade-in text-center py-5 bg-light">
+  <h1 class="display-3 fw-bold">OzFoody</h1>
+  <p class="lead">OZ’s food scene, shared by you and your circle.</p>
+  <p class="mb-4">Create your profile, follow friends, and share your dining experiences.<br>Discover new spots, one bite at a time.</p>
+  <a href="{{ url_for('auth.login') }}" class="btn btn-primary btn-lg">Get Started</a>
+</section>
+
+<!-- Live Community Reviews -->
+{% if notes %}
+<section class="container py-5 fade-in">
+  <h2 class="text-center mb-4">What the Community Is Saying</h2>
+  <div class="row">
+    {% for note in notes[:3] %}
+      <div class="col-md-4">
+        <div class="card review-card p-3 h-100">
+          {% if note.image %}
+            <img src="{{ note.image if note.image.startswith('http') else url_for('static', filename=note.image) }}"
+                 class="card-img-top mb-3" alt="{{ note.restaurant }}">
+          {% endif %}
+          <div class="card-body">
+            <h5 class="card-title">{{ note.restaurant }}</h5>
+            <p class="card-text">{{ note.Review[:100] }}...</p>
+          </div>
+          <div class="card-footer text-muted">
+            — {{ note.user.username }}
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+</section>
+{% endif %}
+
+<!-- Footer -->
+<footer class="footer-dark text-white text-center py-3 mt-5">
+  <div class="container">
+    <p class="mb-0">© 2025 OZFoody. All rights reserved.</p>
+  </div>
+</footer>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/landing.js') }}"></script>
+{% endblock %}
