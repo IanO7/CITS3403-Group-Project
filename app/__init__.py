@@ -1,4 +1,5 @@
 import flask
+from flask_login import LoginManager
 from flask import Flask, session
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
@@ -20,6 +21,7 @@ def create_app():
 
     db.init_app(app)
     migrate.init_app(app, db)  # Initialize Flask-Migrate
+
 
     # Register blueprints
     app.register_blueprint(views, url_prefix='/')

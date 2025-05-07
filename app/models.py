@@ -1,6 +1,10 @@
 from . import db
+from flask_login import LoginManager
 from werkzeug.security import generate_password_hash, check_password_hash
 
+@login.user_loader
+def load_students(id):
+    return User.query.get(int(id))
 
 class Note(db.Model):
     id              = db.Column(db.Integer, primary_key=True)
