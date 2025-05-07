@@ -1,4 +1,5 @@
 from flask import Blueprint, render_template, request, redirect, url_for, session, jsonify, abort, flash
+from flask_login import LoginManager
 from .models import Note, User, Follow
 from . import db
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -22,6 +23,7 @@ def getReviews(user):
     return Note.query.filter_by(user_id=user.id).all()
 
 @views.route('/')
+@
 def landing():
     if session.get('user_id'):
         return redirect(url_for('views.profile'))
