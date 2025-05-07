@@ -1,10 +1,6 @@
 from . import db
-from flask_login import LoginManager
 from werkzeug.security import generate_password_hash, check_password_hash
 
-@login.user_loader
-def load_students(id):
-    return User.query.get(int(id))
 
 class Note(db.Model):
     id              = db.Column(db.Integer, primary_key=True)
@@ -21,11 +17,12 @@ class Note(db.Model):
     location        = db.Column(db.String(255), nullable=True, index=True)  # Add index for faster querying
 
 class User(db.Model):
-    id       = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(150),  unique=True, nullable=False)
-    email    = db.Column(db.String(150), unique=True, nullable=False)
-    password = db.Column(db.String(150), nullable=False)
-    Note       = db.relationship(Note, backref='user', lazy=True)
+    id              = db.Column(db.Integer, primary_key=True)
+    username        = db.Column(db.String(150),  unique=True, nullable=False)
+    email           = db.Column(db.String(150), unique=True, nullable=False)
+    password        = db.Column(db.String(150), nullable=False)
+    profileImage    = db.Column(db.String(200))
+    Note            = db.relationship(Note, backref='user', lazy=True)
 
     # ALways use generate_password_hash() & check_password_hash() for security => AUTOMATIC SALTING, NOT JUST HASHING ONLY!!
     def set_password(self, raw):

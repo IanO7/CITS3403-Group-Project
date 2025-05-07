@@ -52,8 +52,16 @@ form .form-control {
     border-radius: 20px;
     outline: none;
     font-size: 1rem;
-    width: 250px;
+    width: auto;
     transition: border-color 0.3s ease;
+}
+
+form .form-control[type="text"] {
+    width: 250px;
+}
+
+form textarea.form-control {
+    width: 750px;
 }
 
 form .form-control:focus {

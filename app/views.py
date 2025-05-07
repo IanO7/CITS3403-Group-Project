@@ -1,16 +1,11 @@
-from flask import Blueprint, render_template, request, redirect, url_for, session, jsonify, abort, flash
-from flask_login import LoginManager
+from flask import Blueprint, render_template, request, redirect, url_for, session, jsonify, abort, flash, send_from_directory, current_app
 from .models import Note, User, Follow
 from . import db
 from werkzeug.security import generate_password_hash, check_password_hash
 import numpy as np
 #from sklearn.neighbors import NearestNeighbors
-<<<<<<< Updated upstream
 import os 
 from werkzeug.utils import secure_filename
-=======
-from flask_login import login_required
->>>>>>> Stashed changes
 
 views = Blueprint('views', __name__)
 
@@ -27,7 +22,6 @@ def getReviews(user):
     return Note.query.filter_by(user_id=user.id).all()
 
 @views.route('/')
-@
 def landing():
     if session.get('user_id'):
         return redirect(url_for('views.profile'))
@@ -72,6 +66,7 @@ def new_post():
             Spiciness=int(request.form['Spiciness']),
             Deliciousness=int(request.form['Deliciousness']),
             Value=int(request.form['Value']),
+            Stars=int(request.form['Stars']), 
             Plating=int(request.form['Plating']),
             Review=request.form['Review'],
             image=image_filename,
