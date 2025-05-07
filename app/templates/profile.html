@@ -36,7 +36,7 @@
     <div id="Posts" class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4">
         {% for review in reviews %}
         <div class="col">
-            <div class="card mb-4 shadow-sm rounded-4 h-100" style="max-height: 600px; min-height: 600px;">
+            <div class="card" style="max-height: 600px; min-height: 600px;">
                     
                     <div class="d-flex align-items-center mb-3 w-100">
                         <img src="{{ url_for('views.uploaded_file', filename=user.profileImage) }}"
@@ -64,9 +64,9 @@
                     </div> 
 
                     {% if review.image %} 
-                    <div style="height: 150px;">
+                    <div>
                         <img src="{{ url_for('views.uploaded_file', filename=review.image) }}"
-                             class="img-fluid postImage"
+                             class="img-fluid review-image-modern"
                              alt="Dish image">
                       </div>
                     {% endif %}
