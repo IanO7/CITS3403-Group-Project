@@ -2,7 +2,7 @@
 {% block title %}Log In{% endblock %}
 
 {% block content %}
-<link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Roboto:wght@300&display=swap" rel="stylesheet">
 
 <!-- Inline CSS to enhance the design -->
 <style>
@@ -13,29 +13,67 @@
   }
 
   body {
-    background: #f6e7da;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
+    background: linear-gradient(135deg, #fbc2eb 0%, #a6c1ee 100%);
     font-family: 'Lato', sans-serif;
+    color: #333;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
   }
 
-  .login-container {
-    background: white;
-    padding: 2rem;
-    border-radius: 1.25rem;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  /* Navbar Style */
+  .navbar {
     width: 100%;
-    max-width: 420px;
+    padding: 1rem 2rem;
+    background-color: #5f8d3b;
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    position: sticky;
+    top: 0;
+  }
+
+  .navbar .logo {
+    font-size: 1.8rem;
+    font-weight: bold;
+    font-family: 'Roboto', sans-serif;
+  }
+
+  .navbar .menu {
+    display: flex;
+    gap: 2rem;
+  }
+
+  .navbar .menu a {
+    color: white;
+    text-decoration: none;
+    font-size: 1rem;
+  }
+
+  .navbar .menu a:hover {
+    text-decoration: underline;
+  }
+
+  /* Center the Login container */
+  .login-container {
+    background: #fff;
+    padding: 2.5rem;
+    border-radius: 1.25rem;
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 380px;
     text-align: center;
+    margin: auto;
+    flex-grow: 1;
   }
 
   .login-container h1 {
-    font-size: 2rem;
+    font-size: 2.5rem;
     margin-bottom: 1.5rem;
-    color: #333;
-    font-family: 'Lobster', cursive;
+    color: #5f8d3b;
+    font-family: 'Roboto', sans-serif;
   }
 
   .login-form input {
@@ -45,12 +83,15 @@
     border: 1px solid #ddd;
     border-radius: 0.5rem;
     font-size: 1rem;
+    background: #fafafa;
+    color: #333;
     transition: border-color 0.3s ease;
   }
 
   .login-form input:focus {
     outline: none;
     border-color: #5f8d3b;
+    background: #fff;
   }
 
   .login-form button {
@@ -60,13 +101,14 @@
     border: none;
     padding: 0.75rem;
     border-radius: 0.5rem;
-    font-size: 1rem;
+    font-size: 1.1rem;
     cursor: pointer;
     transition: background 0.3s ease;
+    margin-top: 1rem;
   }
 
   .login-form button:hover {
-    background: #5e512b;
+    background: #4b743e;
   }
 
   .google-btn, .email-btn {
@@ -92,13 +134,13 @@
   }
 
   .google-icon {
-    width: 20px;
-    height: 20px;
+    width: 22px;
+    height: 22px;
   }
 
   .separator {
-    margin: 1rem 0;
-    font-size: 0.9rem;
+    margin: 1.5rem 0;
+    font-size: 1rem;
     color: #aaa;
     position: relative;
   }
@@ -117,12 +159,12 @@
 
   .signup-line {
     margin-top: 1.5rem;
-    font-size: 0.9rem;
+    font-size: 1rem;
     color: #444;
   }
 
   .signup-line a {
-    color: #4285f4;
+    color: #5f8d3b;
     text-decoration: none;
     font-weight: bold;
   }
@@ -132,7 +174,7 @@
   }
 
   .footer {
-    margin-top: 1rem;
+    margin-top: 2rem;
     font-size: 0.8rem;
     color: #888;
   }
@@ -140,7 +182,7 @@
 
 <!-- Actual login UI -->
 <div class="login-container">
-  <h1>OzFoody</h1>
+  <h1>Log In</h1>
 
   <!-- Google button (stub) -->
   <button class="google-btn" onclick="handleGoogleLogin()">

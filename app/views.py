@@ -30,7 +30,11 @@ def home():
 @views.route('/landing')
 def landing():
     notes = Note.query.order_by(Note.id.desc()).limit(10).all()
-    return render_template('landing.html', notes=notes)
+    total_posts = Note.query.count()
+    total_users = User.query.count()
+    trending_dishes = Note.query.order_by(Note.likes.desc()).limit(5).all()
+    return render_template('landing.html', notes=notes, total_posts=total_posts, total_users=total_users, trending_dishes=trending_dishes)
+
 
 @views.route('/profile')
 def profile():
@@ -54,7 +58,7 @@ def profile():
 
     return render_template('profile.html', user=user, reviews=review_data)
 
-UPLOAD_FOLDER = 'static/uploads'
+UPLOAD_FOLDER = 'static/uploads'  # adjust as needed
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 
 def allowed_file(filename):

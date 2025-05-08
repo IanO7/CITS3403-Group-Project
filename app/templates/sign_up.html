@@ -2,64 +2,205 @@
 {% block title %}Sign Up{% endblock %}
 
 {% block content %}
-<link rel="stylesheet" href="{{ url_for('static', filename='general_styles.css') }}"/>
+<link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Roboto:wght@300&display=swap" rel="stylesheet">
 
+<!-- Inline CSS to enhance the design -->
 <style>
-  .emoji-input::before {
-    margin-right: 0.5rem;
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
   }
-  .form-icon {
-    font-size: 1.2rem;
-    margin-right: 0.5rem;
+
+  body {
+    background: linear-gradient(135deg, #fbc2eb 0%, #a6c1ee 100%);
+    font-family: 'Lato', sans-serif;
+    color: #333;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
   }
+
+  .navbar {
+    width: 100%;
+    padding: 1rem 2rem;
+    background-color: #5f8d3b;
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    position: sticky;
+    top: 0;
+  }
+
+  .navbar .logo {
+    font-size: 1.8rem;
+    font-weight: bold;
+    font-family: 'Roboto', sans-serif;
+  }
+
+  .navbar .menu {
+    display: flex;
+    gap: 2rem;
+  }
+
+  .navbar .menu a {
+    color: white;
+    text-decoration: none;
+    font-size: 1rem;
+  }
+
+  .navbar .menu a:hover {
+    text-decoration: underline;
+  }
+
+  /* Center the Sign-Up container */
+  .sign-up-container {
+    background: #fff;
+    padding: 2.5rem;
+    border-radius: 1.25rem;
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 380px;
+    text-align: center;
+    margin: auto;
+    flex-grow: 1;
+  }
+
+  .sign-up-container h1 {
+    font-size: 2.5rem;
+    margin-bottom: 1.5rem;
+    color: #5f8d3b;
+    font-family: 'Roboto', sans-serif;
+  }
+
+  .sign-up-form input {
+    width: 100%;
+    padding: 0.75rem;
+    margin: 0.5rem 0;
+    border: 1px solid #ddd;
+    border-radius: 0.5rem;
+    font-size: 1rem;
+    background: #fafafa;
+    color: #333;
+    transition: border-color 0.3s ease;
+  }
+
+  .sign-up-form input:focus {
+    outline: none;
+    border-color: #5f8d3b;
+    background: #fff;
+  }
+
+  .sign-up-form button {
+    width: 100%;
+    background: #5f8d3b;
+    color: white;
+    border: none;
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: background 0.3s ease;
+    margin-top: 1rem;
+  }
+
+  .sign-up-form button:hover {
+    background: #4b743e;
+  }
+
   .validation-list li {
     font-size: 0.9rem;
     list-style: none;
     padding: 2px 0;
+    color: #333;
+    display: flex;
+    align-items: center;
+    transition: color 0.3s ease, opacity 0.3s ease;
   }
+
   .validation-list .valid {
     color: green;
+    opacity: 1;
   }
+
   .validation-list .invalid {
-    color: red;
+    color: black;
+    opacity: 0.6;
+  }
+
+  .validation-list .emoji {
+    margin-right: 0.5rem;
+  }
+
+  .emoji {
+    font-size: 1.5rem;
+  }
+
+  .separator {
+    margin: 1.5rem 0;
+    font-size: 1rem;
+    color: #aaa;
+    position: relative;
+  }
+
+  .separator::before, .separator::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    width: 40%;
+    height: 1px;
+    background: #ccc;
+  }
+
+  .separator::before { left: 0; }
+  .separator::after { right: 0; }
+
+  .footer {
+    margin-top: 2rem;
+    font-size: 0.8rem;
+    color: #888;
   }
 </style>
 
-<div class="d-flex justify-content-center align-items-center min-vh-100">
-  <div class="card shadow p-4" style="max-width: 500px; width: 100%;">
-    <h3 class="text-center mb-4">🎉 Create an Account</h3>
+<div class="sign-up-container">
+  <h1>Create Account</h1>
 
-    <form method="POST" novalidate>
-      <div class="mb-3 d-flex align-items-center">
-        <span class="form-icon">👤</span>
-        <input name="username" class="form-control" placeholder="Username" required>
-      </div>
+  <form class="sign-up-form" method="POST" novalidate>
+    <div class="mb-3 d-flex align-items-center">
+      <span class="emoji">👤</span>
+      <input name="username" class="form-control" placeholder="Username" required>
+    </div>
 
-      <div class="mb-3 d-flex align-items-center">
-        <span class="form-icon">📧</span>
-        <input name="email" type="email" class="form-control" placeholder="Email" required>
-      </div>
+    <div class="mb-3 d-flex align-items-center">
+      <span class="emoji">📧</span>
+      <input name="email" type="email" class="form-control" placeholder="Email" required>
+    </div>
 
-      <div class="mb-3 d-flex align-items-center">
-        <span class="form-icon">🔒</span>
-        <input id="password" name="password" type="password" class="form-control" placeholder="Password" required>
-      </div>
+    <div class="mb-3 d-flex align-items-center">
+      <span class="emoji">🔒</span>
+      <input id="password" name="password" type="password" class="form-control" placeholder="Password" required>
+    </div>
 
-      <div class="mb-3 d-flex align-items-center">
-        <span class="form-icon">🔁</span>
-        <input id="confirm_password" name="confirm_password" type="password" class="form-control" placeholder="Confirm Password" required>
-      </div>
+    <div class="mb-3 d-flex align-items-center">
+      <span class="emoji">🔁</span>
+      <input id="confirm_password" name="confirm_password" type="password" class="form-control" placeholder="Confirm Password" required>
+    </div>
 
-      <ul class="validation-list mb-3 ps-4">
-        <li id="length" class="invalid">❌ At least 8 characters</li>
-        <li id="letter" class="invalid">❌ Includes a letter</li>
-        <li id="number" class="invalid">❌ Includes a number</li>
-        <li id="symbol" class="invalid">❌ Includes a symbol (!@#$...)</li>
-        <li id="match" class="invalid">❌ Passwords match</li>
-      </ul>
+    <ul class="validation-list mb-3 ps-4">
+      <li id="length" class="invalid"><span class="emoji">❌</span> At least 8 characters</li>
+      <li id="letter" class="invalid"><span class="emoji">❌</span> Includes a letter</li>
+      <li id="number" class="invalid"><span class="emoji">❌</span> Includes a number</li>
+      <li id="symbol" class="invalid"><span class="emoji">❌</span> Includes a symbol (!@#$...)</li>
+      <li id="match" class="invalid"><span class="emoji">❌</span> Passwords match</li>
+    </ul>
 
-      <button type="submit" class="btn btn-primary w-100" id="signupBtn" disabled>Sign Up</button>
-    </form>
+    <button type="submit" class="btn btn-primary w-100" id="signupBtn" disabled>Sign Up</button>
+  </form>
+
+  <div class="footer">
+    By continuing, you agree to our Terms and Privacy Policy.
   </div>
 </div>
 
