@@ -1,9 +1,11 @@
-from flask import Blueprint, render_template, request, redirect, url_for, session, jsonify, abort, flash
+from flask import Blueprint, render_template, request, redirect, url_for, session, jsonify, abort, flash, send_from_directory, current_app
 from .models import Note, User, Follow
 from . import db
 from werkzeug.security import generate_password_hash, check_password_hash
 import numpy as np
 from sklearn.neighbors import NearestNeighbors
+import os 
+from werkzeug.utils import secure_filename
 from flask_login import login_required
 
 views = Blueprint('views', __name__)
@@ -27,27 +29,18 @@ def landing():
     notes = Note.query.order_by(Note.id.desc()).limit(10).all()
     return render_template('landing.html', notes=notes)
 
+@views.route('/uploads/<filename>')
+def uploaded_file(filename):
+    return send_from_directory(current_app.config['UPLOAD_FOLDER'], filename)
+
 @views.route('/profile')
 @login_required
 def profile():
-
+  
     # Fetch all notes for the user
-    reviews = Note.query.filter_by(user_id=user.id).all()  # Fetch all notes for the user
-    
-    review_data = [{
-        "id": r.id,
-        "Resturaunt": r.Resturaunt,
-        "Spiciness": r.Spiciness,
-        "Deliciousness": r.Deliciousness,
-        "Value": r.Value,
-        "Plating": r.Plating,
-        "Review": r.Review,
-        "image": r.image,
-        "likes": r.likes,  # Include the latest likes count
-        "location": r.location  # Include the location field
-    } for r in reviews]
+    reviews = Note.query.filter_by(user_id=user.id).all()  # Fetch all notes for the user 
 
-    return render_template('profile.html', user=user, reviews=review_data)
+    return render_template('profile.html', user=user, reviews=reviews)
 
 
 
@@ -58,14 +51,27 @@ def new_post():
         return redirect(url_for('auth.login'))
 
     if request.method == 'POST':
+
+        image_file = request.files.get('image')
+        image_filename = None
+
+        if image_file:
+            filename = secure_filename(os.path.basename(image_file.filename))
+            upload_folder = current_app.config['UPLOAD_FOLDER']
+            os.makedirs(upload_folder, exist_ok=True)
+            image_path = os.path.join(upload_folder, filename)
+            image_file.save(image_path)
+            image_filename = filename
+
         note = Note(
             Resturaunt=request.form['Resturaunt'],
             Spiciness=int(request.form['Spiciness']),
             Deliciousness=int(request.form['Deliciousness']),
             Value=int(request.form['Value']),
+            Stars=int(request.form['Stars']), 
             Plating=int(request.form['Plating']),
             Review=request.form['Review'],
-            image=request.form['image'],
+            image=image_filename,
             location=request.form.get('location'),  # Add location
             user_id=user.id
         )

@@ -3,7 +3,7 @@
 
 {% block content %}
 <div id="profileHeader" class="container mt-2">
-    <img src="{{  url_for('static', filename='download.jpg') }}" class="profileImage"> 
+    <img src="{{ url_for('views.uploaded_file', filename=user.profileImage) }}" class="profileImage"> 
 </div>
 
 <div id="profileSub" class="container mt-1">
@@ -11,17 +11,17 @@
         {{ user.username }}
         <span class="badge badge-level level-{{ level }}">Level {{ level }}</span>
     </h1>
-    <button class="addPost" onclick="location.href='/new_post'">Add + </button>
+    <button class="addPost" onclick="location.href='/new_post'"> + </button>
 </div>
 
 <style>
     .badge-level {
         display: inline-block;
-        padding: 5px 10px;
+        /*padding: 5px 10px;
         font-size: 0.9rem;
         font-weight: bold;
         border-radius: 12px;
-        color: white;
+        color: white;*/ 
     }
 
     .level-1 { background-color: #6E3A14; } /* Bronze */
@@ -36,26 +36,46 @@
     <div id="Posts" class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4">
         {% for review in reviews %}
         <div class="col">
-            <div class="card mb-4 shadow-sm rounded-4 h-100" style="min-height: 500px;">
-                <div class="card-body d-flex flex-column">
+            <div class="card" style="max-height: 600px; min-height: 600px;">
+                    
                     <div class="d-flex align-items-center mb-3 w-100">
-                        <img src="{{  url_for('static', filename='download.jpg') }}"
-                             alt="Profile Avatar"
-                             class="profileImageSmall"> 
-                            <h5 class="card-title mb-1 p-3">{{ user.username }}</h5>
+                        <img src="{{ url_for('views.uploaded_file', filename=user.profileImage) }}"
+                            alt="Profile Avatar"
+                            class="profileImageSmall"> 
+                        <h5 class="mb-1 ml-1 p-3">{{ review.Resturaunt }}</h5>
+                        <div class="star-rating text-warning">
+                            {% set stars = review.Stars | int %}
+
+                            {# Render filled stars #}
+                            {% for _ in range(stars) %}
+                            <i class="fa fa-star text-warning"></i>
+                            {% endfor %}
+
+                            {# Render empty stars #}
+                            {% for _ in range(5 - stars) %}
+                            <i class="fa fa-star text-muted"></i>
+                            {% endfor %}
+                        </div>
                     </div>
-                    <p class="card-text">{{ review.Review }}</p>
-                    <p class="card-text"><strong>Location:</strong> {{ review.location or "Not specified" }}</p>
-                    {% if review.image %}
-                    <img src="{{ review.image }}"
-                         alt="Dish Image"
-                         class="post-image"
-                         style="width:100%;height:300px;object-fit:cover;border-radius:10px;">
+
+
+                    <div class="card-body d-flex flex-column p-3" style="overflow-y: auto; flex: 1;">
+                        <p class="card-text mb-0">{{ review.Review }}</p>
+                    </div> 
+
+                    {% if review.image %} 
+                    <div>
+                        <img src="{{ url_for('views.uploaded_file', filename=review.image) }}"
+                             class="img-fluid review-image-modern"
+                             alt="Dish image">
+                      </div>
                     {% endif %}
+
+
                     <div class="row text-center mt-auto pt-3">
                         <div class="col">
                             <h6>Deliciousness</h6>
-                            <div class="progress" style="height:10px;">
+                            <div class="progress">
                                 <div class="progress-bar bg-warning"
                                      role="progressbar"
                                      style="width: {{ review.Deliciousness | default(0, true) }}%;"
@@ -66,7 +86,7 @@
                         </div>
                         <div class="col">
                             <h6>Spiciness</h6>
-                            <div class="progress" style="height:10px;">
+                            <div class="progress">
                                 <div class="progress-bar bg-danger"
                                     role="progressbar"
                                     style="width: {{ review.Spiciness }}%;"
@@ -77,7 +97,7 @@
                         </div>
                         <div class="col">
                             <h6>Value</h6>
-                            <div class="progress" style="height:10px;">
+                            <div class="progress" >
                                 <div class="progress-bar bg-success"
                                      role="progressbar"
                                      style="width: {{ review.Value }}%;"
@@ -88,7 +108,7 @@
                         </div>
                         <div class="col">
                             <h6>Plating</h6>
-                            <div class="progress" style="height:10px;">
+                            <div class="progress">
                                 <div class="progress-bar bg-info"
                                      role="progressbar"
                                      style="width: {{ review.Plating }}%;"
@@ -98,17 +118,14 @@
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="reaction-buttons d-flex justify-content-around mt-auto p-3">
+
+                <div class="reaction-buttons d-flex justify-content-around" >
                     <button class="btn btn-outline-primary like-button" data-note-id="{{ review.id }}">
                         <i class="bi bi-hand-thumbs-up"></i> Like 
                         <span class="action-count">{{ review.likes }}</span>
                     </button>
                     <button class="btn btn-outline-secondary"><i class="bi bi-chat"></i> Comment</button>
                     <button class="btn btn-outline-success"><i class="bi bi-share"></i> Share</button>
-                    <button class="btn btn-outline-danger delete-button" data-note-id="{{ review.id }}">
-                        <i class="bi bi-trash"></i> Delete
-                    </button>
                 </div>
             </div>
         </div>
