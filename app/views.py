@@ -3,9 +3,10 @@ from .models import Note, User, Follow
 from . import db
 from werkzeug.security import generate_password_hash, check_password_hash
 import numpy as np
-#from sklearn.neighbors import NearestNeighbors
+from sklearn.neighbors import NearestNeighbors
 import os 
 from werkzeug.utils import secure_filename
+from flask_login import login_required
 
 views = Blueprint('views', __name__)
 
@@ -33,14 +34,15 @@ def uploaded_file(filename):
     return send_from_directory(current_app.config['UPLOAD_FOLDER'], filename)
 
 @views.route('/profile')
+@login_required
 def profile():
-    user = current_user()
-    if not user:
-        return redirect(url_for('auth.login'))
+  
+    # Fetch all notes for the user
+    reviews = Note.query.filter_by(user_id=user.id).all()  # Fetch all notes for the user 
 
-    reviews = Note.query.filter_by(user_id=user.id).all()  # Fetch all notes for the user
+    return render_template('profile.html', user=user, reviews=reviews)
 
-    return render_template('profile.html', user=user, reviews=reviews) 
+
 
 @views.route('/new_post', methods=['GET', 'POST'])
 def new_post():

@@ -8,6 +8,7 @@ from .models import User
 from . import db
 import os
 from werkzeug.utils import secure_filename
+from werkzeug.security import check_password_hash
 
 auth = Blueprint('auth', __name__)
 
@@ -58,18 +59,26 @@ def sign_up():
 @auth.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
-        email    = request.form.get('email')
+        email    = request.form.get('email').strip()
         password = request.form.get('password')
-        user     = User.query.filter_by(email=email).first()
+        remember = bool(request.form.get('remember'))  # from checkbox
 
-        if user and user.check_password(password):
-            session['user_id'] = user.id
-            flash('Logged in successfully.', 'success')
-            return redirect(url_for('views.profile'))
+        user = User.query.filter_by(email=email).first()
 
-        flash('Invalid email or password.', 'danger')
+        if not user:
+            flash('No account found with that email.', 'danger')
+            return render_template('login.html')
 
-    # GET
+        if not user.check_password(password):
+            flash('Incorrect password.', 'danger')
+            return render_template('login.html')
+
+        login_user(user, remember=remember)
+        flash(f'Welcome back, {user.username}!', 'success')
+
+        next_page = request.args.get('next')
+        return redirect(next_page or url_for('views.profile'))
+
     return render_template('login.html')
 
 

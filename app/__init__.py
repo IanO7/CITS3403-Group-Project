@@ -3,6 +3,7 @@ from flask_login import LoginManager
 from flask import Flask, session
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
+from flask_login import LoginManager
 from os import path
 import os  # Import os to access environment variables
 
@@ -35,6 +36,11 @@ def create_app():
         db.create_all()
 
     return app
+
+from flask_login import LoginManager
+
+login_manager = LoginManager()
+login_manager.login_view = 'auth.login'
 
 def create_database(app):
     if not path.exists('app/' + DB_NAME):
