@@ -23,7 +23,7 @@ def getReviews(user):
 def home():
     if session.get('user_id'):
         return redirect(url_for('views.profile'))
-    return redirect(url_for('auth.login'))
+    return redirect(url_for('views.landing'))
 
 @views.route('/landing')
 def landing():

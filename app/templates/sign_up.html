@@ -4,14 +4,101 @@
 {% block content %}
 <link rel="stylesheet" href="{{ url_for('static', filename='general_styles.css') }}"/>
 
-<form method="POST" class="mt-4">
-  <h3>Create an Account</h3><br>
+<style>
+  .emoji-input::before {
+    margin-right: 0.5rem;
+  }
+  .form-icon {
+    font-size: 1.2rem;
+    margin-right: 0.5rem;
+  }
+  .validation-list li {
+    font-size: 0.9rem;
+    list-style: none;
+    padding: 2px 0;
+  }
+  .validation-list .valid {
+    color: green;
+  }
+  .validation-list .invalid {
+    color: red;
+  }
+</style>
 
-  <input name="username" placeholder="Username" required><br>
-  <input name="email" type="email" placeholder="Email" required><br>
-  <input name="password" type="password" placeholder="Password" required><br>
-  <input name="confirm_password" type="password" placeholder="Confirm Password" required><br><br>
+<div class="d-flex justify-content-center align-items-center min-vh-100">
+  <div class="card shadow p-4" style="max-width: 500px; width: 100%;">
+    <h3 class="text-center mb-4">🎉 Create an Account</h3>
 
-  <button type="submit" class="btn btn-primary">Sign Up</button>
-</form>
+    <form method="POST" novalidate>
+      <div class="mb-3 d-flex align-items-center">
+        <span class="form-icon">👤</span>
+        <input name="username" class="form-control" placeholder="Username" required>
+      </div>
+
+      <div class="mb-3 d-flex align-items-center">
+        <span class="form-icon">📧</span>
+        <input name="email" type="email" class="form-control" placeholder="Email" required>
+      </div>
+
+      <div class="mb-3 d-flex align-items-center">
+        <span class="form-icon">🔒</span>
+        <input id="password" name="password" type="password" class="form-control" placeholder="Password" required>
+      </div>
+
+      <div class="mb-3 d-flex align-items-center">
+        <span class="form-icon">🔁</span>
+        <input id="confirm_password" name="confirm_password" type="password" class="form-control" placeholder="Confirm Password" required>
+      </div>
+
+      <ul class="validation-list mb-3 ps-4">
+        <li id="length" class="invalid">❌ At least 8 characters</li>
+        <li id="letter" class="invalid">❌ Includes a letter</li>
+        <li id="number" class="invalid">❌ Includes a number</li>
+        <li id="symbol" class="invalid">❌ Includes a symbol (!@#$...)</li>
+        <li id="match" class="invalid">❌ Passwords match</li>
+      </ul>
+
+      <button type="submit" class="btn btn-primary w-100" id="signupBtn" disabled>Sign Up</button>
+    </form>
+  </div>
+</div>
+
+<script>
+  const password = document.getElementById("password");
+  const confirm = document.getElementById("confirm_password");
+  const signupBtn = document.getElementById("signupBtn");
+
+  const lengthCheck = document.getElementById("length");
+  const letterCheck = document.getElementById("letter");
+  const numberCheck = document.getElementById("number");
+  const symbolCheck = document.getElementById("symbol");
+  const matchCheck = document.getElementById("match");
+
+  function validatePassword() {
+    const val = password.value;
+    const confirmVal = confirm.value;
+
+    const hasLetter = /[a-zA-Z]/.test(val);
+    const hasNumber = /\d/.test(val);
+    const hasSymbol = /[^a-zA-Z0-9]/.test(val);
+    const isLong = val.length >= 8;
+    const isMatch = val === confirmVal && val !== "";
+
+    updateCheck(lengthCheck, isLong);
+    updateCheck(letterCheck, hasLetter);
+    updateCheck(numberCheck, hasNumber);
+    updateCheck(symbolCheck, hasSymbol);
+    updateCheck(matchCheck, isMatch);
+
+    signupBtn.disabled = !(isLong && hasLetter && hasNumber && hasSymbol && isMatch);
+  }
+
+  function updateCheck(element, isValid) {
+    element.className = isValid ? "valid" : "invalid";
+    element.innerHTML = isValid ? element.innerHTML.replace('❌', '✅') : element.innerHTML.replace('✅', '❌');
+  }
+
+  password.addEventListener("input", validatePassword);
+  confirm.addEventListener("input", validatePassword);
+</script>
 {% endblock %}
