@@ -2,6 +2,8 @@ from flask import Blueprint, render_template, request, redirect, url_for, sessio
 from .models import Note, User, Follow
 from . import db
 from werkzeug.security import generate_password_hash, check_password_hash
+from werkzeug.utils import secure_filename
+import os
 import numpy as np
 from sklearn.neighbors import NearestNeighbors
 
@@ -52,6 +54,12 @@ def profile():
 
     return render_template('profile.html', user=user, reviews=review_data)
 
+UPLOAD_FOLDER = 'static/uploads'
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
+
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
 @views.route('/new_post', methods=['GET', 'POST'])
 def new_post():
     user = current_user()
@@ -59,6 +67,14 @@ def new_post():
         return redirect(url_for('auth.login'))
 
     if request.method == 'POST':
+        file = request.files.get('image')
+        image_path = None
+        if file and allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+            image_path = os.path.join(UPLOAD_FOLDER, filename)
+            os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+            file.save(image_path)
+
         note = Note(
             Resturaunt=request.form['Resturaunt'],
             Spiciness=int(request.form['Spiciness']),
@@ -66,8 +82,8 @@ def new_post():
             Value=int(request.form['Value']),
             Plating=int(request.form['Plating']),
             Review=request.form['Review'],
-            image=request.form['image'],
-            location=request.form.get('location'),  # Add location
+            image=image_path,  # Now saved file path
+            location=request.form.get('location'),
             user_id=user.id
         )
 
