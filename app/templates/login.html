@@ -6,17 +6,20 @@
 {% endblock %}
 
 {% block content %}
-<div class="row justify-content-center">
-  <div class="col-md-5">
+<div class="login-page-wrapper">
+  <div class="login-container">
+      <h1>OZFoody</h1>
 
-    <h2 class="text-center mb-4">Welcome back</h2>
+      <button class="google-btn" onclick="handleGoogleLogin()">
+          <img class="google-icon" src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google Icon">
+          Continue with Google
+      </button>
 
-    <form class="needs-validation" method="POST"
-          action="{{ url_for('auth.login') }}" novalidate>
+      <div class="separator">or</div>
 
-      <form class="login-form" method="POST" action="{{ url_for('auth.login') }}">
-          <input type="email" placeholder="Email" required>
-          <input type="password" placeholder="Password" required>
+      <form method="POST" class="login-form">
+          <input type="email" placeholder="Email" name="email" required>
+          <input type="password" placeholder="Password" name="password" required>
           <button type="submit">Continue</button>
       </form>
 
