@@ -5,31 +5,34 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='general_styles.css') }}"/>
 
 <!-- Hero Section -->
-<div class="landing-hero text-center py-5 bg-light">
-  <h1 class="display-4">Welcome to OzFoody</h1>
-  <p class="lead">Discover and share real restaurant reviews from our community.</p>
+<div class="landing-hero text-center py-5">
+  <div class="container">
+    <h1 class="display-3 fw-bold">Welcome to OzFoody</h1>
+    <p class="lead mt-3">Your go-to place to discover honest, community-powered restaurant reviews.</p>
+    <a href="{{ url_for('views.new_post') }}" class="btn btn-primary btn-lg mt-4">Write a Review</a>
+  </div>
 </div>
 
 <!-- Reviews Section -->
-<section id="reviews" class="py-4">
+<section id="reviews" class="py-5 bg-white">
   <div class="container">
-    <h2 class="mb-4">Latest Community Reviews</h2>
-    <div class="row g-3">
+    <h2 class="mb-4 text-center">Latest Community Reviews</h2>
+    <div class="row g-4">
       {% for note in notes %}
-        <div class="col-md-6">
-          <div class="card review-card p-3 h-100">
+        <div class="col-md-6 col-lg-4">
+          <div class="card review-card shadow-sm h-100">
             {% if note.image %}
               {% if note.image.startswith('http') %}
-                <img src="{{ note.image }}" class="card-img-top mb-3" alt="{{ note.restaurant }}">
+                <img src="{{ note.image }}" class="card-img-top" alt="{{ note.restaurant }}">
               {% else %}
-                <img src="{{ url_for('static', filename=note.image) }}" class="card-img-top mb-3" alt="{{ note.restaurant }}">
+                <img src="{{ url_for('static', filename=note.image) }}" class="card-img-top" alt="{{ note.restaurant }}">
               {% endif %}
             {% endif %}
             <div class="card-body">
               <h5 class="card-title">{{ note.restaurant }}</h5>
               <p class="card-text">{{ note.review }}</p>
             </div>
-            <div class="card-footer text-muted">
+            <div class="card-footer text-muted text-end">
               — {{ note.user.username }}
             </div>
           </div>
@@ -46,8 +49,30 @@
 </section>
 
 <style>
-  .landing-hero { background-color: #f7efe8; }
-  .review-card { background: #fff; border-radius: 0.5rem; }
-  .review-card img { max-height: 200px; object-fit: cover; }
+  .landing-hero {
+    background: linear-gradient(to right, #ffecd2 0%, #fcb69f 100%);
+    color: #343a40;
+    border-bottom: 1px solid #eee;
+  }
+
+  .review-card {
+    border-radius: 0.75rem;
+    overflow: hidden;
+    transition: transform 0.2s ease;
+  }
+
+  .review-card:hover {
+    transform: translateY(-5px);
+  }
+
+  .review-card img {
+    height: 200px;
+    object-fit: cover;
+  }
+
+  .card-footer {
+    background-color: #f8f9fa;
+    font-size: 0.875rem;
+  }
 </style>
 {% endblock %}
