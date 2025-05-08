@@ -21,9 +21,9 @@
 
       <div class="separator">or</div>
 
-      <form class="login-form" onsubmit="handleEmailLogin(event)">
-          <input type="email" placeholder="Email" required>
-          <input type="password" placeholder="Password" required>
+      <form method="POST" class="login-form">
+          <input type="email" placeholder="Email" name="email" required>
+          <input type="password" placeholder="Password" name="password" required>
           <button type="submit">Continue</button>
       </form>
 
