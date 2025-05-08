@@ -8,8 +8,26 @@
 */ 
 
 body {
-    background-color:#f7efe8;
+    background-color: #f7efe8;
+    font-family: 'Lato', sans-serif;
+    scroll-behavior: smooth;
 }
+
+.brand-title, .hero-heading h1 {
+    font-family: 'Lobster', cursive !important;
+    color: #000000 !important;
+    font-size: 2rem;
+    font-weight: bold;
+    text-decoration: none;
+
+}
+
+.hero-section, .community-section {
+    width: 100%;
+    padding: 5rem 8vw;
+    margin: 0 auto;
+}
+  
 
 .text_main {
     color: #000000; 
@@ -662,28 +680,68 @@ body {
 
 /* Navbar */
 .navbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background-color: #6E3A14; /* Headline text color */
-    padding: 10px 20px;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    background-color: #F6E7DA; /* Soft peach */
+    border-bottom: 2px solid #DF6F1B;
+    border-radius: 0;
+    box-shadow: none;
+    padding: 1rem 2rem;
+    transition: all 0.3s ease-in-out;
+    z-index: 1030;
+}
+
+.navbar-brand {
+    color: #DF6F1B; /* Replace red */
+    font-family: 'Lobster', cursive;
+}
+  
+.navbar-brand:hover {
+    color: #5F8D3B;
+
 }
 
 .navbar a {
-    color: #F6E7DA; /* Soft peach */
-    text-decoration: none;
-    padding: 10px 15px;
-    border-radius: 5px;
-    transition: background-color 0.3s ease;
+    font-size: 1rem;
+    font-weight: 500;
+    font-family: 'Lato', sans-serif;
+    transition: color 0.2s ease;
 }
 
 .navbar a:hover {
-    background-color: #DF6F1B; /* Orange accent */
+    color: #DF6F1B;
 }
 
 .navbar a.active {
-    background-color: #5F8D3B; /* Button green */
+    color: #5F8D3B;
     font-weight: bold;
 }
+
+.footer {
+    text-align: center;
+    padding: 1rem;
+    font-family: 'Lato', sans-serif;
+    margin-top: 2rem;
+}
+
+/* LOGIN SIGNUP Buttons */
+
+.auth-link {
+    font-weight: 700;
+    font-size: 1rem;
+    color: #000;                       /* Black or dark charcoal */
+    text-decoration: none;
+    margin: 0 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  
+.auth-link:hover {
+    text-decoration: underline;
+  }
+  
+.main-wrapper {
+    width: 100%;
+    padding: 0;
+    margin: 0;
+}
+
+  
