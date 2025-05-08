@@ -37,7 +37,6 @@
           <p>Discover what your friends love, with personalized suggestions based on their reviews.</p>
         </div>
       </div>
-
       <div class="col-md-4">
         <div class="feature-card shadow-lg" data-bs-toggle="tooltip" title="Share your favorite restaurants with the community using visual posts!">
           <div class="feature-icon">
@@ -48,6 +47,38 @@
         </div>
       </div>
     </div>
+  </div>
+</section>
+
+<!-- Earn Badges Section -->
+<section id="badges" class="py-5 bg-light text-center">
+  <div class="container">
+    <h2 class="mb-4">Earn Badges to Level Up</h2>
+    <p class="lead mb-5">The more you review, explore, and share, the more badges you earn. Unlock achievements and climb the foodie ranks!</p>
+    <div class="row">
+      <div class="col-md-4">
+        <div class="badge-card shadow-sm p-4">
+          <i class="fas fa-pen-nib fa-3x text-warning mb-3"></i>
+          <h5>First Review</h5>
+          <p>Earn this badge when you publish your very first review.</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="badge-card shadow-sm p-4">
+          <i class="fas fa-fire fa-3x text-danger mb-3"></i>
+          <h5>Spicy Explorer</h5>
+          <p>Review 10 spicy dishes to unlock this hot badge!</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="badge-card shadow-sm p-4">
+          <i class="fas fa-users fa-3x text-success mb-3"></i>
+          <h5>Community Contributor</h5>
+          <p>Earned by receiving 50 likes from other foodies.</p>
+        </div>
+      </div>
+    </div>
+    <a href="{{ url_for('views.profile') }}" class="btn btn-primary btn-lg mt-4">View Your Badge Progress</a>
   </div>
 </section>
 
