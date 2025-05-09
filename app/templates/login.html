@@ -1,9 +1,13 @@
 {% extends "base.html" %}
-{% block title %}Log In{% endblock %}
 
-{% block extra_css %}
+{% set hide_navbar = True %}
+
+{% block title %}Login - OZFoody{% endblock %}
+
+{% block head %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
 {% endblock %}
+
 
 {% block content %}
 <div class="login-page-wrapper">
@@ -23,34 +27,17 @@
           <button type="submit">Continue</button>
       </form>
 
-      <div class="form-check">
-        <input class="form-check-input" type="checkbox" name="remember" id="remember">
-        <label class="form-check-label" for="remember">Remember Me</label>
-      </div>
-      
       <div class="signup-line">
-          Not a Foodymate yet? <a href="{{ url_for('auth.sign_up') }}">Create an account!</a>
+          Not a Foodymate yet? <a href="{{ url_for('auth.signup') }}">Create an account!</a>
       </div>
 
-      <div class="mb-4">
-        <input name="password" class="form-control" type="password"
-               placeholder="Password" required>
-        <div class="invalid-feedback">Password required.</div>
+      <div class="footer">
+          By continuing, you agree to our Terms and Privacy Policy.
       </div>
-
-      <button class="btn btn-primary w-100" type="submit">Log In</button>
-    </form>
-
-    <div class="text-center my-3">or</div>
-
-    <a class="btn btn-outline-danger w-100 mb-4" href="/login/google">
-      <i class="fab fa-google me-2"></i>Log In with Google
-    </a>
-
-    <p class="text-center small">
-      New here?
-      <a href="{{ url_for('auth.signup') }}">Create an account!</a>
-    </p>
   </div>
 </div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/login.js') }}"></script>
 {% endblock %}

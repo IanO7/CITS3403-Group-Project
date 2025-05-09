@@ -1,14 +1,18 @@
 {% extends "base.html" %}
-{% block title %}Sign Up{% endblock %}
 
-{% block extra_css %}
-<link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap" rel="stylesheet">
+{% set hide_navbar = True %}
+
+{% block title %}Sign Up - OZFoody{% endblock %}
+
+{% block head %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/signup.css') }}">
 {% endblock %}
 
+
 {% block content %}
-<div class="row justify-content-center">
-  <div class="col-md-6 col-lg-5">
+<div class="signup-page-wrapper">
+  <div class="signup-container">
+    <h1>Join OZFoody</h1>
 
     <form method='POST' class="signup-form" class="w-50" enctype="multipart/form-data">
       <input type="text" placeholder="Full Name" name="username" required>
@@ -21,11 +25,11 @@
         </button>
       </div>
 
-      <ul class="list-unstyled small mb-3 ps-3" style="line-height:1.4">
-        <li id="length-rule"    class="text-danger">• at least 8 characters</li>
-        <li id="number-rule"    class="text-danger">• at least one number</li>
-        <li id="uppercase-rule" class="text-danger">• at least one uppercase letter</li>
-        <li id="special-rule"   class="text-danger">• at least one special (!@#$%)</li>
+      <ul class="password-rules">
+        <div id="length-rule">❌ At least 8 characters</div>
+        <div id="number-rule">❌ At least one number (0-9)</div>
+        <div id="uppercase-rule">❌ At least one uppercase letter (A-Z)</div>
+        <div id="special-rule">❌ At least one special character (!@#$%)</div>
       </ul>
 
       <div class="password-field">
@@ -43,16 +47,21 @@
       <button type="submit" class="signup-button">Sign Up</button>
     </form>
 
-    <div class="text-center my-3">or</div>
+    <div class="login-line">
+      Already have an account? <a href="{{ url_for('auth.login') }}">Log in here!</a>
+    </div>
 
-    <a class="btn btn-outline-danger w-100 mb-4" href="/login/google">
-      <i class="fab fa-google me-2"></i>Sign Up with Google
-    </a>
-
-    <p class="text-center small">
-      Already have an account?
-      <a href="{{ url_for('auth.login') }}">Log in here!</a>
-    </p>
+    <div class="footer">
+      By signing up, you agree to our Terms and Privacy Policy.
+    </div>
   </div>
 </div>
+
+{% if error %}
+<p class="error-message">{{ error }}</p>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/signup.js') }}"></script>
 {% endblock %}

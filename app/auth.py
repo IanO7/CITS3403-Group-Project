@@ -1,4 +1,3 @@
-# app/auth.py
 from flask import (
     Blueprint, render_template, request, redirect,
     url_for, flash, session, current_app
@@ -9,12 +8,11 @@ from .models import User
 from . import db
 import os
 from werkzeug.utils import secure_filename
-from werkzeug.security import check_password_hash
 
-auth = Blueprint("auth", __name__)
+auth = Blueprint('auth', __name__)
 
-@auth.route('/sign_up', methods=['GET', 'POST'])
-def sign_up():
+@auth.route('/signup', methods=['GET', 'POST'])
+def signup():
     if request.method == 'POST':
         image_file = request.files.get('profileImage')
         image_filename = None
@@ -33,13 +31,15 @@ def sign_up():
         password        = request.form.get('password')
         confirm_pass    = request.form.get('confirm_password')
 
+        # 1) Passwords match?
         if password != confirm_pass:
-            flash("Passwords do not match.", "danger")
-            return render_template("signup.html")
+            flash('Passwords do not match.', 'danger')
+            return render_template('signup.html')
 
+        # 2) Email unique?
         if User.query.filter_by(email=email).first():
-            flash("That email is already registered.", "warning")
-            return render_template("signup.html")
+            flash('That email is already registered.', 'warning')
+            return render_template('signup.html')
 
         # 3) Create & login
         new_user = User(username=username, email=email, profileImage=image_filename)
@@ -47,19 +47,34 @@ def sign_up():
         db.session.add(new_user)
         db.session.commit()
 
-        session["user_id"] = new_user.id
-        flash(f"Welcome, {username}! Account created.", "success")
-        return redirect(url_for("views.profile"))
+        session['user_id'] = new_user.id
+        flash(f'Welcome, {username}! Your account has been created.', 'success')
+        return redirect(url_for('views.profile'))
 
     # GET
     return render_template('signup.html')
 
 
-# ───────────── LOG‑OUT ─────────────
-@auth.route("/logout")
+@auth.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        email    = request.form.get('email')
+        password = request.form.get('password')
+        user     = User.query.filter_by(email=email).first()
+
+        if user and user.check_password(password):
+            session['user_id'] = user.id
+            flash('Logged in successfully.', 'success')
+            return redirect(url_for('views.profile'))
+
+        flash('Invalid email or password.', 'danger')
+
+    # GET
+    return render_template('login.html')
+
+
+@auth.route('/logout')
 def logout():
     session.clear()
     flash('You have been logged out.', 'info')
     return redirect(url_for('auth.login'))
-
-
