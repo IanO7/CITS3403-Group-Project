@@ -67,6 +67,36 @@
             <button id="next-btn" class="btn btn-secondary">➡️ Next</button>
         </div>
     </div>
+
+    <!-- Compare Stats Section -->
+    <div class="compare-stats mt-5">
+        <h2 class="text-center">Compare Your Stats with a Friend</h2>
+        <div class="mb-3 text-center" style="position:relative; max-width:350px; margin:0 auto;">
+            <label for="friend-compare-search" class="form-label">Search for a friend to compare:</label>
+            <input id="friend-compare-search" class="form-control" type="text" placeholder="Type a friend's name..." autocomplete="off">
+            <div id="friend-compare-suggestions" class="list-group position-absolute w-100" style="z-index: 2000;"></div>
+        </div>
+        <div id="compare-stats-table" style="display:none;">
+            <div class="compare-cards d-flex justify-content-center align-items-stretch gap-4 flex-wrap">
+                <div class="compare-card me-card">
+                    <h4>You</h4>
+                    <div class="compare-value"><span>Spiciness</span><span id="my-spiciness">-</span></div>
+                    <div class="compare-value"><span>Deliciousness</span><span id="my-deliciousness">-</span></div>
+                    <div class="compare-value"><span>Value</span><span id="my-value">-</span></div>
+                    <div class="compare-value"><span>Plating</span><span id="my-plating">-</span></div>
+                    <div class="compare-value"><span>Posts Reviewed</span><span id="my-posts">-</span></div>
+                </div>
+                <div class="compare-card friend-card">
+                    <h4 id="friend-name-header">Friend</h4>
+                    <div class="compare-value"><span>Spiciness</span><span id="friend-spiciness">-</span></div>
+                    <div class="compare-value"><span>Deliciousness</span><span id="friend-deliciousness">-</span></div>
+                    <div class="compare-value"><span>Value</span><span id="friend-value">-</span></div>
+                    <div class="compare-value"><span>Plating</span><span id="friend-plating">-</span></div>
+                    <div class="compare-value"><span>Posts Reviewed</span><span id="friend-posts">-</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 <style>
@@ -258,6 +288,64 @@
         justify-content: center;
         gap: 10px;
         margin-top: 10px;
+    }
+
+    .compare-cards {
+        gap: 2rem;
+        margin-top: 1.5rem;
+    }
+    .compare-card {
+        background: linear-gradient(135deg, #fbc2eb 0%, #a6c1ee 100%);
+        border-radius: 1.2rem;
+        box-shadow: 0 6px 24px rgba(90, 90, 150, 0.12);
+        padding: 2rem 1.5rem;
+        min-width: 220px;
+        max-width: 260px;
+        flex: 1 1 220px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        transition: transform 0.2s;
+    }
+    .compare-card h4 {
+        font-weight: bold;
+        margin-bottom: 1.2rem;
+        color: #5f8d3b;
+        letter-spacing: 1px;
+    }
+    .compare-value {
+        display: flex;
+        justify-content: space-between;
+        width: 100%;
+        font-size: 1.1rem;
+        margin: 0.4rem 0;
+        padding: 0.5rem 0.7rem;
+        border-radius: 0.5rem;
+        background: rgba(255,255,255,0.7);
+        font-family: 'Lato', sans-serif;
+    }
+    .me-card {
+        border: 2px solid #5f8d3b;
+    }
+    .friend-card {
+        border: 2px solid #df6f1b;
+    }
+    #friend-compare-suggestions {
+        max-height: 180px;
+        overflow-y: auto;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        background: #fff;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+    #friend-compare-suggestions .list-group-item {
+        cursor: pointer;
+        padding: 0.7rem 1rem;
+        border: none;
+    }
+    #friend-compare-suggestions .list-group-item:hover {
+        background: #fbc2eb;
+        color: #5f8d3b;
     }
 </style>
 
@@ -543,6 +631,83 @@
             if (currentIndex < cards.length - 1) {
                 currentIndex++;
                 updateCarousel();
+            }
+        });
+    });
+
+    // Your stats from backend
+    const myStats = {
+        spiciness: {{ user_stats.spiciness|default(0) }},
+        deliciousness: {{ user_stats.deliciousness|default(0) }},
+        value: {{ user_stats.value|default(0) }},
+        plating: {{ user_stats.plating|default(0) }},
+        posts: {{ user_notes|length }}
+    };
+
+    document.addEventListener('DOMContentLoaded', function() {
+        // Fill in your stats
+        document.getElementById('my-spiciness').textContent = Math.round(myStats.spiciness);
+        document.getElementById('my-deliciousness').textContent = Math.round(myStats.deliciousness);
+        document.getElementById('my-value').textContent = Math.round(myStats.value);
+        document.getElementById('my-plating').textContent = Math.round(myStats.plating);
+        document.getElementById('my-posts').textContent = myStats.posts;
+
+        // Friend search logic
+        const searchInput = document.getElementById('friend-compare-search');
+        const suggestionsBox = document.getElementById('friend-compare-suggestions');
+        const compareTable = document.getElementById('compare-stats-table');
+        const friendNameHeader = document.getElementById('friend-name-header');
+
+        let lastQuery = '';
+        searchInput.addEventListener('input', function() {
+            const query = this.value.trim();
+            if (query.length === 0) {
+                suggestionsBox.innerHTML = '';
+                compareTable.style.display = 'none';
+                return;
+            }
+            lastQuery = query;
+            fetch(`/api/users?q=${encodeURIComponent(query)}`)
+                .then(res => res.json())
+                .then(data => {
+                    if (data.users && data.users.length > 0) {
+                        suggestionsBox.innerHTML = data.users.map(u =>
+                            `<div class="list-group-item" data-id="${u.id}" data-username="${u.username}">${u.username}</div>`
+                        ).join('');
+                    } else {
+                        suggestionsBox.innerHTML = '<div class="list-group-item text-muted">No users found</div>';
+                    }
+                });
+        });
+
+        // Handle suggestion click
+        suggestionsBox.addEventListener('click', function(e) {
+            const item = e.target.closest('.list-group-item[data-id]');
+            if (item) {
+                const friendId = item.getAttribute('data-id');
+                const friendName = item.getAttribute('data-username');
+                searchInput.value = friendName;
+                suggestionsBox.innerHTML = '';
+                fetch(`/api/user_stats/${friendId}`)
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.success) {
+                            compareTable.style.display = '';
+                            friendNameHeader.textContent = data.username;
+                            document.getElementById('friend-spiciness').textContent = Math.round(data.stats.spiciness);
+                            document.getElementById('friend-deliciousness').textContent = Math.round(data.stats.deliciousness);
+                            document.getElementById('friend-value').textContent = Math.round(data.stats.value);
+                            document.getElementById('friend-plating').textContent = Math.round(data.stats.plating);
+                            document.getElementById('friend-posts').textContent = data.posts;
+                        }
+                    });
+            }
+        });
+
+        // Hide suggestions when clicking outside
+        document.addEventListener('click', (event) => {
+            if (!searchInput.contains(event.target) && !suggestionsBox.contains(event.target)) {
+                suggestionsBox.innerHTML = '';
             }
         });
     });
