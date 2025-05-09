@@ -1,5 +1,4 @@
 import flask
-from flask_login import LoginManager
 from flask import Flask, session
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
@@ -17,11 +16,9 @@ def create_app():
     app.config['SECRET_KEY'] = os.environ.get("able", "default_secret_key")  # Use environment variable
     app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{DB_NAME}'
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-    app.config['UPLOAD_FOLDER'] = os.path.join(os.getcwd(), 'app/uploads')
 
     db.init_app(app)
     migrate.init_app(app, db)  # Initialize Flask-Migrate
-
 
     # Register blueprints
     app.register_blueprint(views, url_prefix='/')

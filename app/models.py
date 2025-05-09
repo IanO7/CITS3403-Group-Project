@@ -10,19 +10,17 @@ class Note(db.Model):
     Value           = db.Column(db.Integer, nullable=False)
     Plating         = db.Column(db.Integer, nullable=False)
     Review          = db.Column(db.String(1000), nullable=False)
-    Stars           = db.Column(db.Integer, nullable=False)
     image           = db.Column(db.String(200))
     user_id         = db.Column(db.Integer, db.ForeignKey('user.id'))
     likes           = db.Column(db.Integer, default=0)  # New column for likes
     location        = db.Column(db.String(255), nullable=True, index=True)  # Add index for faster querying
 
 class User(db.Model):
-    id              = db.Column(db.Integer, primary_key=True)
-    username        = db.Column(db.String(150),  unique=True, nullable=False)
-    email           = db.Column(db.String(150), unique=True, nullable=False)
-    password        = db.Column(db.String(150), nullable=False)
-    profileImage    = db.Column(db.String(200))
-    Note            = db.relationship(Note, backref='user', lazy=True)
+    id       = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(150),  unique=True, nullable=False)
+    email    = db.Column(db.String(150), unique=True, nullable=False)
+    password = db.Column(db.String(150), nullable=False)
+    Note       = db.relationship(Note, backref='user', lazy=True)
 
     # ALways use generate_password_hash() & check_password_hash() for security => AUTOMATIC SALTING, NOT JUST HASHING ONLY!!
     def set_password(self, raw):

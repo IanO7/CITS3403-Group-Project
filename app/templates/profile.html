@@ -3,7 +3,7 @@
 
 {% block content %}
 <div id="profileHeader" class="container mt-2">
-    <img src="{{ url_for('views.uploaded_file', filename=user.profileImage) }}" class="profileImage"> 
+    <img src="{{  url_for('static', filename='download.jpg') }}" class="profileImage"> 
 </div>
 
 <div id="profileSub" class="container mt-1">
@@ -55,11 +55,11 @@
 
     .badge-level {
         display: inline-block;
-        /*padding: 5px 10px;
+        padding: 5px 10px;
         font-size: 0.9rem;
         font-weight: bold;
         border-radius: 12px;
-        color: white;*/ 
+        color: white;
     }
 
     .level-1 { background-color: #6E3A14; } /* Bronze */
@@ -159,7 +159,7 @@
                     <div class="row text-center mt-3">
                         <div class="col">
                             <h6>Deliciousness</h6>
-                            <div class="progress">
+                            <div class="progress" style="height:10px;">
                                 <div class="progress-bar bg-warning"
                                      role="progressbar"
                                      style="width: {{ review.Deliciousness | default(0, true) }}%;"
@@ -170,7 +170,7 @@
                         </div>
                         <div class="col">
                             <h6>Spiciness</h6>
-                            <div class="progress">
+                            <div class="progress" style="height:10px;">
                                 <div class="progress-bar bg-danger"
                                      role="progressbar"
                                      style="width: {{ review.Spiciness }}%;"
@@ -181,7 +181,7 @@
                         </div>
                         <div class="col">
                             <h6>Value</h6>
-                            <div class="progress" >
+                            <div class="progress" style="height:10px;">
                                 <div class="progress-bar bg-success"
                                      role="progressbar"
                                      style="width: {{ review.Value }}%;"
@@ -192,7 +192,7 @@
                         </div>
                         <div class="col">
                             <h6>Plating</h6>
-                            <div class="progress">
+                            <div class="progress" style="height:10px;">
                                 <div class="progress-bar bg-info"
                                      role="progressbar"
                                      style="width: {{ review.Plating }}%;"
