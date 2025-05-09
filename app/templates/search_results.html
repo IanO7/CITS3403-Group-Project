@@ -20,6 +20,17 @@
     {% else %}
     <p class="text-center text-muted">No users found matching "{{ query }}".</p>
     {% endif %}
+
+    <!-- Example -->
+    {% for result in results %}
+    <div>
+        <a href="{{ url_for('views.user_profile', user_id=result.id) }}">{{ result.username }}</a>
+        <!-- Optionally show "Follows you" badge if result follows current user -->
+        {% if result.id in followers_of_me %}
+            <span class="badge bg-info">Follows you</span>
+        {% endif %}
+    </div>
+    {% endfor %}
 </div>
 
 <style>

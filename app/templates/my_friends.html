@@ -59,12 +59,87 @@
     <!-- Friend Posts Carousel -->
     <div class="friend-posts-carousel mt-5">
         <h2 class="text-center">🔥 Posts from Your Friends</h2>
-        <div id="friend-posts-carousel" class="carousel">
-            <!-- Swipeable posts will be dynamically loaded here -->
-        </div>
-        <div class="carousel-controls">
-            <button id="prev-btn" class="btn btn-secondary">⬅️ Previous</button>
-            <button id="next-btn" class="btn btn-secondary">➡️ Next</button>
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4">
+            {% for review in notes %}
+            <div class="col">
+                <div class="card mb-4 shadow-sm rounded-4 h-100" style="min-height: 500px;">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center mb-3 w-100">
+                            <img src="{{ url_for('static', filename='download.jpg') }}"
+                                 alt="Profile Avatar"
+                                 class="profileImageSmall">
+                            <h5 class="card-title mb-1">{{ review.user.username }}</h5>
+                        </div>
+                        <p class="card-text">{{ review.Review }}</p>
+                        <p class="card-text"><strong>Location:</strong> {{ review.location or "Not specified" }}</p>
+                        {% if review.image %}
+                        <img src="{{ review.image }}"
+                             alt="Dish Image"
+                             class="post-image">
+                        {% endif %}
+                        <div class="row text-center mt-3">
+                            <div class="col">
+                                <h6>Deliciousness</h6>
+                                <div class="progress" style="height:10px;">
+                                    <div class="progress-bar bg-warning"
+                                         role="progressbar"
+                                         style="width: {{ review.Deliciousness | default(0, true) }}%;"
+                                         aria-valuenow="{{ review.Deliciousness }}"
+                                         aria-valuemin="0"
+                                         aria-valuemax="100"></div>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <h6>Spiciness</h6>
+                                <div class="progress" style="height:10px;">
+                                    <div class="progress-bar bg-danger"
+                                         role="progressbar"
+                                         style="width: {{ review.Spiciness }}%;"
+                                         aria-valuenow="{{ review.Spiciness }}"
+                                         aria-valuemin="0"
+                                         aria-valuemax="100"></div>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <h6>Value</h6>
+                                <div class="progress" style="height:10px;">
+                                    <div class="progress-bar bg-success"
+                                         role="progressbar"
+                                         style="width: {{ review.Value }}%;"
+                                         aria-valuenow="{{ review.Value }}"
+                                         aria-valuemin="0"
+                                         aria-valuemax="100"></div>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <h6>Plating</h6>
+                                <div class="progress" style="height:10px;">
+                                    <div class="progress-bar bg-info"
+                                         role="progressbar"
+                                         style="width: {{ review.Plating }}%;"
+                                         aria-valuenow="{{ review.Plating }}"
+                                         aria-valuemin="0"
+                                         aria-valuemax="100"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="reaction-buttons">
+                        <button class="btn btn-outline-primary like-button" data-note-id="{{ review.id }}">
+                            <i class="bi bi-hand-thumbs-up"></i> 👍 <span class="action-count">{{ review.likes }}</span>
+                        </button>
+                        <button class="btn btn-outline-secondary comment-button">
+                            <i class="bi bi-chat"></i> 💬
+                        </button>
+                        <button class="btn btn-outline-success share-button" data-note-id="{{ review.id }}">
+                            <i class="bi bi-share"></i> 🔗
+                        </button>
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <p class="text-muted text-center mt-5">No posts from your friends yet.</p>
+            {% endfor %}
         </div>
     </div>
 
