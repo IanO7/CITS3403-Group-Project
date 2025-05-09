@@ -13,6 +13,18 @@
             <div>
                 <h1>{{ selected_user.username }}'s Profile</h1>
                 <p>Statistics based on their reviews.</p>
+                <!-- Show Level Badge -->
+                <span class="badge badge-level level-{{ user_level }}">Level {{ user_level }}</span>
+                <!-- Follow/Unfollow Button -->
+                {% if user.id != selected_user.id %}
+                    <button id="follow-btn"
+                        class="btn {% if is_following %}btn-danger{% else %}btn-success{% endif %}">
+                        {% if is_following %}Unfollow{% else %}Follow{% endif %}
+                    </button>
+                    {% if follows_me and not is_following %}
+                        <span class="badge bg-info">Follows you</span>
+                    {% endif %}
+                {% endif %}
             </div>
         </div>
     </div>
@@ -77,4 +89,14 @@
         {% endfor %}
     </div>
 </div>
+<script>
+document.getElementById('follow-btn')?.addEventListener('click', function() {
+    const isFollowing = this.classList.contains('btn-danger');
+    fetch(`/${isFollowing ? 'unfollow' : 'follow'}/{{ selected_user.id }}`, {method: 'POST'})
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) location.reload();
+        });
+});
+</script>
 {% endblock %}

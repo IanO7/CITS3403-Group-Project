@@ -416,6 +416,17 @@ def user_profile(user_id):
     is_following = Follow.query.filter_by(follower_id=user.id, followed_id=selected_user.id).first() is not None
     follows_me = Follow.query.filter_by(follower_id=selected_user.id, followed_id=user.id).first() is not None
 
+    # Calculate user level
+    badges = [
+        {'name': 'First Post', 'earned': len(posts) > 0},
+        {'name': 'Spice Master', 'earned': stats['spiciness'] > 80},
+        {'name': 'Plating Perfectionist', 'earned': stats['plating'] > 90},
+        {'name': 'Value Hunter', 'earned': stats['value'] > 85},
+        {'name': 'Food Critic', 'earned': len(posts) > 20},
+        {'name': 'All-Rounder', 'earned': all(stat > 75 for stat in stats.values())}
+    ]
+    user_level = sum(1 for badge in badges if badge['earned'])
+
     return render_template(
         'user_profile.html',
         user=user,
@@ -424,7 +435,8 @@ def user_profile(user_id):
         overall_average_rating=overall_average_rating,
         posts=posts,
         is_following=is_following,
-        follows_me=follows_me
+        follows_me=follows_me,
+        user_level=user_level
     )
 
 @views.route('/api/search_suggestions', methods=['GET'])

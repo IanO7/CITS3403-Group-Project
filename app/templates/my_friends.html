@@ -37,25 +37,7 @@
         <p class="text-center text-muted">No similar friends found.</p>
         {% endif %}
     </div>
-
-    <!-- Friends List -->
-    <div class="users-to-follow mt-5">
-        <h2>All Friends</h2>
-        <ul class="list-group">
-            {% for user in all_users %}
-            <li class="list-group-item d-flex justify-content-between align-items-center">
-                <span>
-                    {{ user.username }}
-                    <span class="badge badge-level level-{{ user_levels[user.id] }}">Level {{ user_levels[user.id] }}</span>
-                </span>
-                <button class="btn {% if user.id in followed_users %}btn-danger{% else %}btn-success{% endif %} follow-button" data-user-id="{{ user.id }}">
-                    {% if user.id in followed_users %}Unfollow{% else %}Follow{% endif %}
-                </button>
-            </li>
-            {% endfor %}
-        </ul>
-    </div>
-
+    
     <!-- Friend Posts Carousel -->
     <div class="friend-posts-carousel mt-5">
         <h2 class="text-center">🔥 Posts from Your Friends</h2>
