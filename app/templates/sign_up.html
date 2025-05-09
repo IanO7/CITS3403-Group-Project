@@ -178,14 +178,26 @@
       <input name="email" type="email" class="form-control" placeholder="Email" required>
     </div>
 
-    <div class="mb-3 d-flex align-items-center">
+    <div class="mb-3 d-flex align-items-center" style="position:relative;">
       <span class="emoji">🔒</span>
-      <input id="password" name="password" type="password" class="form-control" placeholder="Password" required>
+      <input id="password" name="password" type="password" class="form-control" placeholder="Password" required style="padding-right:2.5rem;">
+      <span id="toggle-password" style="position:absolute;right:0.75rem;top:50%;transform:translateY(-50%);cursor:pointer;">
+        <svg id="eye-icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" viewBox="0 0 24 24">
+          <path stroke="#888" stroke-width="2" d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12Z"/>
+          <circle cx="12" cy="12" r="3.5" stroke="#888" stroke-width="2"/>
+        </svg>
+      </span>
     </div>
 
-    <div class="mb-3 d-flex align-items-center">
+    <div class="mb-3 d-flex align-items-center" style="position:relative;">
       <span class="emoji">🔁</span>
-      <input id="confirm_password" name="confirm_password" type="password" class="form-control" placeholder="Confirm Password" required>
+      <input id="confirm_password" name="confirm_password" type="password" class="form-control" placeholder="Confirm Password" required style="padding-right:2.5rem;">
+      <span id="toggle-confirm-password" style="position:absolute;right:0.75rem;top:50%;transform:translateY(-50%);cursor:pointer;">
+        <svg id="eye-icon-confirm" xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" viewBox="0 0 24 24">
+          <path stroke="#888" stroke-width="2" d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12Z"/>
+          <circle cx="12" cy="12" r="3.5" stroke="#888" stroke-width="2"/>
+        </svg>
+      </span>
     </div>
 
     <ul class="validation-list mb-3 ps-4">
@@ -241,5 +253,33 @@
 
   password.addEventListener("input", validatePassword);
   confirm.addEventListener("input", validatePassword);
+
+  // Password eye toggle for password
+  const togglePassword = document.getElementById('toggle-password');
+  const eyeIcon = document.getElementById('eye-icon');
+  let visible = false;
+  if(password && togglePassword) {
+    togglePassword.addEventListener('click', function() {
+      visible = !visible;
+      password.type = visible ? 'text' : 'password';
+      eyeIcon.innerHTML = visible
+        ? `<path stroke="#888" stroke-width="2" d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12Z"/><circle cx="12" cy="12" r="3.5" stroke="#888" stroke-width="2"/><line x1="4" y1="20" x2="20" y2="4" stroke="#888" stroke-width="2"/>`
+        : `<path stroke="#888" stroke-width="2" d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12Z"/><circle cx="12" cy="12" r="3.5" stroke="#888" stroke-width="2"/>`;
+    });
+  }
+
+  // Password eye toggle for confirm password
+  const toggleConfirmPassword = document.getElementById('toggle-confirm-password');
+  const eyeIconConfirm = document.getElementById('eye-icon-confirm');
+  let visibleConfirm = false;
+  if(confirm && toggleConfirmPassword) {
+    toggleConfirmPassword.addEventListener('click', function() {
+      visibleConfirm = !visibleConfirm;
+      confirm.type = visibleConfirm ? 'text' : 'password';
+      eyeIconConfirm.innerHTML = visibleConfirm
+        ? `<path stroke="#888" stroke-width="2" d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12Z"/><circle cx="12" cy="12" r="3.5" stroke="#888" stroke-width="2"/><line x1="4" y1="20" x2="20" y2="4" stroke="#888" stroke-width="2"/>`
+        : `<path stroke="#888" stroke-width="2" d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12Z"/><circle cx="12" cy="12" r="3.5" stroke="#888" stroke-width="2"/>`;
+    });
+  }
 </script>
 {% endblock %}
