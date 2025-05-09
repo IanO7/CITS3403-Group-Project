@@ -13,7 +13,6 @@ body {
   min-height: 100vh;
 }
 
-/* Navbar Style */
 .navbar {
   width: 100%;
   padding: 1rem 2rem;
@@ -48,8 +47,8 @@ body {
   text-decoration: underline;
 }
 
-/* Center the Login container */
-.login-container {
+/* Center the Sign-Up container */
+.sign-up-container {
   background: #fff;
   padding: 2.5rem;
   border-radius: 1.25rem;
@@ -61,14 +60,14 @@ body {
   flex-grow: 1;
 }
 
-.login-container h1 {
+.sign-up-container h1 {
   font-size: 2.5rem;
   margin-bottom: 1.5rem;
   color: #5f8d3b;
   font-family: 'Roboto', sans-serif;
 }
 
-.login-form input {
+.sign-up-form input {
   width: 100%;
   padding: 0.75rem;
   margin: 0.5rem 0;
@@ -80,13 +79,13 @@ body {
   transition: border-color 0.3s ease;
 }
 
-.login-form input:focus {
+.sign-up-form input:focus {
   outline: none;
   border-color: #5f8d3b;
   background: #fff;
 }
 
-.login-form button {
+.sign-up-form button {
   width: 100%;
   background: #5f8d3b;
   color: white;
@@ -99,35 +98,29 @@ body {
   margin-top: 1rem;
 }
 
-.login-form button:hover {
+.sign-up-form button:hover {
   background: #4b743e;
 }
 
-.google-btn, .email-btn {
-  background: #ffffff;
+.validation-list li {
+  font-size: 0.9rem;
+  list-style: none;
+  padding: 2px 0;
   color: #333;
-  border: 1px solid #ddd;
-  width: 100%;
-  padding: 0.75rem 1rem;
-  border-radius: 0.5rem;
-  font-size: 1rem;
-  cursor: pointer;
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  transition: background 0.3s ease;
-  margin: 0.5rem 0;
 }
 
-.google-btn:hover, .email-btn:hover {
-  background: #3367d6;
-  color: white;
+.validation-list .valid {
+  color: green;
 }
 
-.google-icon {
-  width: 22px;
-  height: 22px;
+.validation-list .invalid {
+  color: black;
+}
+
+.validation-list .emoji {
+  margin-right: 0.5rem;
 }
 
 .separator {
@@ -148,22 +141,6 @@ body {
 
 .separator::before { left: 0; }
 .separator::after { right: 0; }
-
-.signup-line {
-  margin-top: 1.5rem;
-  font-size: 1rem;
-  color: #444;
-}
-
-.signup-line a {
-  color: #5f8d3b;
-  text-decoration: none;
-  font-weight: bold;
-}
-
-.signup-line a:hover {
-  text-decoration: underline;
-}
 
 .footer {
   margin-top: 2rem;
