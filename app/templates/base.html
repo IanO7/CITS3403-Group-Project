@@ -37,6 +37,9 @@
                       <a class="nav-link {% if request.endpoint == 'views.global_stats' %}active{% endif %}" href="{{ url_for('views.global_stats') }}">Global Stats</a>
                   </li>
                   <li class="nav-item">
+                    <a class="nav-link {% if request.endpoint == 'views.inbox' %}active{% endif %}" href="{{ url_for('views.inbox') }}">Inbox</a>
+                </li>
+                  <li class="nav-item">
                       <a class="nav-link {% if request.endpoint == 'views.settings' %}active{% endif %}" href="{{ url_for('views.settings') }}">Settings</a>
                   </li>
                   <li class="nav-item">

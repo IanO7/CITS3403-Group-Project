@@ -664,3 +664,74 @@ def search_reviews():
     } for post in results]
 
     return jsonify(success=True, results=results_data)
+
+@views.route('/share_post', methods=['POST'])
+def share_post():
+    user = current_user()
+    if not user:
+        return jsonify(success=False, error='User not authenticated'), 401
+
+    data = request.json
+    note_id = data.get('note_id')
+    recipient_id = data.get('recipient_id')
+
+    if not note_id or not recipient_id:
+        return jsonify(success=False, error='Missing data'), 400
+
+    # Prevent sharing to self
+    if user.id == int(recipient_id):
+        return jsonify(success=False, error="Can't share to yourself"), 400
+
+    # Check if recipient exists
+    recipient = User.query.get(recipient_id)
+    if not recipient:
+        return jsonify(success=False, error='Recipient not found'), 404
+
+    # Check if note exists
+    note = Note.query.get(note_id)
+    if not note:
+        return jsonify(success=False, error='Post not found'), 404
+
+    # Prevent duplicate shares (optional)
+    from .models import SharedPost
+    already_shared = SharedPost.query.filter_by(sender_id=user.id, recipient_id=recipient_id, note_id=note_id).first()
+    if already_shared:
+        return jsonify(success=False, error='Already shared with this user'), 400
+
+    # Create shared post
+    shared = SharedPost(sender_id=user.id, recipient_id=recipient_id, note_id=note_id)
+    db.session.add(shared)
+    db.session.commit()
+    return jsonify(success=True, message="Post shared successfully!"), 200
+
+@views.route('/inbox')
+def inbox():
+    user = current_user()
+    if not user:
+        return redirect(url_for('auth.login'))
+
+    from .models import SharedPost
+    shared_posts = SharedPost.query.filter_by(recipient_id=user.id).order_by(SharedPost.timestamp.desc()).all()
+    posts = []
+    for shared in shared_posts:
+        note = Note.query.get(shared.note_id)
+        sender = User.query.get(shared.sender_id)
+        if note and sender:
+            posts.append({
+                'note': note,
+                'sender': sender,
+                'timestamp': shared.timestamp
+            })
+    return render_template('inbox.html', user=user, posts=posts)
+
+@views.route('/api/users')
+def api_users():
+    user = current_user()
+    if not user:
+        return jsonify(users=[])
+    q = request.args.get('q', '').strip()
+    query = User.query.filter(User.id != user.id)
+    if q:
+        query = query.filter(User.username.ilike(f"%{q}%"))
+    users = query.all()
+    return jsonify(users=[{'id': u.id, 'username': u.username} for u in users])

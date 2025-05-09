@@ -193,7 +193,7 @@
                     <button class="btn btn-outline-secondary comment-button">
                         <i class="bi bi-chat"></i> 💬
                     </button>
-                    <button class="btn btn-outline-success share-button">
+                    <button class="btn btn-outline-success share-button" data-note-id="{{ review.id }}">
                         <i class="bi bi-share"></i> 🔗
                     </button>
                     <button class="btn btn-outline-danger delete-button" data-note-id="{{ review.id }}">
@@ -244,6 +244,101 @@
             }
         });
     });
+
+    document.addEventListener('DOMContentLoaded', function() {
+        let shareNoteId = null;
+        let selectedUserId = null;
+
+        function openShareModal(noteId) {
+            shareNoteId = noteId;
+            selectedUserId = null;
+            document.getElementById('recipientSearch').value = '';
+            document.getElementById('userResults').innerHTML = '';
+            document.getElementById('shareModal').style.display = 'block';
+        }
+
+        function closeShareModal() {
+            document.getElementById('shareModal').style.display = 'none';
+        }
+
+        document.querySelectorAll('.share-button').forEach(button => {
+            button.addEventListener('click', function() {
+                const noteId = this.getAttribute('data-note-id');
+                openShareModal(noteId);
+            });
+        });
+
+        // Live search for users
+        document.getElementById('recipientSearch').addEventListener('input', function() {
+            const query = this.value.trim();
+            const resultsDiv = document.getElementById('userResults');
+            resultsDiv.innerHTML = '';
+            selectedUserId = null;
+            if (query.length === 0) return;
+            fetch('/api/users?q=' + encodeURIComponent(query))
+                .then(response => response.json())
+                .then(data => {
+                    data.users.forEach(user => {
+                        const item = document.createElement('button');
+                        item.type = 'button';
+                        item.className = 'list-group-item list-group-item-action';
+                        item.textContent = user.username;
+                        item.onclick = function() {
+                            document.getElementById('recipientSearch').value = user.username;
+                            selectedUserId = user.id;
+                            resultsDiv.innerHTML = '';
+                        };
+                        resultsDiv.appendChild(item);
+                    });
+                });
+        });
+
+        document.getElementById('confirmShareBtn').addEventListener('click', function() {
+            if (!selectedUserId) {
+                alert('Please select a user to share with.');
+                return;
+            }
+            fetch('/share_post', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({note_id: shareNoteId, recipient_id: selectedUserId})
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert(data.message || 'Post shared!');
+                    closeShareModal();
+                } else {
+                    alert(data.error || 'Failed to share');
+                }
+            })
+            .catch(() => {
+                alert('Failed to share');
+            });
+        });
+
+        window.closeShareModal = closeShareModal;
+    });
 </script>
+
+<div class="modal" tabindex="-1" id="shareModal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Share Post</h5>
+        <button type="button" class="btn-close" onclick="closeShareModal()"></button>
+      </div>
+      <div class="modal-body">
+        <label for="recipientSearch">Search user to share with:</label>
+        <input type="text" id="recipientSearch" class="form-control" autocomplete="off" placeholder="Type username...">
+        <div id="userResults" class="list-group" style="max-height:150px;overflow-y:auto;"></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="closeShareModal()">Cancel</button>
+        <button type="button" class="btn btn-primary" id="confirmShareBtn">Share</button>
+      </div>
+    </div>
+  </div>
+</div>
 
 {% endblock %}
