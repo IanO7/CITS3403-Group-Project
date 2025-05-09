@@ -229,7 +229,9 @@ def friends():
         followed_users=followed_users,
         notes=notes,
         similar_user=similar_user,
-        user_levels=user_levels
+        user_levels=user_levels,
+        user_stats=user_stats,      # <-- add this
+        user_notes=user_notes       # <-- add this
     )
 
 @views.route('/like/<int:note_id>', methods=['POST'])
@@ -783,3 +785,23 @@ def api_users():
         query = query.filter(User.username.ilike(f"%{q}%"))
     users = query.all()
     return jsonify(users=[{'id': u.id, 'username': u.username} for u in users])
+
+@views.route('/api/user_stats/<int:user_id>')
+def api_user_stats(user_id):
+    user = User.query.get(user_id)
+    if not user:
+        return jsonify(success=False), 404
+    notes = Note.query.filter_by(user_id=user.id).all()
+    total = len(notes) or 1
+    stats = {
+        'spiciness': sum(n.Spiciness for n in notes) / total,
+        'deliciousness': sum(n.Deliciousness for n in notes) / total,
+        'value': sum(n.Value for n in notes) / total,
+        'plating': sum(n.Plating for n in notes) / total,
+    }
+    return jsonify(
+        success=True,
+        stats=stats,
+        posts=len(notes),
+        username=user.username
+    )

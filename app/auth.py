@@ -42,16 +42,16 @@ def sign_up():
 @auth.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
-        email    = request.form.get('email')
+        email = request.form.get('email')
         password = request.form.get('password')
-        user     = User.query.filter_by(email=email).first()
+        user = User.query.filter_by(email=email).first()
+        if not user or not user.check_password(password):
+            flash('Invalid email or password', 'danger')
+            return render_template('login.html')
 
-        if user and user.check_password(password):
-            session['user_id'] = user.id
-            flash('Logged in successfully.', 'success')
-            return redirect(url_for('views.profile'))
-
-        flash('Invalid email or password.', 'danger')
+        session['user_id'] = user.id
+        flash('Logged in successfully.', 'success')
+        return redirect(url_for('views.profile'))
 
     # GET
     return render_template('login.html')

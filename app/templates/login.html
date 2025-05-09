@@ -184,6 +184,14 @@
 <div class="login-container">
   <h1>Log In</h1>
 
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <div id="login-error" class="alert alert-danger" style="margin-bottom:1rem;">
+        {{ messages[0][1] }}
+      </div>
+    {% endif %}
+  {% endwith %}
+
   <!-- Google button (stub) -->
   <button class="google-btn" onclick="handleGoogleLogin()">
     <img class="google-icon" src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google Icon">
@@ -194,8 +202,16 @@
 
   <!-- Email/password form -->
   <form class="login-form" method="POST" action="{{ url_for('auth.login') }}">
-    <input name="email" type="email" placeholder="Email" required>
-    <input name="password" type="password" placeholder="Password" required>
+    <input name="email" id="email-input" type="email" placeholder="Email" required>
+    <div style="position:relative;">
+      <input name="password" id="password-input" type="password" placeholder="Password" required style="padding-right:2.5rem;">
+      <span id="toggle-password" style="position:absolute;top:50%;right:0.75rem;transform:translateY(-50%);cursor:pointer;">
+        <svg id="eye-icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" viewBox="0 0 24 24">
+          <path stroke="#888" stroke-width="2" d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12Z"/>
+          <circle cx="12" cy="12" r="3.5" stroke="#888" stroke-width="2"/>
+        </svg>
+      </span>
+    </div>
     <button type="submit">Log In</button>
   </form>
 
@@ -210,9 +226,35 @@
 
 <script>
   function handleGoogleLogin() {
-    // TODO: Implement the Google OAuth flow
     alert("Redirecting to Google login...");
   }
+
+  // Hide error when email input is focused
+  document.addEventListener('DOMContentLoaded', function() {
+    var emailInput = document.getElementById('email-input');
+    var errorDiv = document.getElementById('login-error');
+    if(emailInput && errorDiv) {
+      emailInput.addEventListener('focus', function() {
+        errorDiv.style.display = 'none';
+      });
+    }
+
+    // Password eye toggle
+    var passwordInput = document.getElementById('password-input');
+    var togglePassword = document.getElementById('toggle-password');
+    var eyeIcon = document.getElementById('eye-icon');
+    let visible = false;
+    if(passwordInput && togglePassword) {
+      togglePassword.addEventListener('click', function() {
+        visible = !visible;
+        passwordInput.type = visible ? 'text' : 'password';
+        // Change icon (simple swap between eye and eye-off)
+        eyeIcon.innerHTML = visible
+          ? `<path stroke="#888" stroke-width="2" d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12Z"/><circle cx="12" cy="12" r="3.5" stroke="#888" stroke-width="2"/><line x1="4" y1="20" x2="20" y2="4" stroke="#888" stroke-width="2"/>`
+          : `<path stroke="#888" stroke-width="2" d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12Z"/><circle cx="12" cy="12" r="3.5" stroke="#888" stroke-width="2"/>`;
+      });
+    }
+  });
 </script>
 
 {% endblock %}
