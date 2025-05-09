@@ -210,8 +210,43 @@
 </script>
 
 <script>
-  document.getElementById('total-posts').textContent = {{ total_posts }};
-  document.getElementById('total-users').textContent = {{ total_users }};
+function animateCountUp(element, target, duration = 1200) {
+    let start = 0;
+    const increment = target / (duration / 16);
+    function update() {
+        start += increment;
+        if (start < target) {
+            element.textContent = Math.floor(start);
+            requestAnimationFrame(update);
+        } else {
+            element.textContent = target;
+        }
+    }
+    update();
+}
+
+// Intersection Observer to trigger animation when stats are visible
+document.addEventListener('DOMContentLoaded', function() {
+    const postsElem = document.getElementById('total-posts');
+    const usersElem = document.getElementById('total-users');
+    const postsTarget = {{ total_posts }};
+    const usersTarget = {{ total_users }};
+    let animated = false;
+
+    function onEntry(entries, observer) {
+        entries.forEach(entry => {
+            if (entry.isIntersecting && !animated) {
+                animateCountUp(postsElem, postsTarget);
+                animateCountUp(usersElem, usersTarget);
+                animated = true;
+                observer.disconnect();
+            }
+        });
+    }
+
+    const observer = new IntersectionObserver(onEntry, { threshold: 0.5 });
+    observer.observe(document.getElementById('stats'));
+});
 </script>
 
 <!-- Call to Action -->
