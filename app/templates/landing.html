@@ -183,73 +183,6 @@
   </div>
 </section>
 
-<script>
-  const progressBar = document.getElementById('progress-bar');
-  const unlockButton = document.getElementById('unlock-button');
-  const recommendationDiv = document.getElementById('recommendation');
-  const recommendationText = document.getElementById('recommendation-text');
-
-  unlockButton.addEventListener('click', () => {
-    let progress = 0;
-    const interval = setInterval(() => {
-      progress += 10;
-      progressBar.style.width = `${progress}%`;
-      if (progress >= 100) {
-        clearInterval(interval);
-        fetch('/recommend_food')
-          .then(response => response.json())
-          .then(data => {
-            if (data.success) {
-              const food = data.recommendations[0];
-              recommendationText.textContent = `${food.restaurant} - Spiciness: ${food.spiciness}, Deliciousness: ${food.deliciousness}`;
-              recommendationDiv.style.display = 'block';
-            }
-          });
-      }
-    }, 200);
-  });
-</script>
-
-<script>
-function animateCountUp(element, target, duration = 1200) {
-    let start = 0;
-    const increment = target / (duration / 16);
-    function update() {
-        start += increment;
-        if (start < target) {
-            element.textContent = Math.floor(start);
-            requestAnimationFrame(update);
-        } else {
-            element.textContent = target;
-        }
-    }
-    update();
-}
-
-// Intersection Observer to trigger animation when stats are visible
-document.addEventListener('DOMContentLoaded', function() {
-    const postsElem = document.getElementById('total-posts');
-    const usersElem = document.getElementById('total-users');
-    const postsTarget = {{ total_posts }};
-    const usersTarget = {{ total_users }};
-    let animated = false;
-
-    function onEntry(entries, observer) {
-        entries.forEach(entry => {
-            if (entry.isIntersecting && !animated) {
-                animateCountUp(postsElem, postsTarget);
-                animateCountUp(usersElem, usersTarget);
-                animated = true;
-                observer.disconnect();
-            }
-        });
-    }
-
-    const observer = new IntersectionObserver(onEntry, { threshold: 0.5 });
-    observer.observe(document.getElementById('stats'));
-});
-</script>
-
 <!-- Call to Action -->
 <section id="cta" class="py-5 bg-primary text-white text-center">
   <div class="container">
@@ -259,4 +192,6 @@ document.addEventListener('DOMContentLoaded', function() {
   </div>
 </section>
 
+<!-- Include landing.js -->
+<script src="{{ url_for('static', filename='js/landing.js') }}"></script>
 {% endblock %}
