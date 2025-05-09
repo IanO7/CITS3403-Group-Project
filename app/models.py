@@ -42,3 +42,4 @@ class SharedPost(db.Model):
     recipient_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     note_id = db.Column(db.Integer, db.ForeignKey('note.id'), nullable=False)
     timestamp = db.Column(db.DateTime, server_default=db.func.now())
+    seen = db.Column(db.Boolean, default=False)  # <-- Add this line

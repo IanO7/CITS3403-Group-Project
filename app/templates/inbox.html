@@ -1,7 +1,14 @@
 {% extends "base.html" %}
 {% block title %}Inbox{% endblock %}
 {% block content %}
-<h2>Inbox</h2>
+<h2>
+    Inbox
+    {% if unseen_count and unseen_count > 0 %}
+        <span class="badge bg-danger" style="font-size:1rem;vertical-align:top;">
+            {{ unseen_count }}
+        </span>
+    {% endif %}
+</h2>
 {% if posts %}
     <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4">
     {% for item in posts %}

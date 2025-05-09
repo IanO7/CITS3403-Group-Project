@@ -14,6 +14,14 @@
     <button class="addPost" onclick="location.href='/new_post'">Add ➕ </button>
 </div>
 
+<div class="mb-3">
+    <button class="btn btn-success" id="shareMultipleBtn">Share Multiple 🔗</button>
+    <button class="btn btn-primary d-none" id="shareSelectedBtn" style="margin-left:10px;">Share Selected</button>
+</div>
+
+<div id="multiShareAlert" class="alert alert-success d-none" role="alert"></div>
+<div id="singleShareAlert" class="alert alert-success d-none" role="alert"></div>
+
 <style>
     .addPost {
     display: inline-block;
@@ -116,6 +124,14 @@
     .reaction-buttons .delete-button i {
         margin-right: 5px;
     }
+
+    /* Hide multi-share checkboxes by default */
+    .multi-share-checkbox {
+        display: none;
+    }
+    .multi-share-mode .multi-share-checkbox {
+        display: block;
+    }
     
 </style>
 
@@ -125,6 +141,7 @@
         {% for review in reviews %}
         <div class="col">
             <div class="card mb-4 shadow-sm rounded-4 h-100" style="min-height: 500px;">
+                <input type="checkbox" class="multi-share-checkbox" value="{{ review.id }}" style="position:absolute;top:10px;left:10px;z-index:2;">
                 <div class="card-body">
                     <div class="d-flex align-items-center mb-3 w-100">
                         <img src="{{  url_for('static', filename='download.jpg') }}"
@@ -295,7 +312,11 @@
 
         document.getElementById('confirmShareBtn').addEventListener('click', function() {
             if (!selectedUserId) {
-                alert('Please select a user to share with.');
+                const alertDiv = document.getElementById('singleShareAlert');
+                alertDiv.className = 'alert alert-danger';
+                alertDiv.textContent = 'Please select a user to share with.';
+                alertDiv.classList.remove('d-none');
+                setTimeout(() => alertDiv.classList.add('d-none'), 4000);
                 return;
             }
             fetch('/share_post', {
@@ -305,19 +326,132 @@
             })
             .then(response => response.json())
             .then(data => {
+                const alertDiv = document.getElementById('singleShareAlert');
                 if (data.success) {
-                    alert(data.message || 'Post shared!');
+                    alertDiv.className = 'alert alert-success';
+                    alertDiv.innerHTML = `<strong>Success!</strong> ${data.message || 'Post shared!'}`;
+                    alertDiv.classList.remove('d-none');
                     closeShareModal();
                 } else {
-                    alert(data.error || 'Failed to share');
+                    alertDiv.className = 'alert alert-danger';
+                    alertDiv.textContent = data.error || 'Failed to share';
+                    alertDiv.classList.remove('d-none');
                 }
+                setTimeout(() => alertDiv.classList.add('d-none'), 4000);
             })
             .catch(() => {
-                alert('Failed to share');
+                const alertDiv = document.getElementById('singleShareAlert');
+                alertDiv.className = 'alert alert-danger';
+                alertDiv.textContent = 'Failed to share';
+                alertDiv.classList.remove('d-none');
+                setTimeout(() => alertDiv.classList.add('d-none'), 4000);
             });
         });
 
         window.closeShareModal = closeShareModal;
+    });
+
+    document.addEventListener('DOMContentLoaded', function() {
+        let selectedMultiUserId = null;
+
+        // Show checkboxes and "Share Selected" button
+        document.getElementById('shareMultipleBtn').addEventListener('click', function() {
+            document.getElementById('Posts').classList.add('multi-share-mode');
+            document.getElementById('shareSelectedBtn').classList.remove('d-none');
+        });
+
+        // Hide checkboxes and button when modal closes
+        function closeMultiShareModal() {
+            document.getElementById('multiShareModal').style.display = 'none';
+            document.getElementById('Posts').classList.remove('multi-share-mode');
+            document.getElementById('shareSelectedBtn').classList.add('d-none');
+            document.querySelectorAll('.multi-share-checkbox').forEach(cb => cb.checked = false);
+        }
+        window.closeMultiShareModal = closeMultiShareModal;
+
+        // When "Share Selected" is clicked, open modal if at least one post is checked
+        document.getElementById('shareSelectedBtn').addEventListener('click', function() {
+            const checked = document.querySelectorAll('.multi-share-checkbox:checked');
+            if (checked.length === 0) {
+                alert('Please select at least one post to share.');
+                return;
+            }
+            selectedMultiUserId = null;
+            document.getElementById('multiRecipientSearch').value = '';
+            document.getElementById('multiUserResults').innerHTML = '';
+            document.getElementById('multiShareModal').style.display = 'block';
+        });
+
+        // Live search for users for multi-share
+        document.getElementById('multiRecipientSearch').addEventListener('input', function() {
+            const query = this.value.trim();
+            const resultsDiv = document.getElementById('multiUserResults');
+            resultsDiv.innerHTML = '';
+            selectedMultiUserId = null;
+            if (query.length === 0) return;
+            fetch('/api/users?q=' + encodeURIComponent(query))
+                .then(response => response.json())
+                .then(data => {
+                    data.users.forEach(user => {
+                        const item = document.createElement('button');
+                        item.type = 'button';
+                        item.className = 'list-group-item list-group-item-action';
+                        item.textContent = user.username;
+                        item.onclick = function() {
+                            document.getElementById('multiRecipientSearch').value = user.username;
+                            selectedMultiUserId = user.id;
+                            resultsDiv.innerHTML = '';
+                        };
+                        resultsDiv.appendChild(item);
+                    });
+                });
+        });
+
+        document.getElementById('confirmMultiShareBtn').addEventListener('click', function() {
+            if (!selectedMultiUserId) {
+                alert('Please select a user to share with.');
+                return;
+            }
+            const checked = Array.from(document.querySelectorAll('.multi-share-checkbox:checked')).map(cb => cb.value);
+            if (checked.length === 0) {
+                alert('Please select at least one post to share.');
+                return;
+            }
+            fetch('/share_multiple_posts', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({note_ids: checked, recipient_id: selectedMultiUserId})
+            })
+            .then(response => response.json())
+            .then(data => {
+                const alertDiv = document.getElementById('multiShareAlert');
+                if (data.success) {
+                    alertDiv.className = 'alert alert-success';
+                    alertDiv.innerHTML = `
+                        <strong>Success!</strong> ${data.shared} post(s) shared.<br>
+                        ${data.ignored > 0 ? data.ignored + ' post(s) were already shared and ignored.' : ''}
+                    `;
+                    alertDiv.classList.remove('d-none');
+                    closeMultiShareModal();
+                    document.querySelectorAll('.multi-share-checkbox').forEach(cb => cb.checked = false);
+                } else {
+                    alertDiv.className = 'alert alert-danger';
+                    alertDiv.textContent = data.error || 'Failed to share';
+                    alertDiv.classList.remove('d-none');
+                }
+                // Hide alert after 4 seconds
+                setTimeout(() => alertDiv.classList.add('d-none'), 4000);
+            })
+            .catch(() => {
+                const alertDiv = document.getElementById('multiShareAlert');
+                alertDiv.className = 'alert alert-danger';
+                alertDiv.textContent = 'Failed to share';
+                alertDiv.classList.remove('d-none');
+                setTimeout(() => alertDiv.classList.add('d-none'), 4000);
+            });
+        });
+
+        window.closeMultiShareModal = closeMultiShareModal;
     });
 </script>
 
@@ -336,6 +470,26 @@
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" onclick="closeShareModal()">Cancel</button>
         <button type="button" class="btn btn-primary" id="confirmShareBtn">Share</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal" tabindex="-1" id="multiShareModal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Share Selected Posts</h5>
+        <button type="button" class="btn-close" onclick="closeMultiShareModal()"></button>
+      </div>
+      <div class="modal-body">
+        <label for="multiRecipientSearch">Search user to share with:</label>
+        <input type="text" id="multiRecipientSearch" class="form-control" autocomplete="off" placeholder="Type username...">
+        <div id="multiUserResults" class="list-group" style="max-height:150px;overflow-y:auto;"></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="closeMultiShareModal()">Cancel</button>
+        <button type="button" class="btn btn-primary" id="confirmMultiShareBtn">Share</button>
       </div>
     </div>
   </div>

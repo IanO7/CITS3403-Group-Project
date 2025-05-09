@@ -26,10 +26,18 @@ def create_app():
     from .auth import auth
     app.register_blueprint(auth, url_prefix='/')
 
-    from .models import Note, User  # Import your models here
+    from .models import Note, User, SharedPost  # Import your models here
 
     with app.app_context():
         db.create_all()
+
+    @app.context_processor
+    def inject_unseen_count():
+        user_id = session.get('user_id')
+        unseen_count = 0
+        if user_id:
+            unseen_count = SharedPost.query.filter_by(recipient_id=user_id, seen=False).count()
+        return dict(unseen_count=unseen_count)
 
     return app
 

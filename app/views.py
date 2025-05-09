@@ -704,6 +704,48 @@ def share_post():
     db.session.commit()
     return jsonify(success=True, message="Post shared successfully!"), 200
 
+@views.route('/share_multiple_posts', methods=['POST'])
+def share_multiple_posts():
+    user = current_user()
+    if not user:
+        return jsonify(success=False, error='User not authenticated'), 401
+
+    data = request.json
+    note_ids = data.get('note_ids', [])
+    recipient_id = data.get('recipient_id')
+
+    if not note_ids or not recipient_id:
+        return jsonify(success=False, error='Missing data'), 400
+
+    if user.id == int(recipient_id):
+        return jsonify(success=False, error="Can't share to yourself"), 400
+
+    recipient = User.query.get(recipient_id)
+    if not recipient:
+        return jsonify(success=False, error='Recipient not found'), 404
+
+    from .models import SharedPost
+    shared_count = 0
+    ignored_count = 0
+    for note_id in map(int, note_ids):
+        note = Note.query.get(note_id)
+        if not note:
+            continue
+        already_shared = SharedPost.query.filter_by(sender_id=user.id, recipient_id=recipient_id, note_id=note_id).first()
+        if already_shared:
+            ignored_count += 1
+            continue
+        shared = SharedPost(sender_id=user.id, recipient_id=recipient_id, note_id=note_id)
+        db.session.add(shared)
+        shared_count += 1
+    db.session.commit()
+    return jsonify(
+        success=True,
+        shared=shared_count,
+        ignored=ignored_count,
+        message=f"{shared_count} post(s) shared! {ignored_count} already shared."
+    )
+
 @views.route('/inbox')
 def inbox():
     user = current_user()
@@ -712,6 +754,12 @@ def inbox():
 
     from .models import SharedPost
     shared_posts = SharedPost.query.filter_by(recipient_id=user.id).order_by(SharedPost.timestamp.desc()).all()
+    unseen_count = SharedPost.query.filter_by(recipient_id=user.id, seen=False).count()
+
+    # Mark all as seen
+    SharedPost.query.filter_by(recipient_id=user.id, seen=False).update({'seen': True})
+    db.session.commit()
+
     posts = []
     for shared in shared_posts:
         note = Note.query.get(shared.note_id)
@@ -722,7 +770,7 @@ def inbox():
                 'sender': sender,
                 'timestamp': shared.timestamp
             })
-    return render_template('inbox.html', user=user, posts=posts)
+    return render_template('inbox.html', user=user, posts=posts, unseen_count=unseen_count)
 
 @views.route('/api/users')
 def api_users():

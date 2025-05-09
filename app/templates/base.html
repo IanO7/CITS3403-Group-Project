@@ -37,7 +37,14 @@
                       <a class="nav-link {% if request.endpoint == 'views.global_stats' %}active{% endif %}" href="{{ url_for('views.global_stats') }}">Global Stats</a>
                   </li>
                   <li class="nav-item">
-                    <a class="nav-link {% if request.endpoint == 'views.inbox' %}active{% endif %}" href="{{ url_for('views.inbox') }}">Inbox</a>
+                    <a class="nav-link {% if request.endpoint == 'views.inbox' %}active{% endif %}" href="{{ url_for('views.inbox') }}">
+                        Inbox
+                        {% if unseen_count and unseen_count > 0 %}
+                            <span class="badge bg-danger" style="font-size:0.9em;vertical-align:top;">
+                                {{ unseen_count }}
+                            </span>
+                        {% endif %}
+                    </a>
                 </li>
                   <li class="nav-item">
                       <a class="nav-link {% if request.endpoint == 'views.settings' %}active{% endif %}" href="{{ url_for('views.settings') }}">Settings</a>
