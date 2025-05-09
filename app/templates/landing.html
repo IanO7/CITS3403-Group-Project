@@ -1,53 +1,356 @@
 {% extends "base.html" %}
-{% block title %}OzFoody - Discover Perth's Tastiest Places{% endblock %}
-
-{% block head %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/landing.css') }}">
-{% endblock %}
+{% block title %}Discover OzFoody - Personalized Restaurant Reviews{% endblock %}
 
 {% block content %}
-<!-- Hero Section -->
-<section class="landing-hero fade-in text-center py-5 bg-light">
-  <h1 class="display-3 fw-bold">OzFoody</h1>
-  <p class="lead">OZ’s food scene, shared by you and your circle.</p>
-  <p class="mb-4">Create your profile, follow friends, and share your dining experiences.<br>Discover new spots, one bite at a time.</p>
-  <a href="{{ url_for('auth.login') }}" class="btn btn-primary btn-lg">Get Started</a>
+<link rel="stylesheet" href="{{ url_for('static', filename='general_styles.css') }}"/>
+
+<!-- Hero Section with Interactive Animation -->
+<div class="landing-hero text-center py-5">
+  <div class="container">
+    <h1 class="display-3 fw-bold text-gradient">Welcome to OzFoody</h1>
+    <p class="lead mt-3">Your personalized restaurant experience, now with smarter recommendations and more engaging features!</p>
+    <a href="{{ url_for('views.new_post') }}" class="btn btn-primary btn-lg mt-4">Share Your Review</a>
+  </div>
+</div>
+
+<!-- Features Section with Animated Visual Indicators -->
+<section id="features" class="py-5 bg-light">
+  <div class="container">
+    <h2 class="mb-4 text-center">How It Works</h2>
+    <div class="row text-center">
+      <div class="col-md-4">
+        <div class="feature-card shadow-lg" data-bs-toggle="tooltip" title="Get personalized recommendations based on your reviews and preferences!">
+          <div class="feature-icon">
+            <i class="fas fa-star fa-3x text-primary"></i>
+          </div>
+          <h5>Personalized Recommendations</h5>
+          <p>Receive restaurant recommendations tailored just for you, powered by our smart algorithm.</p>
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <div class="feature-card shadow-lg" data-bs-toggle="tooltip" title="See what your friends recommend and share your thoughts!">
+          <div class="feature-icon">
+            <i class="fas fa-users fa-3x text-success"></i>
+          </div>
+          <h5>Friends' Reviews</h5>
+          <p>Discover what your friends love, with personalized suggestions based on their reviews.</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="feature-card shadow-lg" data-bs-toggle="tooltip" title="Share your favorite restaurants with the community using visual posts!">
+          <div class="feature-icon">
+            <i class="fas fa-share-alt fa-3x text-danger"></i>
+          </div>
+          <h5>Easy Sharing</h5>
+          <p>Share your experiences with interactive posts, with visual indicators like emojis to represent your ratings!</p>
+        </div>
+      </div>
+    </div>
+  </div>
 </section>
 
-<!-- Live Community Reviews -->
-{% if notes %}
-<section class="container py-5 fade-in">
-  <h2 class="text-center mb-4">What the Community Is Saying</h2>
-  <div class="row">
-    {% for note in notes[:3] %}
+<!-- Earn Badges Section -->
+<section id="badges" class="py-5 bg-light text-center">
+  <div class="container">
+    <h2 class="mb-4">Earn Badges to Level Up</h2>
+    <p class="lead mb-5">The more you review, explore, and share, the more badges you earn. Unlock achievements and climb the foodie ranks!</p>
+    <div class="row">
       <div class="col-md-4">
-        <div class="card review-card p-3 h-100">
-          {% if note.image %}
-            <img src="{{ note.image if note.image.startswith('http') else url_for('static', filename=note.image) }}"
-                 class="card-img-top mb-3" alt="{{ note.restaurant }}">
-          {% endif %}
-          <div class="card-body">
-            <h5 class="card-title">{{ note.restaurant }}</h5>
-            <p class="card-text">{{ note.Review[:100] }}...</p>
-          </div>
-          <div class="card-footer text-muted">
-            — {{ note.user.username }}
+        <div class="badge-card shadow-sm p-4">
+          <i class="fas fa-pen-nib fa-3x text-warning mb-3"></i>
+          <h5>First Review</h5>
+          <p>Earn this badge when you publish your very first review.</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="badge-card shadow-sm p-4">
+          <i class="fas fa-fire fa-3x text-danger mb-3"></i>
+          <h5>Spicy Explorer</h5>
+          <p>Review 10 spicy dishes to unlock this hot badge!</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="badge-card shadow-sm p-4">
+          <i class="fas fa-users fa-3x text-success mb-3"></i>
+          <h5>Community Contributor</h5>
+          <p>Earned by receiving 50 likes from other foodies.</p>
+        </div>
+      </div>
+    </div>
+    <a href="{{ url_for('views.profile') }}" class="btn btn-primary btn-lg mt-4">View Your Badge Progress</a>
+  </div>
+</section>
+
+<!-- Live Trending Dishes Section -->
+<section id="trending-dishes" class="py-5 bg-dark text-white">
+  <div class="container text-center">
+    <h2 class="mb-4">Trending Dishes Right Now</h2>
+    <div class="row">
+      <div class="col-md-4">
+        <div class="trend-card">
+          <img src="https://via.placeholder.com/350x200" alt="Dish 1" class="img-fluid">
+          <div class="trend-info">
+            <h5>Dish Name 1</h5>
+            <span class="emoji-rating">&#x1F60D; 100+ Likes</span>
           </div>
         </div>
       </div>
-    {% endfor %}
+      <div class="col-md-4">
+        <div class="trend-card">
+          <img src="https://via.placeholder.com/350x200" alt="Dish 2" class="img-fluid">
+          <div class="trend-info">
+            <h5>Dish Name 2</h5>
+            <span class="emoji-rating">&#x1F973; 75+ Likes</span>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="trend-card">
+          <img src="https://via.placeholder.com/350x200" alt="Dish 3" class="img-fluid">
+          <div class="trend-info">
+            <h5>Dish Name 3</h5>
+            <span class="emoji-rating">&#x1F44D; 50+ Likes</span>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </section>
-{% endif %}
 
-<!-- Footer -->
-<footer class="footer-dark text-white text-center py-3 mt-5">
-  <div class="container">
-    <p class="mb-0">© 2025 OZFoody. All rights reserved.</p>
+<!-- Trending Dishes Carousel -->
+<section id="trending-carousel" class="py-5 bg-dark text-white">
+  <div class="container text-center">
+    <h2 class="mb-4">Trending Dishes</h2>
+    <div id="trendingCarousel" class="carousel slide" data-bs-ride="carousel">
+      <div class="carousel-inner">
+        {% for dish in trending_dishes %}
+        <div class="carousel-item {% if loop.index == 1 %}active{% endif %}">
+          <img src="{{ url_for('static', filename=dish.image) }}" class="d-block w-100" alt="{{ dish.name }}">
+          <div class="carousel-caption d-none d-md-block">
+            <h5>{{ dish.name }}</h5>
+            <p>{{ dish.location }}</p>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+      <button class="carousel-control-prev" type="button" data-bs-target="#trendingCarousel" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Previous</span>
+      </button>
+      <button class="carousel-control-next" type="button" data-bs-target="#trendingCarousel" data-bs-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Next</span>
+      </button>
+    </div>
   </div>
-</footer>
-{% endblock %}
+</section>
 
-{% block scripts %}
-<script src="{{ url_for('static', filename='js/landing.js') }}"></script>
+<!-- Stats Section -->
+<section id="stats" class="py-5 bg-light text-center">
+  <div class="container">
+    <h2 class="mb-4">Community Stats</h2>
+    <div class="row">
+      <div class="col-md-6">
+        <div class="stat-card">
+          <h3 class="display-4" id="total-posts">0</h3>
+          <p>Total Posts</p>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="stat-card">
+          <h3 class="display-4" id="total-users">0</h3>
+          <p>Registered Users</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Interactive Progress Bar -->
+<section id="progress-bar-section" class="py-5 bg-primary text-white text-center">
+  <div class="container">
+    <h2 class="mb-4">Unlock Your Food Recommendation</h2>
+    <div class="progress" style="height: 30px;">
+      <div class="progress-bar progress-bar-striped progress-bar-animated bg-success" role="progressbar" style="width: 0%;" id="progress-bar"></div>
+    </div>
+    <button class="btn btn-light btn-lg mt-4" id="unlock-button">Unlock Recommendation</button>
+    <div id="recommendation" class="mt-4" style="display: none;">
+      <h3>Your Recommendation:</h3>
+      <p id="recommendation-text"></p>
+    </div>
+  </div>
+</section>
+
+<script>
+  const progressBar = document.getElementById('progress-bar');
+  const unlockButton = document.getElementById('unlock-button');
+  const recommendationDiv = document.getElementById('recommendation');
+  const recommendationText = document.getElementById('recommendation-text');
+
+  unlockButton.addEventListener('click', () => {
+    let progress = 0;
+    const interval = setInterval(() => {
+      progress += 10;
+      progressBar.style.width = `${progress}%`;
+      if (progress >= 100) {
+        clearInterval(interval);
+        fetch('/recommend_food')
+          .then(response => response.json())
+          .then(data => {
+            if (data.success) {
+              const food = data.recommendations[0];
+              recommendationText.textContent = `${food.restaurant} - Spiciness: ${food.spiciness}, Deliciousness: ${food.deliciousness}`;
+              recommendationDiv.style.display = 'block';
+            }
+          });
+      }
+    }, 200);
+  });
+</script>
+
+<script>
+function animateCountUp(element, target, duration = 1200) {
+    let start = 0;
+    const increment = target / (duration / 16);
+    function update() {
+        start += increment;
+        if (start < target) {
+            element.textContent = Math.floor(start);
+            requestAnimationFrame(update);
+        } else {
+            element.textContent = target;
+        }
+    }
+    update();
+}
+
+// Intersection Observer to trigger animation when stats are visible
+document.addEventListener('DOMContentLoaded', function() {
+    const postsElem = document.getElementById('total-posts');
+    const usersElem = document.getElementById('total-users');
+    const postsTarget = {{ total_posts }};
+    const usersTarget = {{ total_users }};
+    let animated = false;
+
+    function onEntry(entries, observer) {
+        entries.forEach(entry => {
+            if (entry.isIntersecting && !animated) {
+                animateCountUp(postsElem, postsTarget);
+                animateCountUp(usersElem, usersTarget);
+                animated = true;
+                observer.disconnect();
+            }
+        });
+    }
+
+    const observer = new IntersectionObserver(onEntry, { threshold: 0.5 });
+    observer.observe(document.getElementById('stats'));
+});
+</script>
+
+<!-- Call to Action -->
+<section id="cta" class="py-5 bg-primary text-white text-center">
+  <div class="container">
+    <h2 class="display-4 mb-4">Join the Community!</h2>
+    <p>Discover new restaurants, share your experiences, and connect with others who share your love for food.</p>
+    <a href="{{ url_for('views.new_post') }}" class="btn btn-light btn-lg">Write Your First Review</a>
+  </div>
+</section>
+
+<style>
+  /* Hero Section Styling */
+  .landing-hero {
+    background: linear-gradient(to right, #ffecd2 0%, #fcb69f 100%);
+    color: #343a40;
+    border-bottom: 1px solid #eee;
+  }
+
+  .landing-hero .btn-primary {
+    background-color: #ff5e57;
+    border: none;
+  }
+
+  /* Feature Cards */
+  .feature-card {
+    background: #fff;
+    border-radius: 15px;
+    padding: 20px;
+    margin-bottom: 30px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    cursor: pointer;
+  }
+
+  .feature-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+  }
+
+  .feature-icon {
+    margin-bottom: 20px;
+  }
+
+  /* Trending Dishes */
+  .trend-card {
+    background-color: #fff;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 20px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .trend-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+  }
+
+  .trend-info {
+    padding: 15px;
+  }
+
+  .emoji-rating {
+    font-size: 1.5rem;
+    color: #ff7f50;
+  }
+
+  .emoji-rating span {
+    margin-left: 10px;
+  }
+
+  /* Carousel */
+  .carousel-item {
+    transition: transform 0.3s ease;
+  }
+
+  .carousel-control-prev-icon,
+  .carousel-control-next-icon {
+    background-color: #ff5e57;
+  }
+
+  .emoji-rating {
+    font-size: 1.5rem;
+    color: #ff7f50;
+    margin-top: 10px;
+  }
+
+  /* Stats Section */
+  #stats .stat-card {
+    background: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  #stats .stat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+  }
+
+  /* Call to Action */
+  #cta {
+    background-color: #ff5e57;
+  }
+</style>
+
 {% endblock %}
