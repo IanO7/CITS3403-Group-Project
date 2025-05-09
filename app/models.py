@@ -37,3 +37,11 @@ class Follow(db.Model):
 
     follower = db.relationship('User', foreign_keys=[follower_id], backref='following')
     followed = db.relationship('User', foreign_keys=[followed_id], backref='followers')
+
+class SharedPost(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    sender_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    recipient_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    note_id = db.Column(db.Integer, db.ForeignKey('note.id'), nullable=False)
+    timestamp = db.Column(db.DateTime, server_default=db.func.now())
+    seen = db.Column(db.Boolean, default=False)  # <-- Add this line

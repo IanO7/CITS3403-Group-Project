@@ -1,11 +1,11 @@
-from flask import Blueprint, render_template, request, redirect, url_for, session, jsonify, abort, flash, send_from_directory, current_app
+from flask import Blueprint, render_template, request, redirect, url_for, session, jsonify, abort, flash
 from .models import Note, User, Follow
 from . import db
 from werkzeug.security import generate_password_hash, check_password_hash
+from werkzeug.utils import secure_filename
+import os
 import numpy as np
 from sklearn.neighbors import NearestNeighbors
-import os 
-from werkzeug.utils import secure_filename
 
 views = Blueprint('views', __name__)
 
@@ -22,15 +22,19 @@ def getReviews(user):
     return Note.query.filter_by(user_id=user.id).all()
 
 @views.route('/')
-def landing():
+def home():
     if session.get('user_id'):
         return redirect(url_for('views.profile'))
-    notes = Note.query.order_by(Note.id.desc()).limit(10).all()
-    return render_template('landing.html', notes=notes)
+    return redirect(url_for('views.landing'))
 
-@views.route('/uploads/<filename>')
-def uploaded_file(filename):
-    return send_from_directory(current_app.config['UPLOAD_FOLDER'], filename)
+@views.route('/landing')
+def landing():
+    notes = Note.query.order_by(Note.id.desc()).limit(10).all()
+    total_posts = Note.query.count()
+    total_users = User.query.count()
+    trending_dishes = Note.query.order_by(Note.likes.desc()).limit(5).all()
+    return render_template('landing.html', notes=notes, total_posts=total_posts, total_users=total_users, trending_dishes=trending_dishes)
+
 
 @views.route('/profile')
 def profile():
@@ -39,8 +43,26 @@ def profile():
         return redirect(url_for('auth.login'))
 
     reviews = Note.query.filter_by(user_id=user.id).all()  # Fetch all notes for the user
+    review_data = [{
+        "id": r.id,
+        "Resturaunt": r.Resturaunt,
+        "Spiciness": r.Spiciness,
+        "Deliciousness": r.Deliciousness,
+        "Value": r.Value,
+        "Plating": r.Plating,
+        "Review": r.Review,
+        "image": r.image,
+        "likes": r.likes,  # Include the latest likes count
+        "location": r.location  # Include the location field
+    } for r in reviews]
 
-    return render_template('profile.html', user=user, reviews=reviews) 
+    return render_template('profile.html', user=user, reviews=review_data)
+
+UPLOAD_FOLDER = 'static/uploads'  # adjust as needed
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
+
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 @views.route('/new_post', methods=['GET', 'POST'])
 def new_post():
@@ -49,28 +71,23 @@ def new_post():
         return redirect(url_for('auth.login'))
 
     if request.method == 'POST':
-
-        image_file = request.files.get('image')
-        image_filename = None
-
-        if image_file:
-            filename = secure_filename(os.path.basename(image_file.filename))
-            upload_folder = current_app.config['UPLOAD_FOLDER']
-            os.makedirs(upload_folder, exist_ok=True)
-            image_path = os.path.join(upload_folder, filename)
-            image_file.save(image_path)
-            image_filename = filename
+        file = request.files.get('image')
+        image_path = None
+        if file and allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+            image_path = os.path.join(UPLOAD_FOLDER, filename)
+            os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+            file.save(image_path)
 
         note = Note(
             Resturaunt=request.form['Resturaunt'],
             Spiciness=int(request.form['Spiciness']),
             Deliciousness=int(request.form['Deliciousness']),
             Value=int(request.form['Value']),
-            Stars=int(request.form['Stars']), 
             Plating=int(request.form['Plating']),
             Review=request.form['Review'],
-            image=image_filename,
-            location=request.form.get('location'),  # Add location
+            image=image_path,  # Now saved file path
+            location=request.form.get('location'),
             user_id=user.id
         )
 
@@ -212,7 +229,9 @@ def friends():
         followed_users=followed_users,
         notes=notes,
         similar_user=similar_user,
-        user_levels=user_levels
+        user_levels=user_levels,
+        user_stats=user_stats,      # <-- add this
+        user_notes=user_notes       # <-- add this
     )
 
 @views.route('/like/<int:note_id>', methods=['POST'])
@@ -647,3 +666,142 @@ def search_reviews():
     } for post in results]
 
     return jsonify(success=True, results=results_data)
+
+@views.route('/share_post', methods=['POST'])
+def share_post():
+    user = current_user()
+    if not user:
+        return jsonify(success=False, error='User not authenticated'), 401
+
+    data = request.json
+    note_id = data.get('note_id')
+    recipient_id = data.get('recipient_id')
+
+    if not note_id or not recipient_id:
+        return jsonify(success=False, error='Missing data'), 400
+
+    # Prevent sharing to self
+    if user.id == int(recipient_id):
+        return jsonify(success=False, error="Can't share to yourself"), 400
+
+    # Check if recipient exists
+    recipient = User.query.get(recipient_id)
+    if not recipient:
+        return jsonify(success=False, error='Recipient not found'), 404
+
+    # Check if note exists
+    note = Note.query.get(note_id)
+    if not note:
+        return jsonify(success=False, error='Post not found'), 404
+
+    # Prevent duplicate shares (optional)
+    from .models import SharedPost
+    already_shared = SharedPost.query.filter_by(sender_id=user.id, recipient_id=recipient_id, note_id=note_id).first()
+    if already_shared:
+        return jsonify(success=False, error='Already shared with this user'), 400
+
+    # Create shared post
+    shared = SharedPost(sender_id=user.id, recipient_id=recipient_id, note_id=note_id)
+    db.session.add(shared)
+    db.session.commit()
+    return jsonify(success=True, message="Post shared successfully!"), 200
+
+@views.route('/share_multiple_posts', methods=['POST'])
+def share_multiple_posts():
+    user = current_user()
+    if not user:
+        return jsonify(success=False, error='User not authenticated'), 401
+
+    data = request.json
+    note_ids = data.get('note_ids', [])
+    recipient_id = data.get('recipient_id')
+
+    if not note_ids or not recipient_id:
+        return jsonify(success=False, error='Missing data'), 400
+
+    if user.id == int(recipient_id):
+        return jsonify(success=False, error="Can't share to yourself"), 400
+
+    recipient = User.query.get(recipient_id)
+    if not recipient:
+        return jsonify(success=False, error='Recipient not found'), 404
+
+    from .models import SharedPost
+    shared_count = 0
+    ignored_count = 0
+    for note_id in map(int, note_ids):
+        note = Note.query.get(note_id)
+        if not note:
+            continue
+        already_shared = SharedPost.query.filter_by(sender_id=user.id, recipient_id=recipient_id, note_id=note_id).first()
+        if already_shared:
+            ignored_count += 1
+            continue
+        shared = SharedPost(sender_id=user.id, recipient_id=recipient_id, note_id=note_id)
+        db.session.add(shared)
+        shared_count += 1
+    db.session.commit()
+    return jsonify(
+        success=True,
+        shared=shared_count,
+        ignored=ignored_count,
+        message=f"{shared_count} post(s) shared! {ignored_count} already shared."
+    )
+
+@views.route('/inbox')
+def inbox():
+    user = current_user()
+    if not user:
+        return redirect(url_for('auth.login'))
+
+    from .models import SharedPost
+    shared_posts = SharedPost.query.filter_by(recipient_id=user.id).order_by(SharedPost.timestamp.desc()).all()
+    unseen_count = SharedPost.query.filter_by(recipient_id=user.id, seen=False).count()
+
+    # Mark all as seen
+    SharedPost.query.filter_by(recipient_id=user.id, seen=False).update({'seen': True})
+    db.session.commit()
+
+    posts = []
+    for shared in shared_posts:
+        note = Note.query.get(shared.note_id)
+        sender = User.query.get(shared.sender_id)
+        if note and sender:
+            posts.append({
+                'note': note,
+                'sender': sender,
+                'timestamp': shared.timestamp
+            })
+    return render_template('inbox.html', user=user, posts=posts, unseen_count=unseen_count)
+
+@views.route('/api/users')
+def api_users():
+    user = current_user()
+    if not user:
+        return jsonify(users=[])
+    q = request.args.get('q', '').strip()
+    query = User.query.filter(User.id != user.id)
+    if q:
+        query = query.filter(User.username.ilike(f"%{q}%"))
+    users = query.all()
+    return jsonify(users=[{'id': u.id, 'username': u.username} for u in users])
+
+@views.route('/api/user_stats/<int:user_id>')
+def api_user_stats(user_id):
+    user = User.query.get(user_id)
+    if not user:
+        return jsonify(success=False), 404
+    notes = Note.query.filter_by(user_id=user.id).all()
+    total = len(notes) or 1
+    stats = {
+        'spiciness': sum(n.Spiciness for n in notes) / total,
+        'deliciousness': sum(n.Deliciousness for n in notes) / total,
+        'value': sum(n.Value for n in notes) / total,
+        'plating': sum(n.Plating for n in notes) / total,
+    }
+    return jsonify(
+        success=True,
+        stats=stats,
+        posts=len(notes),
+        username=user.username
+    )
