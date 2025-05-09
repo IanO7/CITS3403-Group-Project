@@ -4,9 +4,8 @@
 {% block content %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}"/>
 
-<!-- Actual login UI -->
 <div class="login-container">
-  <h1>Log In</h1>
+  <h1>Log In - OZfoody</h1>
 
   {% with messages = get_flashed_messages(with_categories=true) %}
     {% if messages %}
