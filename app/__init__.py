@@ -27,6 +27,7 @@ def create_app():
     app.register_blueprint(auth, url_prefix='/')
 
     from .models import Note, User, SharedPost  # Import your models here
+    
 
     with app.app_context():
         db.create_all()

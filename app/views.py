@@ -6,6 +6,7 @@ from werkzeug.utils import secure_filename
 import os
 import numpy as np
 from sklearn.neighbors import NearestNeighbors
+import re
 
 views = Blueprint('views', __name__)
 
@@ -341,40 +342,85 @@ def unfollow(user_id):
     db.session.commit()
     return jsonify(success=True), 200
 
-@views.route('/settings', methods=['GET', 'POST'])
+
+@views.route("/settings", methods=["GET", "POST"])
 def settings():
+    """
+    Handle user-settings actions:
+      • update_info       → username / email
+      • update_password   → change password
+      • delete_account    → hard delete + logout
+    All POST calls return JSON so the front-end fetch() can react accordingly.
+    """
     user = current_user()
     if not user:
-        return redirect(url_for('auth.login'))
+        return redirect(url_for("auth.login"))
 
-    if request.method == 'POST':
-        action = request.form.get('action')
+    if request.method == "POST":
+        action = request.form.get("action", "").strip()
 
-        if action == 'update_info':
-            # Update user information
-            user.username = request.form.get('username')
-            user.email = request.form.get('email')
+        # 1. ─────────────────────────────  UPDATE USERNAME / EMAIL  ───────────────────────────
+        if action == "update_info":
+            new_username = request.form.get("username", "").strip()
+            new_email    = request.form.get("email", "").strip().lower()
+
+            # Basic format checks ------------------------------------------------------------
+            username_ok = 3 <= len(new_username) <= 30 and re.match(r"^[A-Za-z0-9_.-]+$", new_username)
+            email_ok    = re.match(r"^[^@]+@[^@]+\.[^@]+$", new_email)
+
+            if not username_ok:
+                return jsonify(success=False,
+                               error="Username must be 3-30 chars and contain only letters, digits, underscores, dots or dashes."), 400
+            if not email_ok:
+                return jsonify(success=False, error="Please enter a valid e-mail address."), 400
+
+            # Uniqueness checks --------------------------------------------------------------
+            if new_username != user.username and User.query.filter_by(username=new_username).first():
+                return jsonify(success=False, error="That username is already taken."), 409
+            if new_email != user.email and User.query.filter_by(email=new_email).first():
+                return jsonify(success=False, error="That e-mail is already registered."), 409
+
+            # Persist changes ----------------------------------------------------------------
+            user.username = new_username
+            user.email    = new_email
             db.session.commit()
-            return jsonify(success=True, message="User information updated successfully"), 200
+            return jsonify(success=True, message="Profile updated successfully."), 200
 
-        elif action == 'update_password':
-            # Update password
-            current_password = request.form.get('current_password')
-            new_password = request.form.get('new_password')
-            if not check_password_hash(user.password, current_password):
-                return jsonify(success=False, error="Current password is incorrect"), 400
-            user.password = generate_password_hash(new_password)
+        # 2. ─────────────────────────────  UPDATE PASSWORD  ──────────────────────────────────
+        elif action == "update_password":
+            current_pw = request.form.get("current_password", "")
+            new_pw     = request.form.get("new_password", "")
+
+            # Verify current password --------------------------------------------------------
+            if not check_password_hash(user.password, current_pw):
+                return jsonify(success=False, error="Current password is incorrect."), 401
+
+            # Simple strength rules (adapt to your policy) -----------------------------------
+            if len(new_pw) < 8 or len(new_pw) > 128:
+                return jsonify(success=False,
+                               error="Password must be between 8 and 128 characters long."), 400
+            if new_pw.isalpha() or new_pw.isdigit():
+                return jsonify(success=False,
+                               error="Password must include at least one letter and one number/symbol."), 400
+
+            # Hash & save --------------------------------------------------------------------
+            user.password = generate_password_hash(new_pw)
             db.session.commit()
-            return jsonify(success=True, message="Password updated successfully"), 200
+            return jsonify(success=True, message="Password changed."), 200
 
-        elif action == 'delete_account':
-            # Delete user account
+        # 3. ─────────────────────────────  DELETE ACCOUNT  ──────────────────────────────────
+        elif action == "delete_account":
+            # If you configured ON DELETE CASCADE, children (notes, follows, etc.) go too.
             db.session.delete(user)
             db.session.commit()
             session.clear()
-            return jsonify(success=True, message="Account deleted successfully"), 200
+            return jsonify(success=True, message="Account deleted. Goodbye!"), 200
 
-    return render_template('settings.html', user=user)
+        # ─────────────────────────────────────────────────────────────────────────────────────
+        return jsonify(success=False, error="Unknown action."), 400
+
+    # GET → render page
+    return render_template("settings.html", user=user)
 
 @views.route('/search', methods=['GET'])
 def search():
