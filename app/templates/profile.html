@@ -2,6 +2,8 @@
 {% block title %} Profile {% endblock %}
 
 {% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/badge.css') }}">
+
 <div id="profileHeader" class="container mt-2">
     <img src="{{  url_for('static', filename='download.jpg') }}" class="profileImage"> 
 </div>
@@ -52,21 +54,6 @@
         border: 2px solid #fff;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     }
-
-    .badge-level {
-        display: inline-block;
-        padding: 5px 10px;
-        font-size: 0.9rem;
-        font-weight: bold;
-        border-radius: 12px;
-        color: white;
-    }
-
-    .level-1 { background-color: #6E3A14; } /* Bronze */
-    .level-2 { background-color: #8E5F2B; } /* Silver */
-    .level-3 { background-color: #DF6F1B; } /* Gold */
-    .level-4 { background-color: #5F8D3B; } /* Emerald */
-    .level-5 { background-color: #007BFF; } /* Sapphire */
 
     /* Post Styles */
     .card-body {
