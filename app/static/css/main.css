@@ -35,6 +35,9 @@ body {
 
 }
 
+
+/* profile and add new post css*/ 
+
 #profileHeader {
     text-align: center;
     font-family: 'Lobster', serif;
@@ -48,71 +51,6 @@ body {
     gap: 1rem;              
     flex-wrap: wrap; 
 
-}
-
-#profileContainer {
-    display: flex;
-    box-sizing: border-box;
-    width: 100%; 
-    align-items: center;
-    flex-direction: column;
-}
-
-#content {
-    width: 100%; 
-    display: grid;
-    margin: 0 auto; 
-    max-width: 1200px;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); 
-    gap: 20px; 
-    padding: 10px;
-    box-sizing: border-box;
-}
-
-.post {
-    border-radius: 10px;
-    width: 100%; 
-    min-height: 400px;
-    font-size: 20px;
-    font-weight: bold;
-    text-align: left;
-    background-color: white;
-    color: black;
-
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    overflow: hidden;
-}
-
-.postImage {
-    width: 100%;
-    aspect-ratio: 2.5 / 1;
-    object-fit: cover;
-    object-position: center; 
-    border-radius: 0 0 10px 10px;
-}
-.spiciness-slider::-webkit-slider-runnable-track {
-    background-color: #dc3545; /* Bootstrap danger red */
-}
-.deliciousness-slider::-webkit-slider-runnable-track {
-    background-color: #ffc107; /* Bootstrap warning yellow */
-}
-.value-slider::-webkit-slider-runnable-track {
-    background-color: #198754; /* Bootstrap success green */
-}
-.plating-slider::-webkit-slider-runnable-track {
-    background-color: #0dcaf0; /* Bootstrap info blue */
-}
-
-
-.profileImage {
-    width:8rem; 
-    height:8rem; 
-    object-fit: cover;
-    object-position: top;
-    border-radius: 50%;
-    border:4px solid #5E512B; 
 }
 
 .addPost {
@@ -130,34 +68,17 @@ body {
     cursor: pointer;
 }
 
-.modal {
-    display: none;
-    position: fixed;
-    z-index: 999;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    overflow: auto;
-    background-color: rgba(0,0,0,0.4); /* Overlay background */
+.spiciness-slider::-webkit-slider-runnable-track {
+    background-color: #dc3545; /* Bootstrap danger red */
 }
-  
-.modal-content {
-    background-color: #fff;
-    margin: 10% auto;
-    padding: 20px;
-    border-radius: 10px;
-    width: 500px;
-    position: relative;
+.deliciousness-slider::-webkit-slider-runnable-track {
+    background-color: #ffc107; /* Bootstrap warning yellow */
 }
-  
-.close {
-    position: absolute;
-    top: 8px;
-    right: 12px;
-    font-size: 28px;
-    font-weight: bold;
-    cursor: pointer;
+.value-slider::-webkit-slider-runnable-track {
+    background-color: #198754; /* Bootstrap success green */
+}
+.plating-slider::-webkit-slider-runnable-track {
+    background-color: #0dcaf0; /* Bootstrap info blue */
 }
 
 
@@ -340,16 +261,6 @@ body {
     background-color: #6E3A14; /* Headline text */
 }
 
-/* Chart Container */
-.chart-container {
-    width: 100%;
-    height: 500px;
-    margin-top: 1.5rem;
-    background-color: #FFFFFF; /* White background */
-    border-radius: 0.5rem;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow */
-    padding: 1rem; /* Inner padding */
-}
 
 /* Badges */
 .badge {
@@ -399,12 +310,24 @@ body {
     gap: 1rem;
 }
 
-.profile-img {
-    width: 80px;
-    height: 80px;
+.profileImage {
+    width:8rem; 
+    height:8rem; 
+    object-fit: cover;
+    object-position: top;
     border-radius: 50%;
-    border: 3px solid #5E512B;
+    border:4px solid #5E512B; 
 }
+
+.profileImageSmall {
+    width:4rem; 
+    height:4rem; 
+    object-fit: cover;
+    object-position: top;
+    border-radius: 20%;
+    border:2px solid #5E512B; 
+}
+
 
 .stats-grid, .charts-grid, .badges-grid {
     display: grid;
@@ -502,6 +425,8 @@ body {
     object-fit: cover;
     border-radius: 10px;
 }
+
+
 
 /* Review Stats */
 .review-stats {

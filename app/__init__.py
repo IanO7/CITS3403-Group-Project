@@ -2,7 +2,6 @@ import flask
 from flask import Flask, session
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
-from flask_login import LoginManager
 from os import path
 import os  # Import os to access environment variables
 
@@ -17,6 +16,7 @@ def create_app():
     app.config['SECRET_KEY'] = os.environ.get("able", "default_secret_key")  # Use environment variable
     app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{DB_NAME}'
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+    app.config['UPLOAD_FOLDER'] = os.path.join(os.getcwd(), 'app/uploads')
 
     db.init_app(app)
     migrate.init_app(app, db)  # Initialize Flask-Migrate
@@ -27,20 +27,23 @@ def create_app():
     from .auth import auth
     app.register_blueprint(auth, url_prefix='/')
 
-    from .models import Note, User  # Import your models here
+    from .models import Note, User, SharedPost  # Import your models here
+    
 
     with app.app_context():
         db.create_all()
 
+    @app.context_processor
+    def inject_unseen_count():
+        user_id = session.get('user_id')
+        unseen_count = 0
+        if user_id:
+            unseen_count = SharedPost.query.filter_by(recipient_id=user_id, seen=False).count()
+        return dict(unseen_count=unseen_count)
+
     return app
-
-from flask_login import LoginManager
-
-login_manager = LoginManager()
-login_manager.login_view = 'auth.login'
 
 def create_database(app):
     if not path.exists('app/' + DB_NAME):
         db.create_all(app=app)
         print("Database created!")
-

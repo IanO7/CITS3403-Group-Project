@@ -1,0 +1,247 @@
+.badge-level {
+    display: inline-block;
+    padding: 5px 10px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    border-radius: 12px;
+    color: white;
+    margin-left: 10px;
+}
+
+.level-1 { background-color: #6E3A14; } /* Bronze */
+.level-2 { background-color: #8E5F2B; } /* Silver */
+.level-3 { background-color: #DF6F1B; } /* Gold */
+.level-4 { background-color: #5F8D3B; } /* Emerald */
+.level-5 { background-color: #007BFF; } /* Sapphire */
+
+#suggestions {
+    max-height: 200px;
+    overflow-y: auto;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: white;
+}
+
+#suggestions a {
+    text-decoration: none;
+    color: #333;
+}
+
+#suggestions a:hover {
+    background-color: #f0f0f0;
+}
+
+.trending-dishes .dish-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    margin-bottom: 20px;
+    padding: 15px;
+    border: 2px solid #ddd;
+    border-radius: 10px;
+    background-color: #fff;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.trending-dishes .dish-card:hover {
+    transform: scale(1.05);
+    box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
+}
+
+.trending-dishes .dish-card img {
+    width: 100%;
+    max-width: 300px;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 10px;
+    margin-bottom: 10px;
+}
+
+.trending-dishes .dish-card h5 {
+    font-size: 1.2rem;
+    margin-bottom: 5px;
+}
+
+.trending-dishes .dish-card p {
+    font-size: 0.9rem;
+    color: #555;
+}
+
+.trending-dishes .dish-card.trending {
+    border-color: #DF6F1B;
+    background-color: #fff7e6;
+    box-shadow: 0 8px 15px rgba(223, 111, 27, 0.5);
+}
+
+.trending-dishes .dish-card .likes {
+    font-weight: bold;
+    color: #DF6F1B;
+}
+
+.staggered-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+}
+
+.dish-card, .post-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    margin-bottom: 20px;
+    padding: 15px;
+    border: 2px solid #ddd;
+    border-radius: 10px;
+    background-color: #fff;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.dish-card.trending, .post-card.special {
+    border-color: #DF6F1B;
+    background-color: #fff7e6;
+    box-shadow: 0 8px 15px rgba(223, 111, 27, 0.5);
+}
+
+.swipeable-container {
+    display: flex;
+    overflow-x: auto;
+    gap: 20px;
+    padding: 20px;
+    scroll-snap-type: x mandatory;
+}
+
+.swipeable-container .recommendation-card {
+    flex: 0 0 auto;
+    width: 300px;
+    scroll-snap-align: center;
+    border: 2px solid #ddd;
+    border-radius: 10px;
+    background-color: #fff;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease-in-out;
+}
+
+.swipeable-container .recommendation-card:hover {
+    transform: scale(1.05);
+}
+
+.carousel {
+    display: flex;
+    overflow: hidden;
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+    position: relative;
+}
+
+.carousel .recommendation-card {
+    flex: 0 0 100%;
+    transition: transform 0.5s ease-in-out;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 15px;
+    border: 2px solid #ddd;
+    border-radius: 10px;
+    background-color: #fff;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.carousel .recommendation-card img {
+    width: 100%;
+    max-width: 300px;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 10px;
+    margin-bottom: 10px;
+}
+
+.carousel .recommendation-card.special {
+    border-color: #DF6F1B;
+    background-color: #fff7e6;
+    box-shadow: 0 8px 15px rgba(223, 111, 27, 0.5);
+}
+
+.carousel .recommendation-card.special::after {
+    content: "🔥 Featured Post";
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: #DF6F1B;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 0.9rem;
+    font-weight: bold;
+}
+
+.carousel-controls {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.compare-cards {
+    gap: 2rem;
+    margin-top: 1.5rem;
+}
+.compare-card {
+    background: linear-gradient(135deg, #fbc2eb 0%, #a6c1ee 100%);
+    border-radius: 1.2rem;
+    box-shadow: 0 6px 24px rgba(90, 90, 150, 0.12);
+    padding: 2rem 1.5rem;
+    min-width: 220px;
+    max-width: 260px;
+    flex: 1 1 220px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: transform 0.2s;
+}
+.compare-card h4 {
+    font-weight: bold;
+    margin-bottom: 1.2rem;
+    color: #5f8d3b;
+    letter-spacing: 1px;
+}
+.compare-value {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    font-size: 1.1rem;
+    margin: 0.4rem 0;
+    padding: 0.5rem 0.7rem;
+    border-radius: 0.5rem;
+    background: rgba(255,255,255,0.7);
+    font-family: 'Lato', sans-serif;
+}
+.me-card {
+    border: 2px solid #5f8d3b;
+}
+.friend-card {
+    border: 2px solid #df6f1b;
+}
+#friend-compare-suggestions {
+    max-height: 180px;
+    overflow-y: auto;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background: #fff;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+#friend-compare-suggestions .list-group-item {
+    cursor: pointer;
+    padding: 0.7rem 1rem;
+    border: none;
+}
+#friend-compare-suggestions .list-group-item:hover {
+    background: #fbc2eb;
+    color: #5f8d3b;
+}

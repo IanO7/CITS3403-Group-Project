@@ -13,3 +13,51 @@ instance/
 # VSCode settings 
 .vscode/
 
+
+
+# Ignore database files
+*.db
+*.sqlite
+*.sqlite3
+
+# Ignore logs
+*.log
+
+# Ignore temporary files and directories
+*.tmp
+*.bak
+*.swp
+
+# Ignore node_modules (for Node.js projects)
+node_modules/
+
+# Ignore environment files
+.env
+
+# Ignore IDE-specific files
+.vscode/
+.idea/
+
+# Ignore OS-specific files
+.DS_Store
+Thumbs.db
+
+# Ignore compiled files
+*.class
+*.o
+*.exe
+*.dll
+
+# Ignore Python-specific files
+__pycache__/
+*.pyc
+*.pyo
+
+# Ignore JetBrains specific files
+*.iml
+
+# Ignore virtual environments
+# venv/ contains Python interpreter files and dependencies, not source code.
+#It is machine-specific and should never be tracked by Git.
+# It will bloat your repo and cause unnecessary conflicts or errors.
+venv/

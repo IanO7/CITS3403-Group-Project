@@ -1,53 +1,157 @@
 {% extends "base.html" %}
-{% block title %}OzFoody - Discover Perth's Tastiest Places{% endblock %}
-
-{% block head %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/landing.css') }}">
-{% endblock %}
+{% block title %}Discover OzFoody - Personalized Restaurant Reviews{% endblock %}
 
 {% block content %}
-<!-- Hero Section -->
-<section class="landing-hero fade-in text-center py-5 bg-light">
-  <h1 class="display-3 fw-bold">OzFoody</h1>
-  <p class="lead">OZ’s food scene, shared by you and your circle.</p>
-  <p class="mb-4">Create your profile, follow friends, and share your dining experiences.<br>Discover new spots, one bite at a time.</p>
-  <a href="{{ url_for('auth.login') }}" class="btn btn-primary btn-lg">Get Started</a>
-</section>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/general_styles.css') }}"/>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/landing.css') }}"/>
 
-<!-- Live Community Reviews -->
-{% if notes %}
-<section class="container py-5 fade-in">
-  <h2 class="text-center mb-4">What the Community Is Saying</h2>
-  <div class="row">
-    {% for note in notes[:3] %}
+<!-- Hero Section with Interactive Animation -->
+<div class="landing-hero text-center py-5">
+  <div class="container">
+    <h1 class="display-3 fw-bold text-gradient">Welcome to OzFoody</h1>
+    <p class="lead mt-3">Your personalized restaurant experience, now with smarter recommendations and more engaging features!</p>
+    <a href="{{ url_for('views.new_post') }}" class="btn btn-primary btn-lg mt-4">Share Your Review</a>
+  </div>
+</div>
+
+<!-- Features Section with Animated Visual Indicators -->
+<section id="features" class="py-5 bg-light">
+  <div class="container">
+    <h2 class="mb-4 text-center">How It Works</h2>
+    <div class="row text-center">
       <div class="col-md-4">
-        <div class="card review-card p-3 h-100">
-          {% if note.image %}
-            <img src="{{ note.image if note.image.startswith('http') else url_for('static', filename=note.image) }}"
-                 class="card-img-top mb-3" alt="{{ note.restaurant }}">
-          {% endif %}
-          <div class="card-body">
-            <h5 class="card-title">{{ note.restaurant }}</h5>
-            <p class="card-text">{{ note.Review[:100] }}...</p>
+        <div class="feature-card shadow-lg" data-bs-toggle="tooltip" title="Get personalized recommendations based on your reviews and preferences!">
+          <div class="feature-icon">
+            <i class="fas fa-star fa-3x text-primary"></i>
           </div>
-          <div class="card-footer text-muted">
-            — {{ note.user.username }}
-          </div>
+          <h5>Personalized Recommendations</h5>
+          <p>Receive restaurant recommendations tailored just for you, powered by our smart algorithm.</p>
         </div>
       </div>
-    {% endfor %}
+
+      <div class="col-md-4">
+        <div class="feature-card shadow-lg" data-bs-toggle="tooltip" title="See what your friends recommend and share your thoughts!">
+          <div class="feature-icon">
+            <i class="fas fa-users fa-3x text-success"></i>
+          </div>
+          <h5>Friends' Reviews</h5>
+          <p>Discover what your friends love, with personalized suggestions based on their reviews.</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="feature-card shadow-lg" data-bs-toggle="tooltip" title="Share your favorite restaurants with the community using visual posts!">
+          <div class="feature-icon">
+            <i class="fas fa-share-alt fa-3x text-danger"></i>
+          </div>
+          <h5>Easy Sharing</h5>
+          <p>Share your experiences with interactive posts, with visual indicators like emojis to represent your ratings!</p>
+        </div>
+      </div>
+    </div>
   </div>
 </section>
-{% endif %}
 
-<!-- Footer -->
-<footer class="footer-dark text-white text-center py-3 mt-5">
+<!-- Earn Badges Section -->
+<section id="badges" class="py-5 bg-light text-center">
   <div class="container">
-    <p class="mb-0">© 2025 OZFoody. All rights reserved.</p>
+    <h2 class="mb-4">Earn Badges to Level Up</h2>
+    <p class="lead mb-5">The more you review, explore, and share, the more badges you earn. Unlock achievements and climb the foodie ranks!</p>
+    <div class="row">
+      <div class="col-md-4">
+        <div class="badge-card shadow-sm p-4">
+          <i class="fas fa-pen-nib fa-3x text-warning mb-3"></i>
+          <h5>First Review</h5>
+          <p>Earn this badge when you publish your very first review.</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="badge-card shadow-sm p-4">
+          <i class="fas fa-fire fa-3x text-danger mb-3"></i>
+          <h5>Spicy Explorer</h5>
+          <p>Review 10 spicy dishes to unlock this hot badge!</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="badge-card shadow-sm p-4">
+          <i class="fas fa-users fa-3x text-success mb-3"></i>
+          <h5>Community Contributor</h5>
+          <p>Earned by receiving 50 likes from other foodies.</p>
+        </div>
+      </div>
+    </div>
+    <a href="{{ url_for('views.profile') }}" class="btn btn-primary btn-lg mt-4">View Your Badge Progress</a>
   </div>
-</footer>
-{% endblock %}
+</section>
 
-{% block scripts %}
+<!-- Live Trending Dishes Section -->
+<section id="trending-dishes" class="py-5 bg-dark text-white">
+  <div class="container text-center">
+    <h2 class="mb-4">Trending Dishes Right Now</h2>
+    <div class="row">
+      {% for dish in trending_dishes %}
+      <div class="col-md-4">
+        <div class="trend-card">
+          <img src="{{ url_for('static', filename=dish.image) if dish.image else 'https://via.placeholder.com/350x200' }}" alt="Dish Image" class="img-fluid">
+          <div class="trend-info">
+            <h5>{{ dish.Resturaunt or 'Unknown Restaurant' }}</h5>
+            <p class="mb-1"><i class="fas fa-map-marker-alt"></i> {{ dish.location or 'Unknown' }}</p>
+            <span class="emoji-rating">&#x1F44D; {{ dish.likes or 0 }} Likes</span>
+            <div class="text-muted" style="font-size:0.9em;">by Anonymous</div>
+          </div>
+        </div>
+       {% endfor %}
+      </div>
+      
+</section>
+      
+      
+</section>
+
+<!-- Stats Section -->
+<section id="stats" class="py-5 bg-light text-center">
+  <div class="container">
+    <h2 class="mb-4">Community Stats</h2>
+    <div class="row">
+      <div class="col-md-6">
+        <div class="stat-card">
+          <h3 class="display-4" id="total-posts">0</h3>
+          <p>Total Posts</p>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="stat-card">
+          <h3 class="display-4" id="total-users">0</h3>
+          <p>Registered Users</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Interactive Progress Bar -->
+<section id="progress-bar-section" class="py-5 bg-primary text-white text-center">
+  <div class="container">
+    <h2 class="mb-4">Unlock Your Food Recommendation</h2>
+    <div class="progress" style="height: 30px;">
+      <div class="progress-bar progress-bar-striped progress-bar-animated bg-success" role="progressbar" style="width: 0%;" id="progress-bar"></div>
+    </div>
+    <button class="btn btn-light btn-lg mt-4" id="unlock-button">Unlock Recommendation</button>
+    <div id="recommendation" class="mt-4" style="display: none;">
+      <h3>Your Recommendation:</h3>
+      <p id="recommendation-text"></p>
+    </div>
+  </div>
+</section>
+
+<!-- Call to Action -->
+<section id="cta" class="py-5 bg-primary text-white text-center">
+  <div class="container">
+    <h2 class="display-4 mb-4">Join the Community!</h2>
+    <p>Discover new restaurants, share your experiences, and connect with others who share your love for food.</p>
+    <a href="{{ url_for('views.new_post') }}" class="btn btn-light btn-lg">Write Your First Review</a>
+  </div>
+</section>
+
+<!-- Include landing.js -->
 <script src="{{ url_for('static', filename='js/landing.js') }}"></script>
 {% endblock %}

@@ -1,10 +1,18 @@
-from flask import Blueprint, render_template, request, redirect, url_for, session, jsonify, abort, flash
+from flask import (
+    Blueprint, render_template, request, redirect, 
+    url_for, session, jsonify, abort, flash, current_app, 
+    send_from_directory )
+
 from .models import Note, User, Follow
 from . import db
 from werkzeug.security import generate_password_hash, check_password_hash
+from werkzeug.utils import secure_filename
+import os
 import numpy as np
-from sklearn.neighbors import NearestNeighbors
-from flask_login import login_required
+#from sklearn.neighbors import NearestNeighbors
+import re
+
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 
 views = Blueprint('views', __name__)
 
@@ -20,36 +28,38 @@ def current_user():
 def getReviews(user):
     return Note.query.filter_by(user_id=user.id).all()
 
+@views.route('/uploads/<filename>')
+def uploaded_file(filename):
+    return send_from_directory(current_app.config['UPLOAD_FOLDER'], filename)
+
 @views.route('/')
-def landing():
+def home():
     if session.get('user_id'):
         return redirect(url_for('views.profile'))
+    return redirect(url_for('views.landing'))
+
+@views.route('/landing')
+def landing():
     notes = Note.query.order_by(Note.id.desc()).limit(10).all()
-    return render_template('landing.html', notes=notes)
+    total_posts = Note.query.count()
+    total_users = User.query.count()
+    trending_dishes = Note.query.order_by(Note.likes.desc()).limit(5).all()
+    return render_template('landing.html', notes=notes, total_posts=total_posts, total_users=total_users, trending_dishes=trending_dishes)
+
 
 @views.route('/profile')
-@login_required
 def profile():
+    user = current_user()
+    if not user:
+        return redirect(url_for('auth.login'))
 
-    # Fetch all notes for the user
     reviews = Note.query.filter_by(user_id=user.id).all()  # Fetch all notes for the user
-    
-    review_data = [{
-        "id": r.id,
-        "Resturaunt": r.Resturaunt,
-        "Spiciness": r.Spiciness,
-        "Deliciousness": r.Deliciousness,
-        "Value": r.Value,
-        "Plating": r.Plating,
-        "Review": r.Review,
-        "image": r.image,
-        "likes": r.likes,  # Include the latest likes count
-        "location": r.location  # Include the location field
-    } for r in reviews]
 
-    return render_template('profile.html', user=user, reviews=review_data)
+    return render_template('profile.html', user=user, reviews=reviews)
 
 
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 @views.route('/new_post', methods=['GET', 'POST'])
 def new_post():
@@ -58,15 +68,27 @@ def new_post():
         return redirect(url_for('auth.login'))
 
     if request.method == 'POST':
+        image_file = request.files.get('image')
+        image_path = None
+
+        if image_file:
+            filename = secure_filename(os.path.basename(image_file.filename))
+            upload_folder = current_app.config['UPLOAD_FOLDER']
+            os.makedirs(upload_folder, exist_ok=True)
+            image_path = os.path.join(upload_folder, filename)
+            image_file.save(image_path)
+            image_filename = filename
+
         note = Note(
             Resturaunt=request.form['Resturaunt'],
             Spiciness=int(request.form['Spiciness']),
             Deliciousness=int(request.form['Deliciousness']),
             Value=int(request.form['Value']),
+            Stars=int(request.form['Stars']),
             Plating=int(request.form['Plating']),
             Review=request.form['Review'],
-            image=request.form['image'],
-            location=request.form.get('location'),  # Add location
+            image=image_filename, 
+            location=request.form.get('location'),
             user_id=user.id
         )
 
@@ -208,7 +230,9 @@ def friends():
         followed_users=followed_users,
         notes=notes,
         similar_user=similar_user,
-        user_levels=user_levels
+        user_levels=user_levels,
+        user_stats=user_stats,      # <-- add this
+        user_notes=user_notes       # <-- add this
     )
 
 @views.route('/like/<int:note_id>', methods=['POST'])
@@ -318,40 +342,97 @@ def unfollow(user_id):
     db.session.commit()
     return jsonify(success=True), 200
 
-@views.route('/settings', methods=['GET', 'POST'])
+
+@views.route("/settings", methods=["GET", "POST"])
 def settings():
+    """
+    Handle user-settings actions:
+      • update_info       → username / email
+      • update_password   → change password
+      • delete_account    → hard delete + logout
+    All POST calls return JSON so the front-end fetch() can react accordingly.
+    """
     user = current_user()
     if not user:
-        return redirect(url_for('auth.login'))
+        return redirect(url_for("auth.login"))
 
-    if request.method == 'POST':
-        action = request.form.get('action')
+    if request.method == "POST":
+        action = request.form.get("action", "").strip()
 
-        if action == 'update_info':
-            # Update user information
-            user.username = request.form.get('username')
-            user.email = request.form.get('email')
+        image_file = request.files.get('profileImage')
+        image_filename = None
+
+        if image_file:
+            filename = secure_filename(os.path.basename(image_file.filename))
+            upload_folder = current_app.config['UPLOAD_FOLDER']
+            os.makedirs(upload_folder, exist_ok=True)
+            image_path = os.path.join(upload_folder, filename)
+            image_file.save(image_path)
+            image_filename = filename
+
+        # 1. ─────────────────────────────  UPDATE USERNAME / EMAIL  ───────────────────────────
+        if action == "update_info":
+            new_username = request.form.get("username", "").strip()
+            new_email    = request.form.get("email", "").strip().lower()
+
+            # Basic format checks ------------------------------------------------------------
+            username_ok = 3 <= len(new_username) <= 30 and re.match(r"^[A-Za-z0-9_.-]+$", new_username)
+            email_ok    = re.match(r"^[^@]+@[^@]+\.[^@]+$", new_email)
+
+            if not username_ok:
+                return jsonify(success=False,
+                               error="Username must be 3-30 chars and contain only letters, digits, underscores, dots or dashes."), 400
+            if not email_ok:
+                return jsonify(success=False, error="Please enter a valid e-mail address."), 400
+
+            # Uniqueness checks --------------------------------------------------------------
+            if new_username != user.username and User.query.filter_by(username=new_username).first():
+                return jsonify(success=False, error="That username is already taken."), 409
+            if new_email != user.email and User.query.filter_by(email=new_email).first():
+                return jsonify(success=False, error="That e-mail is already registered."), 409
+
+            # Persist changes ----------------------------------------------------------------
+            user.username = new_username
+            user.email    = new_email
+            user.profileImage = image_filename
             db.session.commit()
-            return jsonify(success=True, message="User information updated successfully"), 200
+            return jsonify(success=True, message="Profile updated successfully."), 200
 
-        elif action == 'update_password':
-            # Update password
-            current_password = request.form.get('current_password')
-            new_password = request.form.get('new_password')
-            if not check_password_hash(user.password, current_password):
-                return jsonify(success=False, error="Current password is incorrect"), 400
-            user.password = generate_password_hash(new_password)
+        # 2. ─────────────────────────────  UPDATE PASSWORD  ──────────────────────────────────
+        elif action == "update_password":
+            current_pw = request.form.get("current_password", "")
+            new_pw     = request.form.get("new_password", "")
+
+            # Verify current password --------------------------------------------------------
+            if not check_password_hash(user.password, current_pw):
+                return jsonify(success=False, error="Current password is incorrect."), 401
+
+            # Simple strength rules (adapt to your policy) -----------------------------------
+            if len(new_pw) < 8 or len(new_pw) > 128:
+                return jsonify(success=False,
+                               error="Password must be between 8 and 128 characters long."), 400
+            if new_pw.isalpha() or new_pw.isdigit():
+                return jsonify(success=False,
+                               error="Password must include at least one letter and one number/symbol."), 400
+
+            # Hash & save --------------------------------------------------------------------
+            user.password = generate_password_hash(new_pw)
             db.session.commit()
-            return jsonify(success=True, message="Password updated successfully"), 200
+            return jsonify(success=True, message="Password changed."), 200
 
-        elif action == 'delete_account':
-            # Delete user account
+        # 3. ─────────────────────────────  DELETE ACCOUNT  ──────────────────────────────────
+        elif action == "delete_account":
+            # If you configured ON DELETE CASCADE, children (notes, follows, etc.) go too.
             db.session.delete(user)
             db.session.commit()
             session.clear()
-            return jsonify(success=True, message="Account deleted successfully"), 200
+            return jsonify(success=True, message="Account deleted. Goodbye!"), 200
 
-    return render_template('settings.html', user=user)
+        # ─────────────────────────────────────────────────────────────────────────────────────
+        return jsonify(success=False, error="Unknown action."), 400
+
+    # GET → render page
+    return render_template("settings.html", user=user)
 
 @views.route('/search', methods=['GET'])
 def search():
@@ -375,26 +456,34 @@ def user_profile(user_id):
     if not user:
         return redirect(url_for('auth.login'))
 
-    # Fetch the selected user
     selected_user = User.query.get_or_404(user_id)
-
-    # Fetch the selected user's posts
     posts = Note.query.filter_by(user_id=selected_user.id).all()
-
-    # Calculate stats for the selected user
-    total_posts = len(posts) or 1  # Avoid division by zero
+    total_posts = len(posts) or 1
     stats = {
         'spiciness': sum(n.Spiciness for n in posts) / total_posts,
         'deliciousness': sum(n.Deliciousness for n in posts) / total_posts,
         'value': sum(n.Value for n in posts) / total_posts,
         'plating': sum(n.Plating for n in posts) / total_posts,
     }
-
-    # Calculate the overall average rating
     average_ratings = [
         (n.Spiciness + n.Deliciousness + n.Value + n.Plating) / 4 for n in posts
     ]
     overall_average_rating = sum(average_ratings) / total_posts
+
+    # Add follow status
+    is_following = Follow.query.filter_by(follower_id=user.id, followed_id=selected_user.id).first() is not None
+    follows_me = Follow.query.filter_by(follower_id=selected_user.id, followed_id=user.id).first() is not None
+
+    # Calculate user level
+    badges = [
+        {'name': 'First Post', 'earned': len(posts) > 0},
+        {'name': 'Spice Master', 'earned': stats['spiciness'] > 80},
+        {'name': 'Plating Perfectionist', 'earned': stats['plating'] > 90},
+        {'name': 'Value Hunter', 'earned': stats['value'] > 85},
+        {'name': 'Food Critic', 'earned': len(posts) > 20},
+        {'name': 'All-Rounder', 'earned': all(stat > 75 for stat in stats.values())}
+    ]
+    user_level = sum(1 for badge in badges if badge['earned'])
 
     return render_template(
         'user_profile.html',
@@ -402,8 +491,12 @@ def user_profile(user_id):
         selected_user=selected_user,
         stats=stats,
         overall_average_rating=overall_average_rating,
-        posts=posts
+        posts=posts,
+        is_following=is_following,
+        follows_me=follows_me,
+        user_level=user_level
     )
+    
 
 @views.route('/api/search_suggestions', methods=['GET'])
 def search_suggestions():
@@ -643,3 +736,142 @@ def search_reviews():
     } for post in results]
 
     return jsonify(success=True, results=results_data)
+
+@views.route('/share_post', methods=['POST'])
+def share_post():
+    user = current_user()
+    if not user:
+        return jsonify(success=False, error='User not authenticated'), 401
+
+    data = request.json
+    note_id = data.get('note_id')
+    recipient_id = data.get('recipient_id')
+
+    if not note_id or not recipient_id:
+        return jsonify(success=False, error='Missing data'), 400
+
+    # Prevent sharing to self
+    if user.id == int(recipient_id):
+        return jsonify(success=False, error="Can't share to yourself"), 400
+
+    # Check if recipient exists
+    recipient = User.query.get(recipient_id)
+    if not recipient:
+        return jsonify(success=False, error='Recipient not found'), 404
+
+    # Check if note exists
+    note = Note.query.get(note_id)
+    if not note:
+        return jsonify(success=False, error='Post not found'), 404
+
+    # Prevent duplicate shares (optional)
+    from .models import SharedPost
+    already_shared = SharedPost.query.filter_by(sender_id=user.id, recipient_id=recipient_id, note_id=note_id).first()
+    if already_shared:
+        return jsonify(success=False, error='Already shared with this user'), 400
+
+    # Create shared post
+    shared = SharedPost(sender_id=user.id, recipient_id=recipient_id, note_id=note_id)
+    db.session.add(shared)
+    db.session.commit()
+    return jsonify(success=True, message="Post shared successfully!"), 200
+
+@views.route('/share_multiple_posts', methods=['POST'])
+def share_multiple_posts():
+    user = current_user()
+    if not user:
+        return jsonify(success=False, error='User not authenticated'), 401
+
+    data = request.json
+    note_ids = data.get('note_ids', [])
+    recipient_id = data.get('recipient_id')
+
+    if not note_ids or not recipient_id:
+        return jsonify(success=False, error='Missing data'), 400
+
+    if user.id == int(recipient_id):
+        return jsonify(success=False, error="Can't share to yourself"), 400
+
+    recipient = User.query.get(recipient_id)
+    if not recipient:
+        return jsonify(success=False, error='Recipient not found'), 404
+
+    from .models import SharedPost
+    shared_count = 0
+    ignored_count = 0
+    for note_id in map(int, note_ids):
+        note = Note.query.get(note_id)
+        if not note:
+            continue
+        already_shared = SharedPost.query.filter_by(sender_id=user.id, recipient_id=recipient_id, note_id=note_id).first()
+        if already_shared:
+            ignored_count += 1
+            continue
+        shared = SharedPost(sender_id=user.id, recipient_id=recipient_id, note_id=note_id)
+        db.session.add(shared)
+        shared_count += 1
+    db.session.commit()
+    return jsonify(
+        success=True,
+        shared=shared_count,
+        ignored=ignored_count,
+        message=f"{shared_count} post(s) shared! {ignored_count} already shared."
+    )
+
+@views.route('/inbox')
+def inbox():
+    user = current_user()
+    if not user:
+        return redirect(url_for('auth.login'))
+
+    from .models import SharedPost
+    shared_posts = SharedPost.query.filter_by(recipient_id=user.id).order_by(SharedPost.timestamp.desc()).all()
+    unseen_count = SharedPost.query.filter_by(recipient_id=user.id, seen=False).count()
+
+    # Mark all as seen
+    SharedPost.query.filter_by(recipient_id=user.id, seen=False).update({'seen': True})
+    db.session.commit()
+
+    posts = []
+    for shared in shared_posts:
+        note = Note.query.get(shared.note_id)
+        sender = User.query.get(shared.sender_id)
+        if note and sender:
+            posts.append({
+                'note': note,
+                'sender': sender,
+                'timestamp': shared.timestamp
+            })
+    return render_template('inbox.html', user=user, posts=posts, unseen_count=unseen_count)
+
+@views.route('/api/users')
+def api_users():
+    user = current_user()
+    if not user:
+        return jsonify(users=[])
+    q = request.args.get('q', '').strip()
+    query = User.query.filter(User.id != user.id)
+    if q:
+        query = query.filter(User.username.ilike(f"%{q}%"))
+    users = query.all()
+    return jsonify(users=[{'id': u.id, 'username': u.username} for u in users])
+
+@views.route('/api/user_stats/<int:user_id>')
+def api_user_stats(user_id):
+    user = User.query.get(user_id)
+    if not user:
+        return jsonify(success=False), 404
+    notes = Note.query.filter_by(user_id=user.id).all()
+    total = len(notes) or 1
+    stats = {
+        'spiciness': sum(n.Spiciness for n in notes) / total,
+        'deliciousness': sum(n.Deliciousness for n in notes) / total,
+        'value': sum(n.Value for n in notes) / total,
+        'plating': sum(n.Plating for n in notes) / total,
+    }
+    return jsonify(
+        success=True,
+        stats=stats,
+        posts=len(notes),
+        username=user.username
+    )

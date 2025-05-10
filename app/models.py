@@ -1,5 +1,4 @@
 from . import db
-from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 
 
@@ -9,6 +8,7 @@ class Note(db.Model):
     Spiciness       = db.Column(db.Integer, nullable=False)
     Deliciousness   = db.Column(db.Integer, nullable = False)
     Value           = db.Column(db.Integer, nullable=False)
+    Stars           = db.Column(db.Integer, nullable=False)
     Plating         = db.Column(db.Integer, nullable=False)
     Review          = db.Column(db.String(1000), nullable=False)
     image           = db.Column(db.String(200))
@@ -20,6 +20,7 @@ class User(db.Model):
     id       = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(150),  unique=True, nullable=False)
     email    = db.Column(db.String(150), unique=True, nullable=False)
+    profileImage = db.Column(db.String(200))
     password = db.Column(db.String(150), nullable=False)
     Note       = db.relationship(Note, backref='user', lazy=True)
 
@@ -36,3 +37,11 @@ class Follow(db.Model):
 
     follower = db.relationship('User', foreign_keys=[follower_id], backref='following')
     followed = db.relationship('User', foreign_keys=[followed_id], backref='followers')
+
+class SharedPost(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    sender_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    recipient_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    note_id = db.Column(db.Integer, db.ForeignKey('note.id'), nullable=False)
+    timestamp = db.Column(db.DateTime, server_default=db.func.now())
+    seen = db.Column(db.Boolean, default=False)  # <-- Add this line

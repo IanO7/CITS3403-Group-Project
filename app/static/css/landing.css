@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /* Hero section */
 .landing-hero {
     background-color: #fff7f0;
@@ -70,3 +71,98 @@
     transform: none;
   }
   
+=======
+/* Landing page CSS*/
+  /* Hero Section Styling */
+  .landing-hero {
+    background: linear-gradient(to right, #ffecd2 0%, #fcb69f 100%);
+    color: #343a40;
+    border-bottom: 1px solid #eee;
+  }
+
+  .landing-hero .btn-primary {
+    background-color: #ff5e57;
+    border: none;
+  }
+
+  /* Feature Cards */
+  .feature-card {
+    background: #fff;
+    border-radius: 15px;
+    padding: 20px;
+    margin-bottom: 30px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    cursor: pointer;
+  }
+
+  .feature-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+  }
+
+  .feature-icon {
+    margin-bottom: 20px;
+  }
+
+  /* Trending Dishes */
+  .trend-card {
+    background-color: #fff;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 20px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .trend-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+  }
+
+  .trend-info {
+    padding: 15px;
+  }
+
+  .emoji-rating {
+    font-size: 1.5rem;
+    color: #ff7f50;
+  }
+
+  .emoji-rating span {
+    margin-left: 10px;
+  }
+
+  /* Carousel */
+  .carousel-item {
+    transition: transform 0.3s ease;
+  }
+
+  .carousel-control-prev-icon,
+  .carousel-control-next-icon {
+    background-color: #ff5e57;
+  }
+
+  .emoji-rating {
+    font-size: 1.5rem;
+    color: #ff7f50;
+    margin-top: 10px;
+  }
+
+  /* Stats Section */
+  #stats .stat-card {
+    background: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  #stats .stat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+  }
+
+  /* Call to Action */
+  #cta {
+    background-color: #ff5e57;
+  }
+>>>>>>> 883a95fa7da8a491448ff0d6ee8289c5dbc0b95f

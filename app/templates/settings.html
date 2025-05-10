@@ -5,11 +5,8 @@
 <div class="container mt-5">
     <h1 class="text-center mb-4">Settings</h1>
 
-    <!-- Add this link to your navigation bar or profile page -->
-    <a href="{{ url_for('views.settings') }}" class="btn btn-outline-secondary">Settings</a>
-
-    <!-- Update User Information -->
-    <form id="update-info-form" method="POST">
+    <!-- ────────────────  Update User Information  ──────────────── -->
+    <form id="update-info-form" method="POST" action="/settings" enctype="multipart/form-data">
         <h3>Update Information</h3>
         <div class="mb-3">
             <label for="username" class="form-label">Username</label>
@@ -19,13 +16,23 @@
             <label for="email" class="form-label">Email</label>
             <input type="email" class="form-control" id="email" name="email" value="{{ user.email }}" required>
         </div>
+        <div class="mb-3">
+            <label for="profileImage" id="pictireStatus">
+                {% if user.profileImage %}
+                change profile picture
+                {% else %}
+                add profile picture
+                {% endif %}
+                </label>
+            <input type="file" class="form-control" id="image" name="profileImage" placeholder="Enter an image URL">
+        </div>
         <button type="submit" class="btn btn-primary" name="action" value="update_info">Update Info</button>
     </form>
 
     <hr>
 
-    <!-- Update Password -->
-    <form id="update-password-form" method="POST">
+    <!-- ────────────────  Update Password  ──────────────── -->
+    <form id="update-password-form" method="POST" action="/settings">
         <h3>Change Password</h3>
         <div class="mb-3">
             <label for="current_password" class="form-label">Current Password</label>
@@ -40,8 +47,8 @@
 
     <hr>
 
-    <!-- Delete Account -->
-    <form id="delete-account-form" method="POST">
+    <!-- ────────────────  Delete Account  ──────────────── -->
+    <form id="delete-account-form" method="POST" action="/settings">
         <h3>Delete Account</h3>
         <p class="text-danger">Warning: This action cannot be undone.</p>
         <button type="submit" class="btn btn-danger" name="action" value="delete_account">Delete Account</button>
@@ -49,27 +56,29 @@
 </div>
 
 <script>
-    // Handle form submissions with fetch to provide better user feedback
+    // Attach enhanced fetch handling to all three forms
     document.querySelectorAll('form').forEach(form => {
         form.addEventListener('submit', event => {
             event.preventDefault();
-            const formData = new FormData(form);
+            // include the clicked button automatically
+            const formData = new FormData(form, event.submitter);
             fetch('/settings', {
                 method: 'POST',
                 body: formData
             })
-            .then(response => response.json())
+            .then(r => r.json())
             .then(data => {
                 if (data.success) {
                     alert(data.message);
                     if (form.id === 'delete-account-form') {
-                        window.location.href = '/';
+                        // redirect to landing page after account deletion
+                        window.location.href = '/landing';
                     }
                 } else {
-                    alert(data.error || 'An error occurred.');
+                    alert(data.error || 'An unexpected error occurred.');
                 }
             })
-            .catch(error => console.error('Error:', error));
+            .catch(err => console.error('Fetch error:', err));
         });
     });
 </script>

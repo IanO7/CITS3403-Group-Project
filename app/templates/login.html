@@ -1,44 +1,52 @@
 {% extends "base.html" %}
-{% block title %}Log In{% endblock %}
-
-{% block extra_css %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
-{% endblock %}
+{% block title %}Log In{% endblock %}
 
 {% block content %}
-<div class="row justify-content-center">
-  <div class="col-md-5">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}"/>
 
-    <h2 class="text-center mb-4">Welcome back</h2>
+<div class="login-container">
+  <h1>Log In - OZfoody</h1>
 
-    <form class="needs-validation" method="POST"
-          action="{{ url_for('auth.login') }}" novalidate>
-
-      <div class="mb-3">
-        <input name="email" class="form-control" type="email"
-               placeholder="Email" required>
-        <div class="invalid-feedback">Enter a valid email.</div>
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <div id="login-error" class="alert alert-danger" style="margin-bottom:1rem;">
+        {{ messages[0][1] }}
       </div>
+    {% endif %}
+  {% endwith %}
 
-      <div class="mb-4">
-        <input name="password" class="form-control" type="password"
-               placeholder="Password" required>
-        <div class="invalid-feedback">Password required.</div>
-      </div>
+  <!-- Google button (stub) -->
+  <button class="google-btn" onclick="handleGoogleLogin()">
+    <img class="google-icon" src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google Icon">
+    Continue with Google
+  </button>
 
-      <button class="btn btn-primary w-100" type="submit">Log In</button>
-    </form>
+  <div class="separator">or</div>
 
-    <div class="text-center my-3">or</div>
+  <!-- Email/password form -->
+  <form class="login-form" method="POST" action="{{ url_for('auth.login') }}">
+    <input name="email" id="email-input" type="email" placeholder="Email" required>
+    <div style="position:relative;">
+      <input name="password" id="password-input" type="password" placeholder="Password" required style="padding-right:2.5rem;">
+      <span id="toggle-password" style="position:absolute;top:50%;right:0.75rem;transform:translateY(-50%);cursor:pointer;">
+        <svg id="eye-icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" viewBox="0 0 24 24">
+          <path stroke="#888" stroke-width="2" d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12Z"/>
+          <circle cx="12" cy="12" r="3.5" stroke="#888" stroke-width="2"/>
+        </svg>
+      </span>
+    </div>
+    <button type="submit">Log In</button>
+  </form>
 
-    <a class="btn btn-outline-danger w-100 mb-4" href="/login/google">
-      <i class="fab fa-google me-2"></i>Log In with Google
-    </a>
+  <div class="signup-line">
+    Not a Foodymate yet? <a href="{{ url_for('auth.sign_up') }}">Sign up now!</a>
+  </div>
 
-    <p class="text-center small">
-      New here?
-      <a href="{{ url_for('auth.signup') }}">Create an account!</a>
-    </p>
+  <div class="footer">
+    By continuing, you agree to our Terms and Privacy Policy.
   </div>
 </div>
+
+<script src="{{ url_for('static', filename='js/login.js')}}"></script>
+
 {% endblock %}

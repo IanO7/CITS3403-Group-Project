@@ -2,7 +2,9 @@
 
 {% block content %}
 <div class="d-flex justify-content-center mt-5">
-    <form method="POST">
+    <form method="POST" enctype="multipart/form-data">
+        <button class="btn btn-secondary mb-3" onclick="history.back()">← Back</button>
+
         <div class="form-group">
             <label for="Resturaunt">Restaurant Name</label>
             <input type="text" class="form-control" id="Resturaunt" name="Resturaunt" required>
@@ -12,34 +14,38 @@
             <input type="text" class="form-control" id="location" name="location" placeholder="Enter a location or landmark" required>
             <ul id="location-suggestions" class="list-group mt-2" style="display: none;"></ul>
         </div>
+        <div class="form-group">
+            <label for="Stars" class="form-label">Stars</label>
+            <input type="number" class="form-control" name="Stars" id="Stars" min="1" max="5" value="0" required>
+        </div>
         <div id="map" style="height: 300px; margin-top: 10px;"></div>
         <div class="form-group">
             <label for="Spiciness">Spiciness</label>
-            <input type="range" class="form-range" id="Spiciness" name="Spiciness" min="0" max="100" value="50" oninput="updateValue('spicinessValue', this.value)">
-            <span id="spicinessValue" class="range-value">50</span>
+            <input type="range" class="form-range spiciness-slider" id="Spiciness" name="Spiciness" min="0" max="100" value="0" oninput="updateValue('spicinessValue', this.value)">
+            <span id="spicinessValue" class="range-value">0</span>
         </div>
         <div class="form-group">
             <label for="Deliciousness">Deliciousness</label>
-            <input type="range" class="form-range" id="Deliciousness" name="Deliciousness" min="0" max="100" value="50" oninput="updateValue('deliciousnessValue', this.value)">
-            <span id="deliciousnessValue" class="range-value">50</span>
+            <input type="range" class="form-range deliciousness-slider" id="Deliciousness" name="Deliciousness" min="0" max="100" value="0" oninput="updateValue('deliciousnessValue', this.value)">
+            <span id="deliciousnessValue" class="range-value">0</span>
         </div>
         <div class="form-group">
             <label for="Value">Value</label>
-            <input type="range" class="form-range" id="Value" name="Value" min="0" max="100" value="50" oninput="updateValue('valueValue', this.value)">
-            <span id="valueValue" class="range-value">50</span>
+            <input type="range" class="form-range value-slider" id="Value" name="Value" min="0" max="100" value="0" oninput="updateValue('valueValue', this.value)">
+            <span id="valueValue" class="range-value">0</span>
         </div>
         <div class="form-group">
             <label for="Plating">Plating</label>
-            <input type="range" class="form-range" id="Plating" name="Plating" min="0" max="100" value="50" oninput="updateValue('platingValue', this.value)">
-            <span id="platingValue" class="range-value">50</span>
+            <input type="range" class="form-range plating-slider" id="Plating" name="Plating" min="0" max="100" value="0" oninput="updateValue('platingValue', this.value)">
+            <span id="platingValue" class="range-value">0</span>
         </div>
         <div class="form-group">
             <label for="Review">Review</label>
             <textarea class="form-control" id="Review" name="Review" rows="3" required></textarea>
         </div>
         <div class="form-group">
-            <label for="image">Image URL</label>
-            <input type="text" class="form-control" id="image" name="image" placeholder="Enter an image URL">
+            <label for="image">Upload Image</label>
+            <input type="file" class="form-control" id="image" name="image" required>
         </div>
         <button type="submit" class="btn btn-primary">Submit</button>
     </form>
