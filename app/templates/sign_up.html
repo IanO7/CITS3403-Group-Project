@@ -7,6 +7,16 @@
 <div class="sign-up-container">
   <h1>Join OZFoody</h1>
 
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for category, message in messages %}
+        <div class="alert alert-{{ category }} text-center" style="margin-bottom:1rem;">
+          {{ message }}
+        </div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+
   <form class="sign-up-form" method="POST" novalidate>
     <div class="mb-3 d-flex align-items-center">
       <input name="username" class="form-control" placeholder="Username" required>
