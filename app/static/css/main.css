@@ -603,38 +603,6 @@ body {
     color: #f6e7da;
 }
 
-/* Modern notification bubble */
-.ozfoody-notification {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    min-width: 300px;
-    max-width: 90vw;
-    background: rgba(255,255,255,0.98);
-    color: #333;
-    border-radius: 1rem;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.18);
-    padding: 2rem 2.5rem;
-    font-size: 1.15rem;
-    font-family: 'Lato', sans-serif;
-    text-align: center;
-    z-index: 9999;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.3s;
-}
-.ozfoody-notification.show {
-    opacity: 1;
-    pointer-events: auto;
-}
-.ozfoody-notification.success {
-    border-left: 6px solid #5F8D3B;
-}
-.ozfoody-notification.error {
-    border-left: 6px solid #DF6F1B;
-}
-
 /* Navbar */
 .navbar {
     background-color: #F6E7DA; /* Soft peach */
@@ -701,4 +669,4 @@ body {
     margin: 0;
 }
 
-
+  

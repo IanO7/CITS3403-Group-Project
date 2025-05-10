@@ -32,18 +32,7 @@
             <label for="new_password" class="form-label">New Password</label>
             <input type="password" class="form-control" id="new_password" name="new_password" required>
         </div>
-        <div class="mb-3">
-            <label for="confirm_new_password" class="form-label">Confirm New Password</label>
-            <input type="password" class="form-control" id="confirm_new_password" name="confirm_new_password" required>
-        </div>
-        <ul class="validation-list mb-3 ps-4" id="settings-password-rules">
-          <li id="settings-length" class="invalid"><span class="emoji">❌</span> At least 8 characters</li>
-          <li id="settings-letter" class="invalid"><span class="emoji">❌</span> At least one letter (a-zA-Z)</li>
-          <li id="settings-number" class="invalid"><span class="emoji">❌</span> At least one number (0-9)</li>
-          <li id="settings-symbol" class="invalid"><span class="emoji">❌</span> At least one special character (!@#$%)</li>
-          <li id="settings-match" class="invalid"><span class="emoji">❌</span> Both passwords must be the same</li>
-        </ul>
-        <button type="submit" class="btn btn-warning" name="action" value="update_password" id="settings-change-btn" disabled>Change Password</button>
+        <button type="submit" class="btn btn-warning" name="action" value="update_password">Change Password</button>
     </form>
 
     <hr>
@@ -56,7 +45,6 @@
     </form>
 </div>
 
-<script src="{{ url_for('static', filename='JS/sign_up.js') }}"></script>
 <script>
     // Attach enhanced fetch handling to all three forms
     document.querySelectorAll('form').forEach(form => {
@@ -71,26 +59,17 @@
             .then(r => r.json())
             .then(data => {
                 if (data.success) {
-                    showOzfoodyNotification(data.message, "success");
+                    alert(data.message);
                     if (form.id === 'delete-account-form') {
                         // redirect to landing page after account deletion
                         window.location.href = '/landing';
                     }
                 } else {
-                    showOzfoodyNotification(data.error || 'An unexpected error occurred.', "error");
+                    alert(data.error || 'An unexpected error occurred.');
                 }
             })
             .catch(err => console.error('Fetch error:', err));
         });
     });
-
-    // For settings page
-    OzfoodyPassword.setupPasswordValidation(
-        'new_password', 'confirm_new_password', 'settings-change-btn',
-        { length: 'settings-length', letter: 'settings-letter', number: 'settings-number', symbol: 'settings-symbol', match: 'settings-match' }
-    );
-    // Add password toggle if you add eye icons to settings page
-    // OzfoodyPassword.setupPasswordToggle('new_password', 'toggle-new-password', 'eye-icon-new');
-    // OzfoodyPassword.setupPasswordToggle('confirm_new_password', 'toggle-confirm-new-password', 'eye-icon-confirm-new');
 </script>
 {% endblock %}
