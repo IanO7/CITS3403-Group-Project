@@ -1,4 +1,14 @@
 // File: static/js/login.js
+<<<<<<< HEAD
+function handleGoogleLogin() {
+    alert("Redirect to Google login (OAuth setup needed in backend)");
+  }
+  
+  function handleEmailLogin(e) {
+    e.preventDefault();
+    alert("Handle email login (to be implemented with Flask backend)");
+  }
+=======
 
 function handleGoogleLogin() {
   alert("Redirecting to Google login...");
@@ -30,4 +40,5 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 });
+>>>>>>> 883a95fa7da8a491448ff0d6ee8289c5dbc0b95f
   

@@ -1,3 +1,20 @@
+# macOS system files
+.DS_Store
+
+# Python environment
+venv/
+__pycache__/
+*.pyc
+
+# Flask uploads or logs
+instance/
+*.log
+
+# VSCode settings 
+.vscode/
+
+
+
 # Ignore database files
 *.db
 *.sqlite
