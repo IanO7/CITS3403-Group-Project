@@ -88,63 +88,23 @@
   <div class="container text-center">
     <h2 class="mb-4">Trending Dishes Right Now</h2>
     <div class="row">
+      {% for dish in trending_dishes %}
       <div class="col-md-4">
         <div class="trend-card">
-          <img src="https://via.placeholder.com/350x200" alt="Dish 1" class="img-fluid">
+          <img src="{{ url_for('static', filename=dish.image) if dish.image else 'https://via.placeholder.com/350x200' }}" alt="Dish Image" class="img-fluid">
           <div class="trend-info">
-            <h5>Dish Name 1</h5>
-            <span class="emoji-rating">&#x1F60D; 100+ Likes</span>
+            <h5>{{ dish.Resturaunt or 'Unknown Restaurant' }}</h5>
+            <p class="mb-1"><i class="fas fa-map-marker-alt"></i> {{ dish.location or 'Unknown' }}</p>
+            <span class="emoji-rating">&#x1F44D; {{ dish.likes or 0 }} Likes</span>
+            <div class="text-muted" style="font-size:0.9em;">by Anonymous</div>
           </div>
         </div>
+       {% endfor %}
       </div>
-      <div class="col-md-4">
-        <div class="trend-card">
-          <img src="https://via.placeholder.com/350x200" alt="Dish 2" class="img-fluid">
-          <div class="trend-info">
-            <h5>Dish Name 2</h5>
-            <span class="emoji-rating">&#x1F973; 75+ Likes</span>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-4">
-        <div class="trend-card">
-          <img src="https://via.placeholder.com/350x200" alt="Dish 3" class="img-fluid">
-          <div class="trend-info">
-            <h5>Dish Name 3</h5>
-            <span class="emoji-rating">&#x1F44D; 50+ Likes</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
+      
 </section>
-
-<!-- Trending Dishes Carousel -->
-<section id="trending-carousel" class="py-5 bg-dark text-white">
-  <div class="container text-center">
-    <h2 class="mb-4">Trending Dishes</h2>
-    <div id="trendingCarousel" class="carousel slide" data-bs-ride="carousel">
-      <div class="carousel-inner">
-        {% for dish in trending_dishes %}
-        <div class="carousel-item {% if loop.index == 1 %}active{% endif %}">
-          <img src="{{ url_for('static', filename=dish.image) }}" class="d-block w-100" alt="{{ dish.name }}">
-          <div class="carousel-caption d-none d-md-block">
-            <h5>{{ dish.name }}</h5>
-            <p>{{ dish.location }}</p>
-          </div>
-        </div>
-        {% endfor %}
-      </div>
-      <button class="carousel-control-prev" type="button" data-bs-target="#trendingCarousel" data-bs-slide="prev">
-        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-        <span class="visually-hidden">Previous</span>
-      </button>
-      <button class="carousel-control-next" type="button" data-bs-target="#trendingCarousel" data-bs-slide="next">
-        <span class="carousel-control-next-icon" aria-hidden="true"></span>
-        <span class="visually-hidden">Next</span>
-      </button>
-    </div>
-  </div>
+      
+      
 </section>
 
 <!-- Stats Section -->

@@ -444,26 +444,34 @@ def user_profile(user_id):
     if not user:
         return redirect(url_for('auth.login'))
 
-    # Fetch the selected user
     selected_user = User.query.get_or_404(user_id)
-
-    # Fetch the selected user's posts
     posts = Note.query.filter_by(user_id=selected_user.id).all()
-
-    # Calculate stats for the selected user
-    total_posts = len(posts) or 1  # Avoid division by zero
+    total_posts = len(posts) or 1
     stats = {
         'spiciness': sum(n.Spiciness for n in posts) / total_posts,
         'deliciousness': sum(n.Deliciousness for n in posts) / total_posts,
         'value': sum(n.Value for n in posts) / total_posts,
         'plating': sum(n.Plating for n in posts) / total_posts,
     }
-
-    # Calculate the overall average rating
     average_ratings = [
         (n.Spiciness + n.Deliciousness + n.Value + n.Plating) / 4 for n in posts
     ]
     overall_average_rating = sum(average_ratings) / total_posts
+
+    # Add follow status
+    is_following = Follow.query.filter_by(follower_id=user.id, followed_id=selected_user.id).first() is not None
+    follows_me = Follow.query.filter_by(follower_id=selected_user.id, followed_id=user.id).first() is not None
+
+    # Calculate user level
+    badges = [
+        {'name': 'First Post', 'earned': len(posts) > 0},
+        {'name': 'Spice Master', 'earned': stats['spiciness'] > 80},
+        {'name': 'Plating Perfectionist', 'earned': stats['plating'] > 90},
+        {'name': 'Value Hunter', 'earned': stats['value'] > 85},
+        {'name': 'Food Critic', 'earned': len(posts) > 20},
+        {'name': 'All-Rounder', 'earned': all(stat > 75 for stat in stats.values())}
+    ]
+    user_level = sum(1 for badge in badges if badge['earned'])
 
     return render_template(
         'user_profile.html',
@@ -471,8 +479,12 @@ def user_profile(user_id):
         selected_user=selected_user,
         stats=stats,
         overall_average_rating=overall_average_rating,
-        posts=posts
+        posts=posts,
+        is_following=is_following,
+        follows_me=follows_me,
+        user_level=user_level
     )
+    
 
 @views.route('/api/search_suggestions', methods=['GET'])
 def search_suggestions():
