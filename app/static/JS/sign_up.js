@@ -1,80 +1,97 @@
-function handleSignup(e) {
-    e.preventDefault();
-  
-    const email = document.querySelector('input[type="email"]').value;
-    const password = document.getElementById('password').value;
-    const confirmPassword = document.getElementById('confirm-password').value;
-  
-    // Check email format
-    if (!isValidEmail(email)) {
-      alert("Please enter a valid email address!");
-      return;
-    }
-  
-    // Check password strength
-    if (!isPasswordSecure(password)) {
-      alert("Password must meet all security rules.");
-      return;
-    }
-  
-    // Check password confirmation
-    if (password !== confirmPassword) {
-      alert("Passwords do not match!");
-      return;
-    }
-  
-    alert("Signup successful! (backend connection needed)");
+// Password validation logic for both signup and settings pages
+
+function updateCheck(element, isValid) {
+  if (!element) return;
+  element.className = isValid ? "valid" : "invalid";
+  element.innerHTML = isValid
+    ? element.innerHTML.replace('❌', '✔️')
+    : element.innerHTML.replace('✔️', '❌');
+}
+
+// Generic password validation for any page
+function validatePasswordFields(passwordId, confirmId, rules) {
+  const password = document.getElementById(passwordId);
+  const confirm = document.getElementById(confirmId);
+
+  if (!password || !confirm) return;
+
+  const val = password.value;
+  const confirmVal = confirm.value;
+
+  const hasLetter = /[a-zA-Z]/.test(val);
+  const hasNumber = /\d/.test(val);
+  const hasSymbol = /[^a-zA-Z0-9]/.test(val);
+  const isLong = val.length >= 8;
+  const isMatch = val === confirmVal && val !== "";
+
+  updateCheck(document.getElementById(rules.length), isLong);
+  updateCheck(document.getElementById(rules.letter), hasLetter);
+  updateCheck(document.getElementById(rules.number), hasNumber);
+  updateCheck(document.getElementById(rules.symbol), hasSymbol);
+  updateCheck(document.getElementById(rules.match), isMatch);
+
+  return isLong && hasLetter && hasNumber && hasSymbol && isMatch;
+}
+
+// Setup live validation for a form
+function setupPasswordValidation(passwordId, confirmId, buttonId, rules) {
+  const password = document.getElementById(passwordId);
+  const confirm = document.getElementById(confirmId);
+  const btn = document.getElementById(buttonId);
+
+  function validate() {
+    const valid = validatePasswordFields(passwordId, confirmId, rules);
+    if (btn) btn.disabled = !valid;
   }
-  
-  // ✅ Password strength checker
-  function isPasswordSecure(password) {
-    const rules = [
-      { regex: /.{8,}/, elementId: 'length-rule' },
-      { regex: /[0-9]/, elementId: 'number-rule' },
-      { regex: /[A-Z]/, elementId: 'uppercase-rule' },
-      { regex: /[!@#$%^&*(),.?\":{}|<>]/, elementId: 'special-rule' },
-    ];
-  
-    let allValid = true;
-    rules.forEach(rule => {
-      const element = document.getElementById(rule.elementId);
-      if (rule.regex.test(password)) {
-        element.classList.add('valid');
-        element.classList.remove('invalid');
-        element.innerText = "✔️ " + element.innerText.substring(2);
-      } else {
-        element.classList.add('invalid');
-        element.classList.remove('valid');
-        element.innerText = "❌ " + element.innerText.substring(2);
-        allValid = false;
-      }
+
+  if (password) password.addEventListener("input", validate);
+  if (confirm) confirm.addEventListener("input", validate);
+  // Initial state
+  validate();
+}
+
+// Email format checker
+function isValidEmail(email) {
+  const emailPattern = /^[^\s@]+@[^\s@]+\.[a-zA-Z]{2,}$/;
+  return emailPattern.test(email);
+}
+
+// Password eye toggle
+function setupPasswordToggle(inputId, toggleId, iconId) {
+  const input = document.getElementById(inputId);
+  const toggle = document.getElementById(toggleId);
+  const icon = document.getElementById(iconId);
+  let visible = false;
+  if (input && toggle && icon) {
+    toggle.addEventListener('click', function() {
+      visible = !visible;
+      input.type = visible ? 'text' : 'password';
+      icon.innerHTML = visible
+        ? `<path stroke="#888" stroke-width="2" d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12Z"/><circle cx="12" cy="12" r="3.5" stroke="#888" stroke-width="2"/><line x1="4" y1="20" x2="20" y2="4" stroke="#888" stroke-width="2"/>`
+        : `<path stroke="#888" stroke-width="2" d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12Z"/><circle cx="12" cy="12" r="3.5" stroke="#888" stroke-width="2"/>`;
     });
-  
-    return allValid;
   }
-  
-  // ✅ Email format checker
-  function isValidEmail(email) {
-    const emailPattern = /^[^\s@]+@[^\s@]+\.[a-zA-Z]{2,}$/
-    // This regex checks for a valid email format;
-    return emailPattern.test(email);
-  }
-  
-  // ✅ Toggle password visibility
-  function togglePassword(inputId) {
-    const input = document.getElementById(inputId);
-    if (input.type === "password") {
-      input.type = "text";
-    } else {
-      input.type = "password";
-    }
-  }
-  
-  // ✅ Setup live password checking on typing
-  document.addEventListener('DOMContentLoaded', function() {
-    const passwordInput = document.getElementById('password');
-    passwordInput.addEventListener('input', function() {
-      isPasswordSecure(passwordInput.value);
-    });
-  });
-  
+}
+
+// Notification display logic
+function showOzfoodyNotification(message, type = "success", duration = 2500) {
+  const notif = document.getElementById("ozfoody-notification");
+  if (!notif) return;
+  notif.textContent = message;
+  notif.className = `ozfoody-notification show ${type}`;
+  notif.style.display = "block";
+  setTimeout(() => {
+    notif.classList.remove("show");
+    setTimeout(() => { notif.style.display = "none"; }, 300);
+  }, duration);
+}
+
+// Export functions for use in HTML pages
+window.OzfoodyPassword = {
+  setupPasswordValidation,
+  isValidEmail,
+  setupPasswordToggle
+};
+
+// Export to window for use in inline scripts
+window.showOzfoodyNotification = showOzfoodyNotification;
