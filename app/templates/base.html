@@ -74,7 +74,9 @@
     <div class="container mt-4">
         {% block content %}{% endblock %}
     </div>
+    <div id="ozfoody-notification" class="ozfoody-notification"></div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ url_for('static', filename='JS/alert.js') }}"></script>
     {% block scripts %}{% endblock %}
 </body>
 </html>

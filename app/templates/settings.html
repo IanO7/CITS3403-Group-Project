@@ -59,13 +59,13 @@
             .then(r => r.json())
             .then(data => {
                 if (data.success) {
-                    alert(data.message);
+                    showOzfoodyNotification(data.message, "success");
                     if (form.id === 'delete-account-form') {
                         // redirect to landing page after account deletion
                         window.location.href = '/landing';
                     }
                 } else {
-                    alert(data.error || 'An unexpected error occurred.');
+                    showOzfoodyNotification(data.error || 'An unexpected error occurred.', "error");
                 }
             })
             .catch(err => console.error('Fetch error:', err));
