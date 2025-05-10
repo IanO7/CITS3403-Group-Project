@@ -2,7 +2,8 @@
 {% block title %}Discover OzFoody - Personalized Restaurant Reviews{% endblock %}
 
 {% block content %}
-<link rel="stylesheet" href="{{ url_for('static', filename='general_styles.css') }}"/>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/general_styles.css') }}"/>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/landing.css') }}"/>
 
 <!-- Hero Section with Interactive Animation -->
 <div class="landing-hero text-center py-5">
@@ -182,73 +183,6 @@
   </div>
 </section>
 
-<script>
-  const progressBar = document.getElementById('progress-bar');
-  const unlockButton = document.getElementById('unlock-button');
-  const recommendationDiv = document.getElementById('recommendation');
-  const recommendationText = document.getElementById('recommendation-text');
-
-  unlockButton.addEventListener('click', () => {
-    let progress = 0;
-    const interval = setInterval(() => {
-      progress += 10;
-      progressBar.style.width = `${progress}%`;
-      if (progress >= 100) {
-        clearInterval(interval);
-        fetch('/recommend_food')
-          .then(response => response.json())
-          .then(data => {
-            if (data.success) {
-              const food = data.recommendations[0];
-              recommendationText.textContent = `${food.restaurant} - Spiciness: ${food.spiciness}, Deliciousness: ${food.deliciousness}`;
-              recommendationDiv.style.display = 'block';
-            }
-          });
-      }
-    }, 200);
-  });
-</script>
-
-<script>
-function animateCountUp(element, target, duration = 1200) {
-    let start = 0;
-    const increment = target / (duration / 16);
-    function update() {
-        start += increment;
-        if (start < target) {
-            element.textContent = Math.floor(start);
-            requestAnimationFrame(update);
-        } else {
-            element.textContent = target;
-        }
-    }
-    update();
-}
-
-// Intersection Observer to trigger animation when stats are visible
-document.addEventListener('DOMContentLoaded', function() {
-    const postsElem = document.getElementById('total-posts');
-    const usersElem = document.getElementById('total-users');
-    const postsTarget = {{ total_posts }};
-    const usersTarget = {{ total_users }};
-    let animated = false;
-
-    function onEntry(entries, observer) {
-        entries.forEach(entry => {
-            if (entry.isIntersecting && !animated) {
-                animateCountUp(postsElem, postsTarget);
-                animateCountUp(usersElem, usersTarget);
-                animated = true;
-                observer.disconnect();
-            }
-        });
-    }
-
-    const observer = new IntersectionObserver(onEntry, { threshold: 0.5 });
-    observer.observe(document.getElementById('stats'));
-});
-</script>
-
 <!-- Call to Action -->
 <section id="cta" class="py-5 bg-primary text-white text-center">
   <div class="container">
@@ -258,99 +192,6 @@ document.addEventListener('DOMContentLoaded', function() {
   </div>
 </section>
 
-<style>
-  /* Hero Section Styling */
-  .landing-hero {
-    background: linear-gradient(to right, #ffecd2 0%, #fcb69f 100%);
-    color: #343a40;
-    border-bottom: 1px solid #eee;
-  }
-
-  .landing-hero .btn-primary {
-    background-color: #ff5e57;
-    border: none;
-  }
-
-  /* Feature Cards */
-  .feature-card {
-    background: #fff;
-    border-radius: 15px;
-    padding: 20px;
-    margin-bottom: 30px;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    cursor: pointer;
-  }
-
-  .feature-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
-  }
-
-  .feature-icon {
-    margin-bottom: 20px;
-  }
-
-  /* Trending Dishes */
-  .trend-card {
-    background-color: #fff;
-    border-radius: 10px;
-    overflow: hidden;
-    margin-bottom: 20px;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-  }
-
-  .trend-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
-  }
-
-  .trend-info {
-    padding: 15px;
-  }
-
-  .emoji-rating {
-    font-size: 1.5rem;
-    color: #ff7f50;
-  }
-
-  .emoji-rating span {
-    margin-left: 10px;
-  }
-
-  /* Carousel */
-  .carousel-item {
-    transition: transform 0.3s ease;
-  }
-
-  .carousel-control-prev-icon,
-  .carousel-control-next-icon {
-    background-color: #ff5e57;
-  }
-
-  .emoji-rating {
-    font-size: 1.5rem;
-    color: #ff7f50;
-    margin-top: 10px;
-  }
-
-  /* Stats Section */
-  #stats .stat-card {
-    background: #fff;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-  }
-
-  #stats .stat-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
-  }
-
-  /* Call to Action */
-  #cta {
-    background-color: #ff5e57;
-  }
-</style>
-
+<!-- Include landing.js -->
+<script src="{{ url_for('static', filename='js/landing.js') }}"></script>
 {% endblock %}

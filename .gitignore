@@ -55,3 +55,9 @@ __pycache__/
 
 # Ignore JetBrains specific files
 *.iml
+
+# Ignore virtual environments
+# venv/ contains Python interpreter files and dependencies, not source code.
+#It is machine-specific and should never be tracked by Git.
+# It will bloat your repo and cause unnecessary conflicts or errors.
+venv/
