@@ -1,6 +1,5 @@
 from flask import (
     Blueprint, render_template, request, redirect,
-    add_images
     url_for, flash, session, current_app
 )
 from .models import User
@@ -17,6 +16,9 @@ auth = Blueprint('auth', __name__)
 def sign_up():
     if request.method == 'POST'
         if image_file:
+            image_file = request.files.get('profileImage')
+            image_filename = None
+            
             filename = secure_filename(os.path.basename(image_file.filename))
             upload_folder = current_app.config['UPLOAD_FOLDER']
             os.makedirs(upload_folder, exist_ok=True)
