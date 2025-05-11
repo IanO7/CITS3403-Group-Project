@@ -9,7 +9,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 import os
 import numpy as np
-#from sklearn.neighbors import NearestNeighbors
+from sklearn.neighbors import NearestNeighbors
 import re
 
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
@@ -843,7 +843,7 @@ def inbox():
                 'sender': sender,
                 'timestamp': shared.timestamp
             })
-    return render_template('inbox.html', user=user, posts=posts, unseen_count=unseen_count)
+    return render_template('inbox.html', user=user, reviews=posts, unseen_count=unseen_count)
 
 @views.route('/api/users')
 def api_users():
