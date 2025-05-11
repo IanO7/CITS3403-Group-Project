@@ -11,6 +11,7 @@ import os
 import numpy as np
 from sklearn.neighbors import NearestNeighbors
 import re
+from collections import Counter
 
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 
@@ -29,6 +30,19 @@ def current_user():
 # Helper to fetch reviews for a user
 def getReviews(user):
     return Note.query.filter_by(user_id=user.id).all()
+
+def get_user_level(badges):
+    earned = sum(1 for b in badges if b['earned'])
+    if earned >= 6:
+        return 5
+    elif earned >= 4:
+        return 4
+    elif earned >= 2:
+        return 3
+    elif earned >= 1:
+        return 2
+    else:
+        return 1
 
 @views.route('/uploads/<filename>')
 def uploaded_file(filename):
@@ -145,6 +159,12 @@ def my_stats():
     ]
     overall_average_rating = sum(average_ratings) / total
 
+    # Favorite cuisine calculation
+    cuisine_list = [n.Cuisine for n in notes if n.Cuisine]
+    favorite_cuisine = None
+    if cuisine_list:
+        favorite_cuisine = Counter(cuisine_list).most_common(1)[0][0]
+
     # Determine earned badges
     badges = [
         {'name': 'First Post', 'earned': len(notes) > 0, 'description': 'Write your first post!'},
@@ -155,12 +175,16 @@ def my_stats():
         {'name': 'All-Rounder', 'earned': all(stat > 75 for stat in stats.values()), 'description': 'All stats above 75%'},
     ]
 
+    user_level = get_user_level(badges)
+
     return render_template(
         'my_stats.html',
         user=user,
         stats=stats,
         overall_average_rating=overall_average_rating,
-        badges=badges
+        badges=badges,
+        favorite_cuisine=favorite_cuisine,  # Pass to template
+        user_level=user_level
     )
 
 @views.route('/global_stats')
@@ -749,6 +773,7 @@ def search_reviews():
     results = Note.query.filter(
         (Note.Resturaunt.ilike(f"%{query}%")) |
         (Note.Review.ilike(f"%{query}%")) |
+        (Note.Cuisine.ilike(f"%{query}%")) |
         (Note.location.ilike(f"%{query}%"))
     ).all()
 
