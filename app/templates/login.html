@@ -25,7 +25,8 @@
 
   <!-- Email/password form -->
   <form class="login-form" method="POST" action="{{ url_for('auth.login') }}">
-    <input name="email" id="email-input" type="email" placeholder="Email" required>
+    <input name="email" id="email-input" type="email" placeholder="Enter your Email" required>
+    <div id="login-error" style="display: none; color: red;"></div>
     <div style="position:relative;">
       <input name="password" id="password-input" type="password" placeholder="Password" required style="padding-right:2.5rem;">
       <span id="toggle-password" style="position:absolute;top:50%;right:0.75rem;transform:translateY(-50%);cursor:pointer;">

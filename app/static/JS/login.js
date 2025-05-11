@@ -1,26 +1,29 @@
 // File: static/js/login.js
-<<<<<<< HEAD
-function handleGoogleLogin() {
-    alert("Redirect to Google login (OAuth setup needed in backend)");
-  }
-  
-  function handleEmailLogin(e) {
-    e.preventDefault();
-    alert("Handle email login (to be implemented with Flask backend)");
-  }
-=======
 
+// Function to hadle login with Google
 function handleGoogleLogin() {
   alert("Redirecting to Google login...");
 }
 
+// Function to check if the email is valid
+function isValidEmail(email) {
+  const emailPattern = /^[^\s@]+@[^\s@]+\.[a-zA-Z]{2,}$/;
+  return emailPattern.test(email);
+}
+
 // Hide error when email input is focused
 document.addEventListener('DOMContentLoaded', function() {
-  var emailInput = document.getElementById('email-input');
-  var errorDiv = document.getElementById('login-error');
-  if(emailInput && errorDiv) {
-    emailInput.addEventListener('focus', function() {
-      errorDiv.style.display = 'none';
+  const emailInput = document.getElementById('email-input');
+  const errorDiv = document.getElementById('login-error');
+
+  if (emailInput && errorDiv) {
+    emailInput.addEventListener('blur', function() {
+      if (!isValidEmail(emailInput.value)) {
+        errorDiv.style.display = 'block';
+        errorDiv.textContent = 'Please enter a valid email address.';
+      } else {
+        errorDiv.style.display = 'none';
+      }
     });
   }
 
@@ -40,5 +43,3 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 });
->>>>>>> 883a95fa7da8a491448ff0d6ee8289c5dbc0b95f
-  

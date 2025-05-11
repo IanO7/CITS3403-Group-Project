@@ -1,80 +1,93 @@
-function handleSignup(e) {
-    e.preventDefault();
-  
-    const email = document.querySelector('input[type="email"]').value;
-    const password = document.getElementById('password').value;
-    const confirmPassword = document.getElementById('confirm-password').value;
-  
-    // Check email format
-    if (!isValidEmail(email)) {
-      alert("Please enter a valid email address!");
-      return;
-    }
-  
-    // Check password strength
-    if (!isPasswordSecure(password)) {
-      alert("Password must meet all security rules.");
-      return;
-    }
-  
-    // Check password confirmation
-    if (password !== confirmPassword) {
-      alert("Passwords do not match!");
-      return;
-    }
-  
-    alert("Signup successful! (backend connection needed)");
+document.addEventListener('DOMContentLoaded', function () {
+  // DOM Elements
+  const password = document.getElementById('password');
+  const confirmPassword = document.getElementById('confirm_password');
+  const signupBtn = document.getElementById('signupBtn');
+  const togglePassword = document.getElementById('toggle-password');
+  const eyeIcon = document.getElementById('eye-icon');
+  const toggleConfirmPassword = document.getElementById('toggle-confirm-password');
+  const eyeIconConfirm = document.getElementById('eye-icon-confirm');
+
+  // Password Validation Rules
+  const rules = [
+    { id: 'length-rule', regex: /.{8,}/, label: "At least 8 characters" },
+    { id: 'number-rule', regex: /\d/, label: "At least one number (0-9)" },
+    { id: 'uppercase-rule', regex: /[A-Z]/, label: "At least one uppercase letter (A-Z)" },
+    { id: 'special-rule', regex: /[^a-zA-Z0-9]/, label: "At least one special character (!@#$%)" }
+  ];
+
+  // Helper Function: Update Rule Display
+  function updateRuleDisplay(rule, isValid) {
+    const element = document.getElementById(rule.id);
+    if (!element) return;
+
+    element.classList.toggle('valid', isValid);
+    element.classList.toggle('invalid', !isValid);
+    element.innerHTML = isValid
+      ? `✔️ ${rule.label}`
+      : `❌ ${rule.label}`;
   }
-  
-  // ✅ Password strength checker
-  function isPasswordSecure(password) {
-    const rules = [
-      { regex: /.{8,}/, elementId: 'length-rule' },
-      { regex: /[0-9]/, elementId: 'number-rule' },
-      { regex: /[A-Z]/, elementId: 'uppercase-rule' },
-      { regex: /[!@#$%^&*(),.?\":{}|<>]/, elementId: 'special-rule' },
-    ];
-  
+
+  // Password Validation
+  function validatePassword() {
+    const val = password.value;
+    const confirmVal = confirmPassword.value;
     let allValid = true;
+
+    // Validate password rules
     rules.forEach(rule => {
-      const element = document.getElementById(rule.elementId);
-      if (rule.regex.test(password)) {
-        element.classList.add('valid');
-        element.classList.remove('invalid');
-        element.innerText = "✔️ " + element.innerText.substring(2);
-      } else {
-        element.classList.add('invalid');
-        element.classList.remove('valid');
-        element.innerText = "❌ " + element.innerText.substring(2);
-        allValid = false;
+      const isValid = rule.regex.test(val);
+      updateRuleDisplay(rule, isValid);
+      if (!isValid) allValid = false;
+    });
+
+    // Validate password match
+    const match = val === confirmVal && val !== "";
+    updateRuleDisplay({ id: 'match-rule', label: "Both passwords must be the same" }, match);
+    allValid = allValid && match;
+
+    // Enable or disable the signup button
+    signupBtn.disabled = !allValid;
+  }
+
+  // Event Listeners for Password Validation
+  if (password) password.addEventListener('input', validatePassword);
+  if (confirmPassword) confirmPassword.addEventListener('input', validatePassword);
+
+  // Password Eye Toggle for Password
+  let visible = false;
+  if (password && togglePassword) {
+    togglePassword.addEventListener('click', function () {
+      visible = !visible;
+      password.type = visible ? 'text' : 'password';
+      eyeIcon.innerHTML = visible
+        ? `<path stroke="#888" stroke-width="2" d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12Z"/><circle cx="12" cy="12" r="3.5" stroke="#888" stroke-width="2"/><line x1="4" y1="20" x2="20" y2="4" stroke="#888" stroke-width="2"/>`
+        : `<path stroke="#888" stroke-width="2" d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12Z"/><circle cx="12" cy="12" r="3.5" stroke="#888" stroke-width="2"/>`;
+    });
+  }
+
+  // Password Eye Toggle for Confirm Password
+  let visibleConfirm = false;
+  if (confirmPassword && toggleConfirmPassword) {
+    toggleConfirmPassword.addEventListener('click', function () {
+      visibleConfirm = !visibleConfirm;
+      confirmPassword.type = visibleConfirm ? 'text' : 'password';
+      eyeIconConfirm.innerHTML = visibleConfirm
+        ? `<path stroke="#888" stroke-width="2" d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12Z"/><circle cx="12" cy="12" r="3.5" stroke="#888" stroke-width="2"/><line x1="4" y1="20" x2="20" y2="4" stroke="#888" stroke-width="2"/>`
+        : `<path stroke="#888" stroke-width="2" d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12Z"/><circle cx="12" cy="12" r="3.5" stroke="#888" stroke-width="2"/>`;
+    });
+  }
+
+  // Final Check on Form Submission
+  const form = document.querySelector('.signup-form');
+  if (form) {
+    form.addEventListener('submit', function (e) {
+      validatePassword(); // Ensure the latest state
+
+      if (signupBtn.disabled) {
+        e.preventDefault();
+        alert("Please correct the highlighted issues before signing up.");
       }
     });
-  
-    return allValid;
   }
-  
-  // ✅ Email format checker
-  function isValidEmail(email) {
-    const emailPattern = /^[^\s@]+@[^\s@]+\.[a-zA-Z]{2,}$/
-    // This regex checks for a valid email format;
-    return emailPattern.test(email);
-  }
-  
-  // ✅ Toggle password visibility
-  function togglePassword(inputId) {
-    const input = document.getElementById(inputId);
-    if (input.type === "password") {
-      input.type = "text";
-    } else {
-      input.type = "password";
-    }
-  }
-  
-  // ✅ Setup live password checking on typing
-  document.addEventListener('DOMContentLoaded', function() {
-    const passwordInput = document.getElementById('password');
-    passwordInput.addEventListener('input', function() {
-      isPasswordSecure(passwordInput.value);
-    });
-  });
-  
+});

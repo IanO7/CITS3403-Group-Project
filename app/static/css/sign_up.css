@@ -109,7 +109,7 @@ body {
   background: #4b743e;
 }
 
-.validation-list li {
+.password-rules li {
   font-size: 0.9rem;
   list-style: none;
   padding: 2px 0;
@@ -118,15 +118,15 @@ body {
   align-items: center;
 }
 
-.validation-list .valid {
+.password-rules .valid {
   color: green;
 }
 
-.validation-list .invalid {
+.password-rules .invalid {
   color: black;
 }
 
-.validation-list .emoji {
+.password-rules .emoji {
   margin-right: 0.5rem;
 }
 
