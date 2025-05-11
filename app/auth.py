@@ -15,6 +15,9 @@ auth = Blueprint('auth', __name__)
 @auth.route('/sign_up', methods=['GET', 'POST'])
 def sign_up():
     if request.method == 'POST':
+        image_file = request.files.get('profileImage')
+        image_filename = None
+
         if image_file:
             image_file = request.files.get('profileImage')
             image_filename = None
