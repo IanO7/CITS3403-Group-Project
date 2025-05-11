@@ -1,0 +1,109 @@
+{% block content %}
+        <div class="col">
+            
+            <div class="card mb-4 shadow-sm rounded-4 h-100" style="min-height: 500px;">
+
+                <input type="checkbox" class="multi-share-checkbox" id="checkbox" value="{{ review.id }}" style="position:absolute;top:10px;left:10px;z-index:2;display:none;">
+
+                <div class="card-body">
+
+                    <div class="d-flex align-items-center mb-3 w-100">
+                        <img src="{{ url_for('views.uploaded_file', filename=user.profileImage) }}"
+                            alt="Profile Avatar"
+                            class="profileImageSmall"> 
+
+                        <h5 class="card-title mb-1">{{ review.Resturaunt }}</h5>
+        
+                        <div class="star-rating text-warning">
+                            {% set stars = review.Stars | int %}
+
+                            {# Render filled stars #}
+                            {% for _ in range(stars) %}
+                            <i class="fa fa-star text-warning"></i>
+                            {% endfor %}
+
+                            {# Render empty stars #}
+                            {% for _ in range(5 - stars) %}
+                            <i class="fa fa-star text-muted"></i>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    
+                    <div class="card-body d-flex flex-column p-3" style="overflow-y: auto; max-height: 150px;">
+                        <p class="card-text mb-0">{{ review.Review }}</p>
+                    </div> 
+
+                    <h5 class="card-text">{{ review.Cuisine }}</h5>
+
+                    <p class="card-text"><strong>Location:</strong> {{ review.location or "Not specified"}}</p>
+                    
+                    {% if review.image %}
+                    <img src="{{ url_for('views.uploaded_file', filename=review.image) }}"
+                        class="post-image"
+                        alt="Dish Image">
+                    {% endif %}
+
+                    <div class="row text-center">
+                        <div class="col">
+                            <h6>Deliciousness</h6>
+                            <div class="progress">
+                                <div class="progress-bar bg-warning"
+                                        role="progressbar"
+                                        style="width: {{ review.Deliciousness | default(0, true) }}%;"
+                                        aria-valuenow="{{ review.Deliciousness }}"
+                                        aria-valuemin="0"
+                                        aria-valuemax="100"></div>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <h6>Spiciness</h6>
+                            <div class="progress" >
+                                <div class="progress-bar bg-danger"
+                                        role="progressbar"
+                                        style="width: {{ review.Spiciness }}%;"
+                                        aria-valuenow="{{ review.Spiciness }}"
+                                        aria-valuemin="0"
+                                        aria-valuemax="100"></div>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <h6>Value</h6>
+                            <div class="progress" >
+                                <div class="progress-bar bg-success"
+                                        role="progressbar"
+                                        style="width: {{ review.Value }}%;"
+                                        aria-valuenow="{{ review.Value }}"
+                                        aria-valuemin="0"
+                                        aria-valuemax="100"></div>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <h6>Service</h6>
+                            <div class="progress" >
+                                <div class="progress-bar bg-info"
+                                        role="progressbar"
+                                        style="width: {{ review.Service }}%;"
+                                        aria-valuenow="{{ review.Service }}"
+                                        aria-valuemin="0"
+                                        aria-valuemax="100"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="reaction-buttons">
+                    <button class="btn btn-outline-primary like-button" data-note-id="{{ review.id }}">
+                        <i class="bi bi-hand-thumbs-up"></i> 👍 <span class="action-count">{{ review.likes }}</span>
+                    </button>
+                    <button class="btn btn-outline-secondary comment-button">
+                        <i class="bi bi-chat"></i> 💬
+                    </button>
+                    <button class="btn btn-outline-success share-button" data-note-id="{{ review.id }}">
+                        <i class="bi bi-share"></i> 🔗
+                    </button>
+                    <button class="btn btn-outline-danger delete-button" data-note-id="{{ review.id }}">
+                        <i class="bi bi-trash"></i> 🗑️
+                    </button>
+                </div>
+            </div>
+        </div>
+{% endblock %}

@@ -12,77 +12,11 @@
 {% if posts %}
     <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4">
     {% for item in posts %}
-        <div class="col">
-            <div class="card mb-4 shadow-sm rounded-4 h-100" style="min-height: 500px;">
-
-                <div class="card-header">
-                    <strong>From: {{ item.sender.username }}</strong><br>
-                    <em>{{ item.timestamp.strftime('%Y-%m-%d %H:%M') }}</em>
-                </div>
-
-                
-                <div class="card-body">
-                    <div class="d-flex align-items-center mb-3 w-100">
-                        <img src="{{ url_for('static', filename='download.jpg') }}"
-                             alt="Profile Avatar"
-                             class="profileImageSmall">
-                        <h5 class="card-title mb-1">{{ item.sender.username }}</h5>
-                    </div>
-                    <p class="card-text">{{ item.note.Review }}</p>
-                    <p class="card-text"><strong>Location:</strong> {{ item.note.location or "Not specified" }}</p>
-                    {% if item.note.image %}
-                    <img src="{{ item.note.image }}"
-                         alt="Dish Image"
-                         class="post-image">
-                    {% endif %}
-                    <div class="row text-center mt-3">
-                        <div class="col">
-                            <h6>Deliciousness</h6>
-                            <div class="progress" style="height:10px;">
-                                <div class="progress-bar bg-warning"
-                                     role="progressbar"
-                                     style="width: {{ item.note.Deliciousness | default(0, true) }}%;"
-                                     aria-valuenow="{{ item.note.Deliciousness }}"
-                                     aria-valuemin="0"
-                                     aria-valuemax="100"></div>
-                            </div>
-                        </div>
-                        <div class="col">
-                            <h6>Spiciness</h6>
-                            <div class="progress" style="height:10px;">
-                                <div class="progress-bar bg-danger"
-                                     role="progressbar"
-                                     style="width: {{ item.note.Spiciness }}%;"
-                                     aria-valuenow="{{ item.note.Spiciness }}"
-                                     aria-valuemin="0"
-                                     aria-valuemax="100"></div>
-                            </div>
-                        </div>
-                        <div class="col">
-                            <h6>Value</h6>
-                            <div class="progress" style="height:10px;">
-                                <div class="progress-bar bg-success"
-                                     role="progressbar"
-                                     style="width: {{ item.note.Value }}%;"
-                                     aria-valuenow="{{ item.note.Value }}"
-                                     aria-valuemin="0"
-                                     aria-valuemax="100"></div>
-                            </div>
-                        </div>
-                        <div class="col">
-                            <h6>Service</h6>
-                            <div class="progress" style="height:10px;">
-                                <div class="progress-bar bg-info"
-                                     role="progressbar"
-                                     style="width: {{ item.note.Service }}%;"
-                                     aria-valuenow="{{ item.note.Service }}"
-                                     aria-valuemin="0"
-                                     aria-valuemax="100"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+        <div class="card-header">
+            <strong>From: {{ item.sender.username }}</strong><br>
+            <em>{{ item.timestamp.strftime('%Y-%m-%d %H:%M') }}</em>
+        {% set review = item.note %}
+        {% include "post.html" %}
         </div>
     {% endfor %}
     </div>

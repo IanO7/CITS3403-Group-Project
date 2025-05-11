@@ -9,7 +9,6 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 import os
 import numpy as np
-
 from sklearn.neighbors import NearestNeighbors
 import re
 
