@@ -65,7 +65,7 @@ def profile():
         "Spiciness": r.Spiciness,
         "Deliciousness": r.Deliciousness,
         "Value": r.Value,
-        "Plating": r.Plating,
+        "Service": r.Service,
         "Review": r.Review,
         "image": r.image,
         "likes": r.likes,  # Include the latest likes count
