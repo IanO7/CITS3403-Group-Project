@@ -2,8 +2,8 @@
         <div class="col">
             
             <div class="card mb-4 shadow-sm rounded-4 h-100" style="min-height: 500px;">
-                
-                <input type="checkbox" class="multi-share-checkbox" value="{{ review.id }}" style="position:absolute;top:10px;left:10px;z-index:2;">
+
+                <input type="checkbox" class="multi-share-checkbox" id="checkbox" value="{{ review.id }}" style="position:absolute;top:10px;left:10px;z-index:2;display:none;">
 
                 <div class="card-body">
 
@@ -12,7 +12,7 @@
                             alt="Profile Avatar"
                             class="profileImageSmall"> 
 
-                        <h5 class="card-title mb-1">{{ review.Resturaunt or item.note.Resturaunt }}</h5>
+                        <h5 class="card-title mb-1">{{ review.Resturaunt }}</h5>
         
                         <div class="star-rating text-warning">
                             {% set stars = review.Stars | int %}
@@ -30,12 +30,12 @@
                     </div>
                     
                     <div class="card-body d-flex flex-column p-3" style="overflow-y: auto; max-height: 150px;">
-                        <p class="card-text mb-0">{{ review.Review or item.note.Review }}</p>
+                        <p class="card-text mb-0">{{ review.Review }}</p>
                     </div> 
 
-                    <h5 class="card-text">{{ review.Cuisine or item.note.Cuisine }}</h5>
+                    <h5 class="card-text">{{ review.Cuisine }}</h5>
 
-                    <p class="card-text"><strong>Location:</strong> {{ review.location or item.note.location or "Not specified"}}</p>
+                    <p class="card-text"><strong>Location:</strong> {{ review.location or "Not specified"}}</p>
                     
                     {% if review.image %}
                     <img src="{{ url_for('views.uploaded_file', filename=review.image) }}"
@@ -92,7 +92,7 @@
                 </div>
                 <div class="reaction-buttons">
                     <button class="btn btn-outline-primary like-button" data-note-id="{{ review.id }}">
-                        <i class="bi bi-hand-thumbs-up"></i> 👍 <span class="action-count">{{ review.likes or item.note.likes }}</span>
+                        <i class="bi bi-hand-thumbs-up"></i> 👍 <span class="action-count">{{ review.likes }}</span>
                     </button>
                     <button class="btn btn-outline-secondary comment-button">
                         <i class="bi bi-chat"></i> 💬

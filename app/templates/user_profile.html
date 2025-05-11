@@ -6,10 +6,10 @@
     <!-- User Stats Section -->
     <div class="dashboard-header mb-4">
         <div class="profile-info d-flex align-items-center">
-            <img src="{{ url_for('static', filename=selected_user.profile_photo or 'default_profile.jpg') }}" 
-                 alt="{{ selected_user.username }}" 
-                 class="rounded-circle" 
-                 style="width: 100px; height: 100px; object-fit: cover; margin-right: 20px;">
+            <img src="{{ url_for('views.uploaded_file', filename=selected_user.profileImage) }}" 
+                alt="{{ selected_user.username }}" 
+                class="profileImage" 
+                style="width: 100px; height: 100px; object-fit: cover; margin-right: 20px;">
             <div>
                 <h1>{{ selected_user.username }}'s Profile</h1>
                 <p>Statistics based on their reviews.</p>
@@ -61,19 +61,9 @@
 
     <!-- User Posts Section -->
     <h2 class="text-center mt-5">Posts by {{ selected_user.username }}</h2>
-    <div class="staggered-grid mt-4">
-        {% for post in posts %}
-        <div class="review-card-modern">
-            {% if post.image %}
-            <div class="review-image-modern">
-                <img src="{{ url_for('static', filename=post.image) }}" alt="{{ post.Resturaunt }}">
-            </div>
-            {% endif %}
-            <div class="review-header-modern">
-                <h5>{{ post.Resturaunt }}</h5>
-                <p>{{ post.Review }}</p>
-            </div>
-        </div>
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4">
+        {% for review in posts %}
+            {% include "post.html" %}
         {% endfor %}
     </div>
 </div>

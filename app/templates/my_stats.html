@@ -9,7 +9,9 @@
     <!-- Welcome Section -->
     <div class="dashboard-header">
         <div class="profile-info">
-            <img src="{{ url_for('static', filename='Images/profile-placeholder.png') }}" alt="Profile Picture" class="profile-img">
+            {% if user.profileImage %}
+                <img src="{{ url_for('views.uploaded_file', filename=user.profileImage) }}" class="profileImage" alt="profile image"> 
+            {% endif %} 
             <div>
                 <h1>Welcome back, <span class="user-name">{{ user.username }}</span>!</h1>
                 <p>Your personalized food journey dashboard.</p>

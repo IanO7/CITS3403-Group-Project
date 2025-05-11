@@ -843,7 +843,7 @@ def inbox():
                 'sender': sender,
                 'timestamp': shared.timestamp
             })
-    return render_template('inbox.html', user=user, reviews=posts, unseen_count=unseen_count)
+    return render_template('inbox.html', user=user, posts=posts, unseen_count=unseen_count)
 
 @views.route('/api/users')
 def api_users():

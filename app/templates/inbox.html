@@ -11,9 +11,13 @@
 </h2>
 {% if posts %}
     <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4">
-        <p> you have posts! </p>
     {% for item in posts %}
+        <div class="card-header">
+            <strong>From: {{ item.sender.username }}</strong><br>
+            <em>{{ item.timestamp.strftime('%Y-%m-%d %H:%M') }}</em>
+        {% set review = item.note %}
         {% include "post.html" %}
+        </div>
     {% endfor %}
     </div>
 {% else %}
