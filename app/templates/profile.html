@@ -5,7 +5,9 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='css/badge.css') }}">
 
 <div id="profileHeader" class="container mt-2">
-    <img src="{{  url_for('static', filename='download.jpg') }}" class="profileImage"> 
+    {% if user.profileImage %}
+    <img src="{{ url_for('views.uploaded_file', filename=user.profileImage) }}" class="profileImage"> 
+    {% endif %} 
 </div>
 
 <div id="profileSub" class="container mt-1">
@@ -14,12 +16,14 @@
         <span class="badge badge-level level-{{ level }}">Level {{ level }}</span>
     </h1>
     <button class="addPost" onclick="location.href='/new_post'">Add ➕ </button>
+
 </div>
 
 <div class="mb-3">
     <button class="btn btn-success" id="shareMultipleBtn">Share Multiple 🔗</button>
     <button class="btn btn-primary d-none" id="shareSelectedBtn" style="margin-left:10px;">Share Selected</button>
 </div>
+
 
 <div id="multiShareAlert" class="alert alert-success d-none" role="alert"></div>
 <div id="singleShareAlert" class="alert alert-success d-none" role="alert"></div>
@@ -55,6 +59,21 @@
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     }
 
+    .badge-level {
+        display: inline-block;
+        padding: 5px 10px;
+        font-size: 0.9rem;
+        font-weight: bold;
+        border-radius: 12px;
+        color: white;
+    }
+
+    .level-1 { background-color: #6E3A14; } /* Bronze */
+    .level-2 { background-color: #8E5F2B; } /* Silver */
+    .level-3 { background-color: #DF6F1B; } /* Gold */
+    .level-4 { background-color: #5F8D3B; } /* Emerald */
+    .level-5 { background-color: #007BFF; } /* Sapphire */
+
     /* Post Styles */
     .card-body {
         padding: 15px;
@@ -62,6 +81,7 @@
         flex-direction: column;
         justify-content: space-between;
     }
+
 
     .profileImageSmall {
         width: 40px;
@@ -73,7 +93,9 @@
 
     .post-image {
         width: 100%;
-        height: 300px;
+
+        height: 250px;
+
         object-fit: cover;
         border-radius: 10px;
         margin-top: 15px;
@@ -127,26 +149,56 @@
     <div id="Posts" class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4">
         {% for review in reviews %}
         <div class="col">
+            
             <div class="card mb-4 shadow-sm rounded-4 h-100" style="min-height: 500px;">
+
+                
                 <input type="checkbox" class="multi-share-checkbox" value="{{ review.id }}" style="position:absolute;top:10px;left:10px;z-index:2;">
+
                 <div class="card-body">
+
                     <div class="d-flex align-items-center mb-3 w-100">
-                        <img src="{{  url_for('static', filename='download.jpg') }}"
-                             alt="Profile Avatar"
-                             class="profileImageSmall"> 
-                        <h5 class="card-title mb-1">{{ user.username }}</h5>
+                        <img src="{{ url_for('views.uploaded_file', filename=user.profileImage) }}"
+                            alt="Profile Avatar"
+                            class="profileImageSmall"> 
+
+                        <h5 class="card-title mb-1">{{ review.Resturaunt }}</h5>
+        
+                        <div class="star-rating text-warning">
+                            {% set stars = review.Stars | int %}
+
+                            {# Render filled stars #}
+                            {% for _ in range(stars) %}
+                            <i class="fa fa-star text-warning"></i>
+                            {% endfor %}
+
+                            {# Render empty stars #}
+                            {% for _ in range(5 - stars) %}
+                            <i class="fa fa-star text-muted"></i>
+                            {% endfor %}
+                        </div>
+
+                
                     </div>
-                    <p class="card-text">{{ review.Review }}</p>
+                    
+                    <div class="card-body d-flex flex-column p-3" style="overflow-y: auto; max-height: 150px;">
+                        <p class="card-text mb-0">{{ review.Review }}</p>
+                    </div> 
+
                     <p class="card-text"><strong>Location:</strong> {{ review.location or "Not specified" }}</p>
+                    
                     {% if review.image %}
-                    <img src="{{ review.image }}"
-                         alt="Dish Image"
-                         class="post-image">
+
+                    <img src="{{ url_for('views.uploaded_file', filename=review.image) }}"
+                        class="post-image"
+                        alt="Dish Image">
                     {% endif %}
-                    <div class="row text-center mt-3">
+
+                    <div class="row text-center">
+
                         <div class="col">
                             <h6>Deliciousness</h6>
-                            <div class="progress" style="height:10px;">
+                            <div class="progress">
                                 <div class="progress-bar bg-warning"
                                      role="progressbar"
                                      style="width: {{ review.Deliciousness | default(0, true) }}%;"
@@ -157,7 +209,7 @@
                         </div>
                         <div class="col">
                             <h6>Spiciness</h6>
-                            <div class="progress" style="height:10px;">
+                            <div class="progress" >
                                 <div class="progress-bar bg-danger"
                                      role="progressbar"
                                      style="width: {{ review.Spiciness }}%;"
@@ -168,7 +220,7 @@
                         </div>
                         <div class="col">
                             <h6>Value</h6>
-                            <div class="progress" style="height:10px;">
+                            <div class="progress" >
                                 <div class="progress-bar bg-success"
                                      role="progressbar"
                                      style="width: {{ review.Value }}%;"
@@ -179,7 +231,7 @@
                         </div>
                         <div class="col">
                             <h6>Plating</h6>
-                            <div class="progress" style="height:10px;">
+                            <div class="progress" >
                                 <div class="progress-bar bg-info"
                                      role="progressbar"
                                      style="width: {{ review.Plating }}%;"

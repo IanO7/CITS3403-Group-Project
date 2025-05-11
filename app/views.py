@@ -1,12 +1,21 @@
-from flask import Blueprint, render_template, request, redirect, url_for, session, jsonify, abort, flash
+from flask import (
+    Blueprint, render_template, request, redirect, 
+    url_for, session, jsonify, abort, flash, current_app, 
+    send_from_directory )
+
 from .models import Note, User, Follow
 from . import db
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 import os
 import numpy as np
+
 from sklearn.neighbors import NearestNeighbors
 import re
+
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
+
+
 
 views = Blueprint('views', __name__)
 
@@ -21,6 +30,10 @@ def current_user():
 # Helper to fetch reviews for a user
 def getReviews(user):
     return Note.query.filter_by(user_id=user.id).all()
+
+@views.route('/uploads/<filename>')
+def uploaded_file(filename):
+    return send_from_directory(current_app.config['UPLOAD_FOLDER'], filename)
 
 @views.route('/')
 def home():
@@ -44,6 +57,8 @@ def profile():
         return redirect(url_for('auth.login'))
 
     reviews = Note.query.filter_by(user_id=user.id).all()  # Fetch all notes for the user
+
+
     review_data = [{
         "id": r.id,
         "Resturaunt": r.Resturaunt,
@@ -57,7 +72,8 @@ def profile():
         "location": r.location  # Include the location field
     } for r in reviews]
 
-    return render_template('profile.html', user=user, reviews=review_data)
+
+    return render_template('profile.html', user=user, reviews=reviews)
 
 UPLOAD_FOLDER = 'static/uploads'  # adjust as needed
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
@@ -72,22 +88,30 @@ def new_post():
         return redirect(url_for('auth.login'))
 
     if request.method == 'POST':
-        file = request.files.get('image')
-        image_path = None
-        if file and allowed_file(file.filename):
-            filename = secure_filename(file.filename)
-            image_path = os.path.join(UPLOAD_FOLDER, filename)
-            os.makedirs(UPLOAD_FOLDER, exist_ok=True)
-            file.save(image_path)
 
+        image_file = request.files.get('image')
+        image_path = None
+
+        if image_file:
+            filename = secure_filename(os.path.basename(image_file.filename))
+            upload_folder = current_app.config['UPLOAD_FOLDER']
+            os.makedirs(upload_folder, exist_ok=True)
+            image_path = os.path.join(upload_folder, filename)
+            image_file.save(image_path)
+            image_filename = filename
+
+       
         note = Note(
             Resturaunt=request.form['Resturaunt'],
             Spiciness=int(request.form['Spiciness']),
             Deliciousness=int(request.form['Deliciousness']),
             Value=int(request.form['Value']),
+            Stars=int(request.form['Stars']),
             Plating=int(request.form['Plating']),
             Review=request.form['Review'],
-            image=image_path,  # Now saved file path
+
+            image=image_filename, 
+
             location=request.form.get('location'),
             user_id=user.id
         )
@@ -359,6 +383,19 @@ def settings():
     if request.method == "POST":
         action = request.form.get("action", "").strip()
 
+
+        image_file = request.files.get('profileImage')
+        image_filename = None
+
+        if image_file:
+            filename = secure_filename(os.path.basename(image_file.filename))
+            upload_folder = current_app.config['UPLOAD_FOLDER']
+            os.makedirs(upload_folder, exist_ok=True)
+            image_path = os.path.join(upload_folder, filename)
+            image_file.save(image_path)
+            image_filename = filename
+
+
         # 1. ─────────────────────────────  UPDATE USERNAME / EMAIL  ───────────────────────────
         if action == "update_info":
             new_username = request.form.get("username", "").strip()
@@ -383,6 +420,9 @@ def settings():
             # Persist changes ----------------------------------------------------------------
             user.username = new_username
             user.email    = new_email
+
+            user.profileImage = image_filename
+
             db.session.commit()
             return jsonify(success=True, message="Profile updated successfully."), 200
 
@@ -415,6 +455,7 @@ def settings():
             db.session.commit()
             session.clear()
             return jsonify(success=True, message="Account deleted. Goodbye!"), 200
+
 
         # ─────────────────────────────────────────────────────────────────────────────────────
         return jsonify(success=False, error="Unknown action."), 400

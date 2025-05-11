@@ -6,7 +6,9 @@
     <h1 class="text-center mb-4">Settings</h1>
 
     <!-- ────────────────  Update User Information  ──────────────── -->
-    <form id="update-info-form" method="POST" action="/settings">
+
+    <form id="update-info-form" method="POST" action="/settings" enctype="multipart/form-data">
+
         <h3>Update Information</h3>
         <div class="mb-3">
             <label for="username" class="form-label">Username</label>
@@ -15,6 +17,16 @@
         <div class="mb-3">
             <label for="email" class="form-label">Email</label>
             <input type="email" class="form-control" id="email" name="email" value="{{ user.email }}" required>
+        </div>
+        <div class="mb-3">
+            <label for="profileImage" id="pictireStatus">
+                {% if user.profileImage %}
+                change profile picture
+                {% else %}
+                add profile picture
+                {% endif %}
+                </label>
+            <input type="file" class="form-control" id="image" name="profileImage" placeholder="Enter an image URL">
         </div>
         <button type="submit" class="btn btn-primary" name="action" value="update_info">Update Info</button>
     </form>
@@ -65,7 +77,8 @@
                         window.location.href = '/landing';
                     }
                 } else {
-                    showOzfoodyNotification(data.error || 'An unexpected error occurred.', "error");
+
+                    alert(data.error || 'An unexpected error occurred.');
                 }
             })
             .catch(err => console.error('Fetch error:', err));

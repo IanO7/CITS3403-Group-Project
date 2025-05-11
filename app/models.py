@@ -8,6 +8,7 @@ class Note(db.Model):
     Spiciness       = db.Column(db.Integer, nullable=False)
     Deliciousness   = db.Column(db.Integer, nullable = False)
     Value           = db.Column(db.Integer, nullable=False)
+    Stars           = db.Column(db.Integer, nullable=False)
     Plating         = db.Column(db.Integer, nullable=False)
     Review          = db.Column(db.String(1000), nullable=False)
     image           = db.Column(db.String(200))
@@ -19,6 +20,7 @@ class User(db.Model):
     id       = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(150),  unique=True, nullable=False)
     email    = db.Column(db.String(150), unique=True, nullable=False)
+    profileImage = db.Column(db.String(200))
     password = db.Column(db.String(150), nullable=False)
     Note       = db.relationship(Note, backref='user', lazy=True)
 
