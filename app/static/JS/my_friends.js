@@ -116,7 +116,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             <h5>${dish.restaurant}</h5>
                             <p>${dish.review}</p>
                             <p class="likes">❤️ ${dish.likes} Likes</p>
-                            <p>Spiciness: ${dish.spiciness}, Deliciousness: ${dish.deliciousness}, Value: ${dish.value}, Plating: ${dish.plating}</p>
+                            <p>Spiciness: ${dish.spiciness}, Deliciousness: ${dish.deliciousness}, Value: ${dish.value}, Service: ${dish.service}</p>
                         </div>
                     `;
                     trendingContainer.innerHTML += dishCard;
@@ -147,7 +147,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             <h5>${post.restaurant}</h5>
                             <p>${post.review}</p>
                             <p class="likes">❤️ ${post.likes} Likes</p>
-                            <p>Spiciness: ${post.spiciness}, Deliciousness: ${post.deliciousness}, Value: ${post.value}, Plating: ${post.plating}</p>
+                            <p>Spiciness: ${post.spiciness}, Deliciousness: ${post.deliciousness}, Value: ${post.value}, Service: ${post.service}</p>
                             <p><strong>Location:</strong> ${post.location || "Not specified"}</p>
                         </div>
                     `;
@@ -162,7 +162,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             <h5>${post.restaurant}</h5>
                             <p>${post.review}</p>
                             <p class="likes">❤️ ${post.likes} Likes</p>
-                            <p>Spiciness: ${post.spiciness}, Deliciousness: ${post.deliciousness}, Value: ${post.value}, Plating: ${post.plating}</p>
+                            <p>Spiciness: ${post.spiciness}, Deliciousness: ${post.deliciousness}, Value: ${post.value}, Service: ${post.service}</p>
                             <p><strong>Location:</strong> ${post.location || "Not specified"}</p>
                         </div>
                     `;
@@ -197,7 +197,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             <h5>${post.restaurant}</h5>
                             <p>${post.review}</p>
                             <p class="likes">❤️ ${post.likes} Likes</p>
-                            <p>Spiciness: ${post.spiciness}, Deliciousness: ${post.deliciousness}, Value: ${post.value}, Plating: ${post.plating}</p>
+                            <p>Spiciness: ${post.spiciness}, Deliciousness: ${post.deliciousness}, Value: ${post.value}, Service: ${post.service}</p>
                             <p><strong>Location:</strong> ${post.location || "Not specified"}</p>
                         </div>
                     `;
@@ -260,7 +260,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             <h5>${post.restaurant}</h5>
                             <p>${post.review}</p>
                             <p class="likes">❤️ ${post.likes} Likes</p>
-                            <p>Spiciness: ${post.spiciness}, Deliciousness: ${post.deliciousness}, Value: ${post.value}, Plating: ${post.plating}</p>
+                            <p>Spiciness: ${post.spiciness}, Deliciousness: ${post.deliciousness}, Value: ${post.value}, Service: ${post.service}</p>
                             <p><strong>Location:</strong> ${post.location || "Not specified"}</p>
                         </div>
                     `;
@@ -310,7 +310,7 @@ const stats = {
     spiciness: myStats.spiciness || 0,
     deliciousness: myStats.deliciousness || 0,
     value: myStats.value || 0,
-    plating: myStats.plating || 0,
+    service: myStats.service || 0,
     post: typeof userNotesLength !== 'undefined' ? userNotesLength : 0
 };
 
@@ -319,7 +319,7 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('my-spiciness').textContent = Math.round(stats.spiciness);
     document.getElementById('my-deliciousness').textContent = Math.round(stats.deliciousness);
     document.getElementById('my-value').textContent = Math.round(stats.value);
-    document.getElementById('my-plating').textContent = Math.round(stats.plating);
+    document.getElementById('my-service').textContent = Math.round(stats.service);
     document.getElementById('my-posts').textContent = stats.posts;
 
     // Friend search logic
@@ -367,7 +367,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         document.getElementById('friend-spiciness').textContent = Math.round(data.stats.spiciness);
                         document.getElementById('friend-deliciousness').textContent = Math.round(data.stats.deliciousness);
                         document.getElementById('friend-value').textContent = Math.round(data.stats.value);
-                        document.getElementById('friend-plating').textContent = Math.round(data.stats.plating);
+                        document.getElementById('friend-service').textContent = Math.round(data.stats.service);
                         document.getElementById('friend-posts').textContent = data.posts;
                     }
                 });

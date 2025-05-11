@@ -175,6 +175,8 @@
                         <p class="card-text mb-0">{{ review.Review }}</p>
                     </div> 
 
+                    <h5 class="card-text">{{ review.Cuisine }}</h5>
+
                     <p class="card-text"><strong>Location:</strong> {{ review.location or "Not specified" }}</p>
                     
                     {% if review.image %}
@@ -218,12 +220,12 @@
                             </div>
                         </div>
                         <div class="col">
-                            <h6>Plating</h6>
+                            <h6>Service</h6>
                             <div class="progress" >
                                 <div class="progress-bar bg-info"
                                      role="progressbar"
-                                     style="width: {{ review.Plating }}%;"
-                                     aria-valuenow="{{ review.Plating }}"
+                                     style="width: {{ review.Service }}%;"
+                                     aria-valuenow="{{ review.Service }}"
                                      aria-valuemin="0"
                                      aria-valuemax="100"></div>
                             </div>

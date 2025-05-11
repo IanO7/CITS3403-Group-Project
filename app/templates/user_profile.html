@@ -43,11 +43,11 @@
         </div>
 
         <div class="card stat-card">
-            <h3 class="card-title">🍽️ Plating</h3>
+            <h3 class="card-title">🍽️ Service</h3>
             <div class="progress custom-progress">
-                <div class="progress-bar bg-info" style="width: {{ stats.plating | default(0) }}%;"></div>
+                <div class="progress-bar bg-info" style="width: {{ stats.service | default(0) }}%;"></div>
             </div>
-            <p>{{ stats.plating | default(0) }}% plating-rated dishes</p>
+            <p>{{ stats.service | default(0) }}% service-rated dishes</p>
         </div>
     </div>
 
