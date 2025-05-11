@@ -16,6 +16,10 @@ auth = Blueprint('auth', __name__)
 def sign_up():
     if request.method == 'POST':
         image_file = request.files.get('profileImage')
+        if not image_file or image_file.filename == '':
+            flash('Profile image is required.', 'danger')
+            return redirect(url_for('auth.sign_up'))
+
         image_filename = None
 
         if image_file:
