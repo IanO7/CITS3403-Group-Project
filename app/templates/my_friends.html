@@ -24,11 +24,13 @@
         <h2>Recommended Friend</h2>
         {% if similar_user %}
         <div class="card text-center">
-            <div class="card-body">
-                <img src="{{ url_for('views.uploaded_file', filename=similar_user.profileImage) }}"
-                    alt="{{ similar_user.username }}" 
-                    class="profileImage" 
-                    style="width: 100px; height: 100px; object-fit: cover;">
+          <div class="card-body">
+            {% if similar_user.profileImage %}
+              <img src="{{ url_for('views.uploaded_file', filename=similar_user.profileImage) }}"
+                   alt="{{ similar_user.username }}" 
+                   class="profileImage"
+                   style="width: 100px; height: 100px; object-fit: cover;">
+            {% endif %}
                 <h5 class="card-title">{{ similar_user.username }}</h5>
                 <p class="card-text">This user has similar taste preferences to you!</p>
                 <a href="{{ url_for('views.user_profile', user_id=similar_user.id) }}" class="btn btn-primary">View Profile</a>
