@@ -2,6 +2,8 @@
 {% block title %} Profile {% endblock %}
 
 {% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/badge.css') }}">
+
 <div id="profileHeader" class="container mt-2">
     {% if user.profileImage %}
     <img src="{{ url_for('views.uploaded_file', filename=user.profileImage) }}" class="profileImage"> 
@@ -14,12 +16,14 @@
         <span class="badge badge-level level-{{ level }}">Level {{ level }}</span>
     </h1>
     <button class="addPost" onclick="location.href='/new_post'">Add ➕ </button>
+
 </div>
 
 <div class="mb-3">
     <button class="btn btn-success" id="shareMultipleBtn">Share Multiple 🔗</button>
     <button class="btn btn-primary d-none" id="shareSelectedBtn" style="margin-left:10px;">Share Selected</button>
 </div>
+
 
 <div id="multiShareAlert" class="alert alert-success d-none" role="alert"></div>
 <div id="singleShareAlert" class="alert alert-success d-none" role="alert"></div>
@@ -78,6 +82,7 @@
         justify-content: space-between;
     }
 
+
     .profileImageSmall {
         width: 40px;
         height: 40px;
@@ -88,7 +93,9 @@
 
     .post-image {
         width: 100%;
+
         height: 250px;
+
         object-fit: cover;
         border-radius: 10px;
         margin-top: 15px;
@@ -144,6 +151,7 @@
         <div class="col">
             
             <div class="card mb-4 shadow-sm rounded-4 h-100" style="min-height: 500px;">
+
                 
                 <input type="checkbox" class="multi-share-checkbox" value="{{ review.id }}" style="position:absolute;top:10px;left:10px;z-index:2;">
 
@@ -169,6 +177,8 @@
                             <i class="fa fa-star text-muted"></i>
                             {% endfor %}
                         </div>
+
+                
                     </div>
                     
                     <div class="card-body d-flex flex-column p-3" style="overflow-y: auto; max-height: 150px;">
@@ -178,12 +188,14 @@
                     <p class="card-text"><strong>Location:</strong> {{ review.location or "Not specified" }}</p>
                     
                     {% if review.image %}
+
                     <img src="{{ url_for('views.uploaded_file', filename=review.image) }}"
                         class="post-image"
                         alt="Dish Image">
                     {% endif %}
 
                     <div class="row text-center">
+
                         <div class="col">
                             <h6>Deliciousness</h6>
                             <div class="progress">

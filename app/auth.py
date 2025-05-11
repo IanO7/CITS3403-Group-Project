@@ -1,5 +1,6 @@
 from flask import (
     Blueprint, render_template, request, redirect,
+    add_images
     url_for, flash, session, current_app
 )
 from .models import User
@@ -7,14 +8,14 @@ from . import db
 from werkzeug.utils import secure_filename
 import os
 
+ 
+
+
 auth = Blueprint('auth', __name__)
 
 @auth.route('/sign_up', methods=['GET', 'POST'])
 def sign_up():
-    if request.method == 'POST':
-        image_file = request.files.get('profileImage')
-        image_filename = None
-
+    if request.method == 'POST'
         if image_file:
             filename = secure_filename(os.path.basename(image_file.filename))
             upload_folder = current_app.config['UPLOAD_FOLDER']
@@ -22,6 +23,7 @@ def sign_up():
             image_path = os.path.join(upload_folder, filename)
             image_file.save(image_path)
             image_filename = filename
+
 
         username        = request.form.get('username')
         email           = request.form.get('email')
@@ -39,7 +41,10 @@ def sign_up():
             return render_template('sign_up.html')
 
         # 3) Create & login
+        
         new_user = User(username=username, email=email, profileImage=image_filename)
+
+  
         new_user.set_password(password)
         db.session.add(new_user)
         db.session.commit()

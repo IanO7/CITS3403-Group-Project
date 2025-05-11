@@ -1,0 +1,41 @@
+/* Sleek, modern badge style for all levels */
+.badge-level {
+    display: inline-block;
+    padding: 7px 18px;
+    font-size: 1rem;
+    font-weight: 700;
+    border-radius: 999px;
+    color: #fff;
+    margin-left: 10px;
+    letter-spacing: 0.04em;
+    box-shadow: 0 4px 18px rgba(0,0,0,0.10);
+    border: none;
+    vertical-align: middle;
+    background: #888;
+    transition: 
+        background 0.2s,
+        box-shadow 0.2s,
+        transform 0.15s;
+    cursor: default;
+    user-select: none;
+    outline: none;
+}
+
+.level-1 { background: linear-gradient(90deg, #b07a4a 0%, #6E3A14 100%); }    /* Bronze */
+.level-2 { background: linear-gradient(90deg, #b8b8b8 0%, #8E5F2B 100%); }    /* Silver */
+.level-3 { background: linear-gradient(90deg, #ffe066 0%, #DF6F1B 100%); }    /* Gold */
+.level-4 { background: linear-gradient(90deg, #7ed957 0%, #5F8D3B 100%); }    /* Emerald */
+.level-5 { background: linear-gradient(90deg, #3a8dde 0%, #007BFF 100%); }    /* Sapphire */
+
+.badge-level:hover, .badge-level:focus {
+    filter: brightness(1.10);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.18);
+    transform: scale(1.07);
+    text-decoration: none;
+    outline: none;
+}
+
+.badge-level:active {
+    filter: brightness(0.95);
+    transform: scale(0.98);
+}

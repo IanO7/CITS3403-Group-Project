@@ -6,7 +6,9 @@
     <h1 class="text-center mb-4">Settings</h1>
 
     <!-- ────────────────  Update User Information  ──────────────── -->
+
     <form id="update-info-form" method="POST" action="/settings" enctype="multipart/form-data">
+
         <h3>Update Information</h3>
         <div class="mb-3">
             <label for="username" class="form-label">Username</label>
@@ -69,12 +71,13 @@
             .then(r => r.json())
             .then(data => {
                 if (data.success) {
-                    alert(data.message);
+                    showOzfoodyNotification(data.message, "success");
                     if (form.id === 'delete-account-form') {
                         // redirect to landing page after account deletion
                         window.location.href = '/landing';
                     }
                 } else {
+
                     alert(data.error || 'An unexpected error occurred.');
                 }
             })

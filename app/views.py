@@ -9,10 +9,13 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 import os
 import numpy as np
-#from sklearn.neighbors import NearestNeighbors
+
+from sklearn.neighbors import NearestNeighbors
 import re
 
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
+
+
 
 views = Blueprint('views', __name__)
 
@@ -55,8 +58,25 @@ def profile():
 
     reviews = Note.query.filter_by(user_id=user.id).all()  # Fetch all notes for the user
 
+
+    review_data = [{
+        "id": r.id,
+        "Resturaunt": r.Resturaunt,
+        "Spiciness": r.Spiciness,
+        "Deliciousness": r.Deliciousness,
+        "Value": r.Value,
+        "Plating": r.Plating,
+        "Review": r.Review,
+        "image": r.image,
+        "likes": r.likes,  # Include the latest likes count
+        "location": r.location  # Include the location field
+    } for r in reviews]
+
+
     return render_template('profile.html', user=user, reviews=reviews)
 
+UPLOAD_FOLDER = 'static/uploads'  # adjust as needed
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
@@ -68,6 +88,7 @@ def new_post():
         return redirect(url_for('auth.login'))
 
     if request.method == 'POST':
+
         image_file = request.files.get('image')
         image_path = None
 
@@ -79,6 +100,7 @@ def new_post():
             image_file.save(image_path)
             image_filename = filename
 
+       
         note = Note(
             Resturaunt=request.form['Resturaunt'],
             Spiciness=int(request.form['Spiciness']),
@@ -87,7 +109,9 @@ def new_post():
             Stars=int(request.form['Stars']),
             Plating=int(request.form['Plating']),
             Review=request.form['Review'],
+
             image=image_filename, 
+
             location=request.form.get('location'),
             user_id=user.id
         )
@@ -359,6 +383,7 @@ def settings():
     if request.method == "POST":
         action = request.form.get("action", "").strip()
 
+
         image_file = request.files.get('profileImage')
         image_filename = None
 
@@ -369,6 +394,7 @@ def settings():
             image_path = os.path.join(upload_folder, filename)
             image_file.save(image_path)
             image_filename = filename
+
 
         # 1. ─────────────────────────────  UPDATE USERNAME / EMAIL  ───────────────────────────
         if action == "update_info":
@@ -394,7 +420,9 @@ def settings():
             # Persist changes ----------------------------------------------------------------
             user.username = new_username
             user.email    = new_email
+
             user.profileImage = image_filename
+
             db.session.commit()
             return jsonify(success=True, message="Profile updated successfully."), 200
 
@@ -427,6 +455,7 @@ def settings():
             db.session.commit()
             session.clear()
             return jsonify(success=True, message="Account deleted. Goodbye!"), 200
+
 
         # ─────────────────────────────────────────────────────────────────────────────────────
         return jsonify(success=False, error="Unknown action."), 400
