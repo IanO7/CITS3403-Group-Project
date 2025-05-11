@@ -904,3 +904,4 @@ def api_user_stats(user_id):
         posts=len(notes),
         username=user.username
     )
+

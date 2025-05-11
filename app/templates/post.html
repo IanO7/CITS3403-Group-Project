@@ -97,12 +97,14 @@
                     <button class="btn btn-outline-secondary comment-button">
                         <i class="bi bi-chat"></i> 💬
                     </button>
-                    <button class="btn btn-outline-success share-button" data-note-id="{{ review.id }}">
-                        <i class="bi bi-share"></i> 🔗
-                    </button>
-                    <button class="btn btn-outline-danger delete-button" data-note-id="{{ review.id }}">
-                        <i class="bi bi-trash"></i> 🗑️
-                    </button>
+                    {% if show_actions is not defined or show_actions %}
+                        <button class="btn btn-outline-success share-button" data-note-id="{{ review.id }}">
+                            <i class="bi bi-share"></i> 🔗
+                        </button>
+                        <button class="btn btn-outline-danger delete-button" data-note-id="{{ review.id }}">
+                            <i class="bi bi-trash"></i> 🗑️
+                        </button>
+                    {% endif %}
                 </div>
             </div>
         </div>

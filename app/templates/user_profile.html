@@ -73,8 +73,14 @@
     <h2 class="text-center mt-5">Posts by {{ selected_user.username }}</h2>
     <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4">
         {% for review in posts %}
-            {% include "post.html" %}
+            {% set show_actions = False %}
+            {% include "post.html" with context %}
         {% endfor %}
     </div>
 </div>
+{% endblock %}
+
+{% block scripts %}
+    {{ super() }}
+    <script src="{{ url_for('static', filename='JS/my_friends.js') }}"></script>
 {% endblock %}
