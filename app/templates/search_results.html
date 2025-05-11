@@ -2,6 +2,8 @@
 {% block title %}Search Results{% endblock %}
 
 {% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/badge.css') }}">
+
 <div class="container mt-5">
     <h1 class="text-center mb-4">Search Results for "{{ query }}"</h1>
 
@@ -21,6 +23,7 @@
     <p class="text-center text-muted">No users found matching "{{ query }}".</p>
     {% endif %}
 
+
     <!-- Example -->
     {% for result in results %}
     <div>
@@ -36,21 +39,7 @@
 <style>
 </div>
 
-<style>
-    .badge-level {
-        display: inline-block;
-        padding: 5px 10px;
-        font-size: 0.8rem;
-        font-weight: bold;
-        border-radius: 12px;
-        color: white;
-        margin-left: 10px;
-    }
 
-    .level-1 { background-color: #6E3A14; } /* Bronze */
-    .level-2 { background-color: #8E5F2B; } /* Silver */
-    .level-3 { background-color: #DF6F1B; } /* Gold */
-    .level-4 { background-color: #5F8D3B; } /* Emerald */
-    .level-5 { background-color: #007BFF; } /* Sapphire */
-</style>
+</div>
+
 {% endblock %}

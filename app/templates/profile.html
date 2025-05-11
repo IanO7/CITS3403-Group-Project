@@ -2,6 +2,8 @@
 {% block title %} Profile {% endblock %}
 
 {% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/badge.css') }}">
+
 <div id="profileHeader" class="container mt-2">
     {% if user.profileImage %}
     <img src="{{ url_for('views.uploaded_file', filename=user.profileImage) }}" class="profileImage" alt="profile image"> 
@@ -14,12 +16,14 @@
         <span class="badge badge-level level-{{ level }}">Level {{ level }}</span>
     </h1>
     <button class="addPost" onclick="location.href='/new_post'">Add ➕ </button>
+
 </div>
 
 <div class="mb-3">
     <button class="btn btn-success" id="shareMultipleBtn">Share Multiple 🔗</button>
     <button class="btn btn-primary d-none" id="shareSelectedBtn" style="margin-left:10px;">Share Selected</button>
 </div>
+
 
 <div id="multiShareAlert" class="alert alert-success d-none" role="alert"></div>
 <div id="singleShareAlert" class="alert alert-success d-none" role="alert"></div>
@@ -77,10 +81,11 @@
         flex-direction: column;
         justify-content: space-between;
     }
-
     .post-image {
         width: 100%;
+
         height: 250px;
+
         object-fit: cover;
         border-radius: 10px;
         margin-top: 15px;
@@ -128,7 +133,6 @@
     }
     
 </style>
-
 {% if reviews %}
 <div id="userPosts">
     <div id="Posts" class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4">

@@ -1,6 +1,10 @@
 {% extends "base.html" %}
 {% block title %}{{ selected_user.username }}'s Profile{% endblock %}
 
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/badge.css') }}">
+{% endblock %}
+
 {% block content %}
 <div class="container mt-5">
     <!-- User Stats Section -->
@@ -11,7 +15,10 @@
                 class="profileImage" 
                 style="width: 100px; height: 100px; object-fit: cover; margin-right: 20px;">
             <div>
-                <h1>{{ selected_user.username }}'s Profile</h1>
+                <h1>
+                    {{ selected_user.username }}
+                    <span class="badge badge-level level-{{ selected_user.level }}">Level {{ selected_user.level }}</span>
+                </h1>
                 <p>Statistics based on their reviews.</p>
             </div>
         </div>
