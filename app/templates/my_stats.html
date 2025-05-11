@@ -47,11 +47,11 @@
         </div>
 
         <div class="card stat-card">
-            <h3 class="card-title">🍽️ Plating</h3>
+            <h3 class="card-title">🍽️ Service</h3>
             <div class="progress custom-progress">
-                <div class="progress-bar bg-info" style="width: {{ stats.plating | default(0) }}%;"></div>
+                <div class="progress-bar bg-info" style="width: {{ stats.service | default(0) }}%;"></div>
             </div>
-            <p>{{ stats.plating | default(0) }}% plating-rated dishes</p>
+            <p>{{ stats.service | default(0) }}% service-rated dishes</p>
         </div>
     </div>
 
@@ -214,9 +214,9 @@
     const foodChart = new Chart(foodChartCtx, {
         type: 'doughnut',
         data: {
-            labels: ['Spicy', 'Delicious', 'Value', 'Plating'],
+            labels: ['Spicy', 'Delicious', 'Value', 'Service'],
             datasets: [{
-                data: [{{ stats.spiciness }}, {{ stats.deliciousness }}, {{ stats.value }}, {{ stats.plating }}],
+                data: [{{ stats.spiciness }}, {{ stats.deliciousness }}, {{ stats.value }}, {{ stats.service }}],
                 backgroundColor: ['#DF6F1B', '#5F8D3B', '#8E5F2B', '#6E3A14']
             }]
         }
@@ -254,7 +254,7 @@
                 <div class="recommendation-card">
                     <img src="${food.image || 'https://via.placeholder.com/300'}" alt="${food.restaurant}">
                     <h5>${food.restaurant}</h5>
-                    <p>Spiciness: ${food.spiciness}, Deliciousness: ${food.deliciousness}, Value: ${food.value}, Plating: ${food.plating}, Overall: ${food.overall}</p>
+                    <p>Spiciness: ${food.spiciness}, Deliciousness: ${food.deliciousness}, Value: ${food.value}, Service: ${food.service}, Overall: ${food.overall}</p>
                 </div>
             `;
             recommendationBox.innerHTML += recommendationCard;
@@ -300,7 +300,7 @@
                                     <img src="${post.image || 'https://via.placeholder.com/300'}" alt="${post.restaurant}">
                                     <h5>${post.restaurant}</h5>
                                     <p>${post.review}</p>
-                                    <p>Spiciness: ${post.spiciness}, Deliciousness: ${post.deliciousness}, Value: ${post.value}, Plating: ${post.plating}</p>
+                                    <p>Spiciness: ${post.spiciness}, Deliciousness: ${post.deliciousness}, Value: ${post.value}, Service: ${post.service}</p>
                                 </div>
                             `;
                             searchResults.innerHTML += resultCard;

@@ -58,7 +58,7 @@ flagImage.strokeWidth = 2;
 // Add data points
 imageSeries.data = [
     { latitude: 35.6895, longitude: 139.6917, stat: "Spiciness", value: "9/10", flag: "https://cdn-icons-png.flaticon.com/512/197/197604.png" }, // Tokyo
-    { latitude: 48.8566, longitude: 2.3522, stat: "Plating", value: "8/10", flag: "https://cdn-icons-png.flaticon.com/512/197/197560.png" }, // Paris
+    { latitude: 48.8566, longitude: 2.3522, stat: "Service", value: "8/10", flag: "https://cdn-icons-png.flaticon.com/512/197/197560.png" }, // Paris
     { latitude: 40.7128, longitude: -74.0060, stat: "Deliciousness", value: "7/10", flag: "https://cdn-icons-png.flaticon.com/512/197/197484.png" }, // New York
     { latitude: -33.8688, longitude: 151.2093, stat: "Value", value: "6/10", flag: "https://cdn-icons-png.flaticon.com/512/197/197507.png" }, // Sydney
     { latitude: 55.7558, longitude: 37.6173, stat: "Uniqueness", value: "8/10", flag: "https://cdn-icons-png.flaticon.com/512/197/197408.png" } // Moscow

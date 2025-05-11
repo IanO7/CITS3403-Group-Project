@@ -103,11 +103,12 @@ def new_post():
        
         note = Note(
             Resturaunt=request.form['Resturaunt'],
+            Cuisine=request.form['Cuisine'],
             Spiciness=int(request.form['Spiciness']),
             Deliciousness=int(request.form['Deliciousness']),
             Value=int(request.form['Value']),
             Stars=int(request.form['Stars']),
-            Plating=int(request.form['Plating']),
+            Service=int(request.form['Service']),
             Review=request.form['Review'],
 
             image=image_filename, 
@@ -136,12 +137,12 @@ def my_stats():
         'spiciness':     sum(n.Spiciness     for n in notes) / total,
         'deliciousness': sum(n.Deliciousness for n in notes) / total,
         'value':         sum(n.Value         for n in notes) / total,
-        'plating':       sum(n.Plating       for n in notes) / total
+        'service':       sum(n.Service       for n in notes) / total
     }
 
     # Calculate the average rating for each review and then across all reviews
     average_ratings = [
-        (n.Spiciness + n.Deliciousness + n.Value + n.Plating) / 4 for n in notes
+        (n.Spiciness + n.Deliciousness + n.Value + n.Service) / 4 for n in notes
     ]
     overall_average_rating = sum(average_ratings) / total
 
@@ -149,7 +150,7 @@ def my_stats():
     badges = [
         {'name': 'First Post', 'earned': len(notes) > 0, 'description': 'Write your first post!'},
         {'name': 'Spice Master', 'earned': stats['spiciness'] > 80, 'description': 'Average spiciness above 80%'},
-        {'name': 'Plating Perfectionist', 'earned': stats['plating'] > 90, 'description': 'Average plating above 90%'},
+        {'name': 'Service Perfectionist', 'earned': stats['service'] > 90, 'description': 'Average service above 90%'},
         {'name': 'Value Hunter', 'earned': stats['value'] > 85, 'description': 'Average value above 85%'},
         {'name': 'Food Critic', 'earned': len(notes) > 20, 'description': 'Write more than 20 reviews'},
         {'name': 'All-Rounder', 'earned': all(stat > 75 for stat in stats.values()), 'description': 'All stats above 75%'},
@@ -188,7 +189,7 @@ def friends():
         'spiciness': sum(n.Spiciness for n in user_notes) / (len(user_notes) or 1),
         'deliciousness': sum(n.Deliciousness for n in user_notes) / (len(user_notes) or 1),
         'value': sum(n.Value for n in user_notes) / (len(user_notes) or 1),
-        'plating': sum(n.Plating for n in user_notes) / (len(user_notes) or 1),
+        'service': sum(n.Service for n in user_notes) / (len(user_notes) or 1),
     }
 
     # Prepare data for KNN
@@ -201,7 +202,7 @@ def friends():
                 sum(n.Spiciness for n in u_notes) / len(u_notes),
                 sum(n.Deliciousness for n in u_notes) / len(u_notes),
                 sum(n.Value for n in u_notes) / len(u_notes),
-                sum(n.Plating for n in u_notes) / len(u_notes),
+                sum(n.Service for n in u_notes) / len(u_notes),
             ]
             user_data.append(stats)
             user_ids.append(u.id)
@@ -213,7 +214,7 @@ def friends():
             user_stats['spiciness'],
             user_stats['deliciousness'],
             user_stats['value'],
-            user_stats['plating'],
+            user_stats['service'],
         ]).reshape(1, -1)
 
         knn = NearestNeighbors(n_neighbors=1, metric='euclidean')
@@ -235,12 +236,12 @@ def friends():
             'spiciness': sum(n.Spiciness for n in u_notes) / total,
             'deliciousness': sum(n.Deliciousness for n in u_notes) / total,
             'value': sum(n.Value for n in u_notes) / total,
-            'plating': sum(n.Plating for n in u_notes) / total
+            'service': sum(n.Service for n in u_notes) / total
         }
         badges = [
             {'name': 'First Post', 'earned': len(u_notes) > 0},
             {'name': 'Spice Master', 'earned': stats['spiciness'] > 80},
-            {'name': 'Plating Perfectionist', 'earned': stats['plating'] > 90},
+            {'name': 'Service Perfectionist', 'earned': stats['service'] > 90},
             {'name': 'Value Hunter', 'earned': stats['value'] > 85},
             {'name': 'Food Critic', 'earned': len(u_notes) > 20},
             {'name': 'All-Rounder', 'earned': all(stat > 75 for stat in stats.values())}
@@ -492,10 +493,10 @@ def user_profile(user_id):
         'spiciness': sum(n.Spiciness for n in posts) / total_posts,
         'deliciousness': sum(n.Deliciousness for n in posts) / total_posts,
         'value': sum(n.Value for n in posts) / total_posts,
-        'plating': sum(n.Plating for n in posts) / total_posts,
+        'service': sum(n.Service for n in posts) / total_posts,
     }
     average_ratings = [
-        (n.Spiciness + n.Deliciousness + n.Value + n.Plating) / 4 for n in posts
+        (n.Spiciness + n.Deliciousness + n.Value + n.Service) / 4 for n in posts
     ]
     overall_average_rating = sum(average_ratings) / total_posts
 
@@ -507,7 +508,7 @@ def user_profile(user_id):
     badges = [
         {'name': 'First Post', 'earned': len(posts) > 0},
         {'name': 'Spice Master', 'earned': stats['spiciness'] > 80},
-        {'name': 'Plating Perfectionist', 'earned': stats['plating'] > 90},
+        {'name': 'Service Perfectionist', 'earned': stats['service'] > 90},
         {'name': 'Value Hunter', 'earned': stats['value'] > 85},
         {'name': 'Food Critic', 'earned': len(posts) > 20},
         {'name': 'All-Rounder', 'earned': all(stat > 75 for stat in stats.values())}
@@ -556,8 +557,8 @@ def recommend_food():
             food.Spiciness,
             food.Deliciousness,
             food.Value,
-            food.Plating,
-            (food.Spiciness + food.Deliciousness + food.Value + food.Plating) / 4  # Overall rating
+            food.Service,
+            (food.Spiciness + food.Deliciousness + food.Value + food.Service) / 4  # Overall rating
         ])
         food_ids.append(food.id)
 
@@ -568,7 +569,7 @@ def recommend_food():
         request.args.get('spiciness', 50, type=int),
         request.args.get('deliciousness', 50, type=int),
         request.args.get('value', 50, type=int),
-        request.args.get('plating', 50, type=int),
+        request.args.get('service', 50, type=int),
         request.args.get('overall', 50, type=int)
     ]).reshape(1, -1)
 
@@ -589,8 +590,8 @@ def recommend_food():
             'spiciness': food.Spiciness,
             'deliciousness': food.Deliciousness,
             'value': food.Value,
-            'plating': food.Plating,
-            'overall': (food.Spiciness + food.Deliciousness + food.Value + food.Plating) / 4
+            'service': food.Service,
+            'overall': (food.Spiciness + food.Deliciousness + food.Value + food.Service) / 4
         })
 
     return jsonify(success=True, recommendations=recommendations)
@@ -618,12 +619,12 @@ def search_users():
             'spiciness': sum(n.Spiciness for n in notes) / total,
             'deliciousness': sum(n.Deliciousness for n in notes) / total,
             'value': sum(n.Value for n in notes) / total,
-            'plating': sum(n.Plating for n in notes) / total
+            'service': sum(n.Service for n in notes) / total
         }
         badges = [
             {'name': 'First Post', 'earned': len(notes) > 0},
             {'name': 'Spice Master', 'earned': stats['spiciness'] > 80},
-            {'name': 'Plating Perfectionist', 'earned': stats['plating'] > 90},
+            {'name': 'Service Perfectionist', 'earned': stats['service'] > 90},
             {'name': 'Value Hunter', 'earned': stats['value'] > 85},
             {'name': 'Food Critic', 'earned': len(notes) > 20},
             {'name': 'All-Rounder', 'earned': all(stat > 75 for stat in stats.values())}
@@ -653,7 +654,7 @@ def trending_dishes():
         'spiciness': dish.Spiciness,
         'deliciousness': dish.Deliciousness,
         'value': dish.Value,
-        'plating': dish.Plating
+        'service': dish.Service
     } for dish in dishes]
 
     return jsonify(success=True, dishes=trending_data)
@@ -681,7 +682,7 @@ def merged_posts():
         'spiciness': post.Spiciness,
         'deliciousness': post.Deliciousness,
         'value': post.Value,
-        'plating': post.Plating,
+        'service': post.Service,
         'is_special': False  # Default to not special
     } for post in followed_posts]
 
@@ -696,7 +697,7 @@ def merged_posts():
             'spiciness': non_followed_post.Spiciness,
             'deliciousness': non_followed_post.Deliciousness,
             'value': non_followed_post.Value,
-            'plating': non_followed_post.Plating,
+            'service': non_followed_post.Service,
             'is_special': True  # Mark as special
         })
 
@@ -722,7 +723,7 @@ def friend_posts():
         'spiciness': post.Spiciness,
         'deliciousness': post.Deliciousness,
         'value': post.Value,
-        'plating': post.Plating
+        'service': post.Service
     } for post in friend_posts]
 
     return jsonify(success=True, posts=posts_data)
@@ -761,7 +762,7 @@ def search_reviews():
         'spiciness': post.Spiciness,
         'deliciousness': post.Deliciousness,
         'value': post.Value,
-        'plating': post.Plating
+        'service': post.Service
     } for post in results]
 
     return jsonify(success=True, results=results_data)
@@ -896,7 +897,7 @@ def api_user_stats(user_id):
         'spiciness': sum(n.Spiciness for n in notes) / total,
         'deliciousness': sum(n.Deliciousness for n in notes) / total,
         'value': sum(n.Value for n in notes) / total,
-        'plating': sum(n.Plating for n in notes) / total,
+        'service': sum(n.Service for n in notes) / total,
     }
     return jsonify(
         success=True,

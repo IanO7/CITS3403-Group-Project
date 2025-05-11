@@ -77,7 +77,7 @@ body {
 .value-slider::-webkit-slider-runnable-track {
     background-color: #198754; /* Bootstrap success green */
 }
-.plating-slider::-webkit-slider-runnable-track {
+.service-slider::-webkit-slider-runnable-track {
     background-color: #0dcaf0; /* Bootstrap info blue */
 }
 
@@ -257,7 +257,7 @@ body {
     background-color: #8E5F2B; /* Warm golden brown */
 }
 
-.progress-bar-fill.plating {
+.progress-bar-fill.service {
     background-color: #6E3A14; /* Headline text */
 }
 
