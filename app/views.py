@@ -3,7 +3,7 @@ from flask import (
     url_for, session, jsonify, abort, flash, current_app, 
     send_from_directory )
 
-from .models import Note, User, Follow
+from .models import Note, User, Follow, SharedPost
 from . import db
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
@@ -890,17 +890,37 @@ def inbox():
     if not user:
         return redirect(url_for('auth.login'))
 
-    # Get unseen shared posts as before
-    posts = []  # your existing logic
+    # Mark all unseen shared posts as seen
+    unseen_posts = SharedPost.query.filter_by(recipient_id=user.id, seen=False).all()
+    for sp in unseen_posts:
+        sp.seen = True
+    if unseen_posts:
+        db.session.commit()
+
+    # Fetch all shared posts sent to this user, newest first
+    shared_posts = SharedPost.query.filter_by(recipient_id=user.id).order_by(SharedPost.timestamp.desc()).all()
+
+    posts = []
+    for sp in shared_posts:
+        sender = User.query.get(sp.sender_id)
+        note = Note.query.get(sp.note_id)
+        if sender and note:
+            posts.append({
+                'sender': sender,
+                'note': note,
+                'timestamp': sp.timestamp,
+                'seen': sp.seen,
+            })
 
     # Get incoming follow requests
     incoming_requests = Follow.query.filter_by(followed_id=user.id, status='pending').all()
 
-    # Count unseen posts if needed
-    unseen_count = 0  # your existing logic
+    # Count unseen posts (should now be zero)
+    unseen_count = SharedPost.query.filter_by(recipient_id=user.id, seen=False).count()
 
     return render_template(
         'inbox.html',
+        user=user, 
         posts=posts,
         unseen_count=unseen_count,
         incoming_requests=incoming_requests
