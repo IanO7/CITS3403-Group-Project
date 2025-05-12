@@ -10,14 +10,14 @@
     <!-- User Stats Section -->
     <div class="dashboard-header mb-4">
         <div class="profile-info d-flex align-items-center">
-            {# Only render avatar if it exists #}
+              {# Only render avatar if it exists #}
             {% if selected_user.profileImage %}
             <img src="{{ url_for('views.uploaded_file', filename=selected_user.profileImage) }}" 
                  alt="{{ selected_user.username }}" 
                  class="profileImage" 
                  style="width: 100px; height: 100px; object-fit: cover; margin-right: 20px;">
             {% endif %}
-            <div> 
+            <div>
                 <h1>
                     {{ selected_user.username }}
                     <span class="badge badge-level level-{{ selected_user.level }}">Level {{ selected_user.level }}</span>
