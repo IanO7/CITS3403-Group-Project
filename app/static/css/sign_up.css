@@ -13,6 +13,7 @@ h1 {
 
 body {
   background: #F6E7DA;
+  padding-top: 100px;
   font-family: 'Lato', sans-serif;
   color: #333;
   display: flex;
@@ -20,6 +21,7 @@ body {
   min-height: 100vh;
 }
 
+/* Navbar Style 
 .navbar {
   width: 100%;
   padding: 1rem 2rem;
@@ -53,6 +55,7 @@ body {
 .navbar .menu a:hover {
   text-decoration: underline;
 }
+*/
 
 /* Center the Sign-Up container */
 .sign-up-container {

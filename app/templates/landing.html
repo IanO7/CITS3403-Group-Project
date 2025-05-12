@@ -1,50 +1,62 @@
 {% extends "base.html" %}
-{% block title %}Discover OzFoody - Personalized Restaurant Reviews{% endblock %}
+{% block title %}Discover OZfoody{% endblock %}
 
 {% block content %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/general_styles.css') }}"/>
 <link rel="stylesheet" href="{{ url_for('static', filename='css/landing.css') }}"/>
 
 <!-- Hero Section with Interactive Animation -->
-<div class="landing-hero text-center py-5">
-  <div class="container">
-    <h1 class="display-3 fw-bold text-gradient">Welcome to OzFoody</h1>
-    <p class="lead mt-3">Your personalized restaurant experience, now with smarter recommendations and more engaging features!</p>
-    <a href="{{ url_for('views.new_post') }}" class="btn btn-primary btn-lg mt-4">Share Your Review</a>
+<div class="landing-hero">
+  <div class="hero-overlay"></div>
+  <div class="hero-content">
+    <h1 class="display-2 fw-bold">Welcome to OZfoody!</h1>
+    <p class="lead">Aussie Food Scene, Shared by You and Your Mates.</p>
+    <a href="{{ url_for('views.new_post') }}" class="btn btn-primary btn-lg mt-3">Share Your Review</a>
   </div>
 </div>
 
 <!-- Features Section with Animated Visual Indicators -->
-<section id="features" class="py-5 bg-light">
+<!-- SEO keywords for restaurant review sites -->
+<section id="features" class="feature-fullpage py-5 text-center">
   <div class="container">
-    <h2 class="mb-4 text-center">How It Works</h2>
+    <!-- header -->
+    <h1 class="mb-4 text-center">Make Dining Easier - Discover - Share Amazing Food</h1>
+    <p class="lead mb-5">
+      Find hidden gems, share honest reviews, and get personalised dining suggestions tailored to your taste.
+    </p>
+    <!-- feature cards -->
     <div class="row text-center">
+      <!-- Personalised Recommendations -->
       <div class="col-md-4">
-        <div class="feature-card shadow-lg" data-bs-toggle="tooltip" title="Get personalized recommendations based on your reviews and preferences!">
+        <div class="feature-card shadow-lg" data-bs-toggle="tooltip" title="personalized recommendations">
           <div class="feature-icon">
             <i class="fas fa-star fa-3x text-primary"></i>
           </div>
-          <h5>Personalized Recommendations</h5>
-          <p>Receive restaurant recommendations tailored just for you, powered by our smart algorithm.</p>
+          <h3>Smart Food Suggestions</h3>
+          <p>Get restaurant recommendations tailored just for you. Our system learns your taste to suggest the best places to dine.</p>
         </div>
       </div>
 
+      <!-- Friends' Reviews -->
       <div class="col-md-4">
-        <div class="feature-card shadow-lg" data-bs-toggle="tooltip" title="See what your friends recommend and share your thoughts!">
+        <div class="feature-card shadow-lg" data-bs-toggle="tooltip" title="friends reviews">
           <div class="feature-icon">
             <i class="fas fa-users fa-3x text-success"></i>
           </div>
-          <h5>Friends' Reviews</h5>
-          <p>Discover what your friends love, with personalized suggestions based on their reviews.</p>
+          <h3>See Where Friends Dine</h3>
+          <p>Explore reviews from people you know and trust. Get real opinions and discover trending spots based on what your friends love.
+          </p>
         </div>
       </div>
+
+      <!-- Easy Sharing -->
       <div class="col-md-4">
-        <div class="feature-card shadow-lg" data-bs-toggle="tooltip" title="Share your favorite restaurants with the community using visual posts!">
+        <div class="feature-card shadow-lg" data-bs-toggle="tooltip" title="Share restaurants">
           <div class="feature-icon">
             <i class="fas fa-share-alt fa-3x text-danger"></i>
           </div>
-          <h5>Easy Sharing</h5>
-          <p>Share your experiences with interactive posts, with visual indicators like emojis to represent your ratings!</p>
+          <h3>Share Your Food Adventures</h3>
+          <p>Post your dining experiences with ease. Use fun visuals like ratings, emojis, and photos to tell your story and inspire others.</p>
         </div>
       </div>
     </div>
@@ -52,39 +64,46 @@
 </section>
 
 <!-- Earn Badges Section -->
-<section id="badges" class="py-5 bg-light text-center">
+<section id="badge" class="badge-fullpage py-5 text-center">
   <div class="container">
-    <h2 class="mb-4">Earn Badges to Level Up</h2>
-    <p class="lead mb-5">The more you review, explore, and share, the more badges you earn. Unlock achievements and climb the foodie ranks!</p>
+    
+    <!-- header -->
+    <h1 class="mb-4">Collect Foody Badges - Show Off Your Expertise</h1>
+    <p class="lead mb-5">The more you eat, review, and share, the more you rise! Unlock exclusive achievements, climb the foodie leaderboard, and let everyone know you are the real taste expert.</p>
+    
+    <!-- badge cards -->
     <div class="row">
+      <!-- First Review -->
       <div class="col-md-4">
-        <div class="badge-card shadow-sm p-4">
+        <div class="badge-card shadow-lg" data-bs-toggle="tooltip" title="first review">
           <i class="fas fa-pen-nib fa-3x text-warning mb-3"></i>
-          <h5>First Review</h5>
-          <p>Earn this badge when you publish your very first review.</p>
+          <h3>First Bite Reviewer</h3>
+          <p>Claim your very first badge by posting your first review. Every journey starts with one bite!</p>
         </div>
       </div>
+      <!-- Spicy Explorer -->
       <div class="col-md-4">
-        <div class="badge-card shadow-sm p-4">
+        <div class="badge-card shadow-lg" data-bs-toggle="tooltip" title="spicy food">
           <i class="fas fa-fire fa-3x text-danger mb-3"></i>
-          <h5>Spicy Explorer</h5>
-          <p>Review 10 spicy dishes to unlock this hot badge!</p>
+          <h3>Spicy Food Challenger</h3>
+          <p>Love a little heat? Review 10 spicy dishes to earn this badge and prove you can handle the fire!</p>
         </div>
       </div>
+      <!-- Foodie Influencer -->
       <div class="col-md-4">
-        <div class="badge-card shadow-sm p-4">
+        <div class="badge-card shadow-lg" data-bs-toggle="tooltip" title="foodie influencer">
           <i class="fas fa-users fa-3x text-success mb-3"></i>
-          <h5>Community Contributor</h5>
-          <p>Earned by receiving 50 likes from other foodies.</p>
+          <h3>Foody Influencer</h3>
+          <p>Gain 50 likes from fellow food lovers and earn this badge as a foody influencer.</p>
         </div>
       </div>
     </div>
-    <a href="{{ url_for('views.profile') }}" class="btn btn-primary btn-lg mt-4">View Your Badge Progress</a>
+    <a href="{{ url_for('views.profile') }}" class="btn btn-primary btn-lg mt-4">Your Foody Badges</a>
   </div>
 </section>
 
 <!-- Live Trending Dishes Section -->
-<section id="trending-dishes" class="py-5 bg-dark text-white">
+<section id="trending-dishes" class="py-5 bg-light">
   <div class="container text-center">
     <h2 class="mb-4">Trending Dishes Right Now</h2>
     <div class="row">
@@ -100,13 +119,9 @@
           </div>
         </div>
        {% endfor %}
-      </div>
-      
-</section>
-      
-      
-</section>
-
+      </div>      
+</section>    
+    
 <!-- Stats Section -->
 <section id="stats" class="py-5 bg-light text-center">
   <div class="container">
@@ -129,7 +144,7 @@
 </section>
 
 <!-- Interactive Progress Bar -->
-<section id="progress-bar-section" class="py-5 bg-primary text-white text-center">
+<section id="progress-bar-section" class="py-5 bg-light text-center">
   <div class="container">
     <h2 class="mb-4">Unlock Your Food Recommendation</h2>
     <div class="progress" style="height: 30px;">
@@ -143,14 +158,23 @@
   </div>
 </section>
 
-<!-- Call to Action -->
-<section id="cta" class="py-5 bg-primary text-white text-center">
+<!-- Footer Section -->
+<footer class="bg-dark text-white text-center py-4">
   <div class="container">
-    <h2 class="display-4 mb-4">Join the Community!</h2>
-    <p>Discover new restaurants, share your experiences, and connect with others who share your love for food.</p>
-    <a href="{{ url_for('views.new_post') }}" class="btn btn-light btn-lg">Write Your First Review</a>
+    <p>Follow us on:
+      <a href="#" class="text-white"><i class="fab fa-facebook-f"></i></a>
+      <a href="#" class="text-white"><i class="fab fa-tiktok"></i></a>
+      <a href="#" class="text-white"><i class="fab fa-instagram"></i></a>
+    </p>
+    <p>Copyright &copy; 2025 OZfoody. All rights reserved.</p>
   </div>
-</section>
+</footer>
+<!-- Bootstrap JS and dependencies -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
+<!-- Font Awesome for icons -->
+<script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
 
 <!-- Include landing.js -->
 <script src="{{ url_for('static', filename='js/landing.js') }}"></script>

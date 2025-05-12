@@ -1,39 +1,64 @@
-<<<<<<< HEAD
 /* Hero section */
 .landing-hero {
-    background-color: #fff7f0;
-    padding: 5rem 2rem;
-    text-align: center;
-    border-bottom: 1px solid #eee;
+    position: relative;
+    width: 100vw;
+    min-height: 90vh;
+    background: url('/static/image/hero-image.jpg') center center/cover no-repeat;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+
+  .hero-overlay {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(94, 81, 43, 0.35); /* Olive overlay, adjust opacity as needed */
+    z-index: 1;
+  }
+
+  .hero-content {
+    position: absolute;
+    bottom: 15%;
+    z-index: 2;
+    font-weight: 900;
+    color: #fff;
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+
+  .hero-content h1,
+  .hero-content .display-2 {
+    font-size: 5rem;
+    font-weight: 1500;
+    letter-spacing: 2px;
+    margin-bottom: 1.2rem;
+    color: #fff;
+    text-shadow: 0 6px 32px rgba(0,0,0,0.8), 0 1px 2px rgba(0,0,0,0.5);
+  }
+
+  .hero-content p,
+  .hero-content .lead {
+      font-size: 1.7rem;
+      font-weight: 900;
+      margin-bottom: 2rem;
+      color: #fff;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.6);
+  }
+
+  .btn-primary {
+      background-color: #DF6F1B;
+      font-family: 'Lobster', serif;
+      font-size: 2rem;
+      color: #000;
+      padding: 0.75em 2.5em;
+      border: 0.7em;
+  }
+  .btn-primary:hover, .btn-primary:focus {
+      background-color: #8E5F2B;
+      color: #fff;
   }
   
-  .landing-hero h1 {
-    font-size: 3rem;
-    font-weight: 800;
-    color: #ff7043;
-    font-family: 'Georgia', serif;
-  }
-  
-  .landing-hero p.lead {
-    font-size: 1.4rem;
-    margin-top: 1rem;
-    color: #555;
-  }
-  
-  .landing-hero .btn {
-    margin-top: 2rem;
-    padding: 0.75rem 2rem;
-    font-size: 1.2rem;
-    background-color: #ff7043;
-    border: none;
-    border-radius: 5px;
-    color: white;
-    transition: background-color 0.3s ease;
-  }
-  
-  .landing-hero .btn:hover {
-    background-color: #e65100;
-  }
   
   /* Testimonials */
   blockquote {
@@ -70,20 +95,21 @@
     opacity: 1;
     transform: none;
   }
-  
-=======
-/* Landing page CSS*/
-  /* Hero Section Styling */
-  .landing-hero {
-    background: linear-gradient(to right, #ffecd2 0%, #fcb69f 100%);
-    color: #343a40;
-    border-bottom: 1px solid #eee;
-  }
 
-  .landing-hero .btn-primary {
-    background-color: #ff5e57;
-    border: none;
-  }
+  /* Feature Section */
+  /* Make the features section fill the whole viewport */
+.feature-fullpage, #features {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /* vertical centering */
+  align-items: center;     /* horizontal centering */
+  padding-top: 0;
+  padding-bottom: 0;
+}
+.feature-fullpage .container, #features .container {
+  width: 100%;
+}
 
   /* Feature Cards */
   .feature-card {
@@ -101,6 +127,65 @@
   }
 
   .feature-icon {
+    margin-bottom: 20px;
+  }
+
+
+/* h1 setting */
+h1,
+.feature-fullpage h1,
+.badge-fullpage h1 {
+    font-family: 'Lobster', serif;
+    color: #DF6F1B; 
+}
+
+/* h3 setting */
+h3,
+.feature-card h3,
+.badge-card h3 {
+    font-weight: 1000;
+    color: #5F8D3B;
+    /* Optionally, increase font-size for more impact */
+}
+
+   /* Badge Section */
+  /* Make the  section fill the whole viewport */
+.badge-fullpage, #badge {
+  background-color: #FCF7F0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /* vertical centering */
+  align-items: center;     /* horizontal centering */
+  padding-top: 0;
+  padding-bottom: 0;
+}
+.badge-fullpage .container, #badge .container {
+  width: 100%;
+}
+
+#badge h1,
+.badge-fullpage h1 {
+    font-family: 'Lobster', serif;
+    font-size: bold;
+}
+
+  /* Badge Cards */
+  .badge-card {
+    background: #fff;
+    border-radius: 15px;
+    padding: 20px;
+    margin-bottom: 30px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    cursor: pointer;
+  }
+
+  .badge-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+  }
+
+  .badge-icon {
     margin-bottom: 20px;
   }
 
@@ -165,4 +250,3 @@
   #cta {
     background-color: #ff5e57;
   }
->>>>>>> 883a95fa7da8a491448ff0d6ee8289c5dbc0b95f
