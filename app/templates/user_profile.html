@@ -19,7 +19,8 @@
             <div>
                 <h1>
                     {{ selected_user.username }}
-                    <span class="badge badge-level level-{{ selected_user.level }}">Level {{ selected_user.level }}</span>
+                    <!-- Show the badge next to the username -->
+                    <span class="badge badge-level level-{{ user_level }}">Level {{ user_level }}</span>
                 </h1>
                 <p>Statistics based on their reviews.</p>
             </div>

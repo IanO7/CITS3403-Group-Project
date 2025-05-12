@@ -71,22 +71,25 @@ def profile():
 
     reviews = Note.query.filter_by(user_id=user.id).all()  # Fetch all notes for the user
 
+    # Calculate badges and level
+    total = len(reviews) or 1
+    stats = {
+        'spiciness':     sum(n.Spiciness     for n in reviews) / total,
+        'deliciousness': sum(n.Deliciousness for n in reviews) / total,
+        'value':         sum(n.Value         for n in reviews) / total,
+        'service':       sum(n.Service       for n in reviews) / total
+    }
+    badges = [
+        {'name': 'First Post', 'earned': len(reviews) > 0},
+        {'name': 'Spice Master', 'earned': stats['spiciness'] > 80},
+        {'name': 'Service Perfectionist', 'earned': stats['service'] > 90},
+        {'name': 'Value Hunter', 'earned': stats['value'] > 85},
+        {'name': 'Food Critic', 'earned': len(reviews) > 20},
+        {'name': 'All-Rounder', 'earned': all(stat > 75 for stat in stats.values())}
+    ]
+    level = get_user_level(badges)
 
-    review_data = [{
-        "id": r.id,
-        "Resturaunt": r.Resturaunt,
-        "Spiciness": r.Spiciness,
-        "Deliciousness": r.Deliciousness,
-        "Value": r.Value,
-        "Service": r.Service,
-        "Review": r.Review,
-        "image": r.image,
-        "likes": r.likes,  # Include the latest likes count
-        "location": r.location  # Include the location field
-    } for r in reviews]
-
-
-    return render_template('profile.html', user=user, reviews=reviews)
+    return render_template('profile.html', user=user, reviews=reviews, level=level)
 
 UPLOAD_FOLDER = 'static/uploads'  # adjust as needed
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}

@@ -21,11 +21,27 @@
     outline: none;
 }
 
-.level-1 { background: linear-gradient(90deg, #b07a4a 0%, #6E3A14 100%); }    /* Bronze */
-.level-2 { background: linear-gradient(90deg, #b8b8b8 0%, #8E5F2B 100%); }    /* Silver */
-.level-3 { background: linear-gradient(90deg, #ffe066 0%, #DF6F1B 100%); }    /* Gold */
-.level-4 { background: linear-gradient(90deg, #7ed957 0%, #5F8D3B 100%); }    /* Emerald */
-.level-5 { background: linear-gradient(90deg, #3a8dde 0%, #007BFF 100%); }    /* Sapphire */
+/* More distinct, vibrant gradients for each level */
+.level-1 { 
+    background: linear-gradient(90deg, #c68642 0%, #8d5524 100%);
+    /* Bronze: warm brown to deep bronze */
+}
+.level-2 { 
+    background: linear-gradient(90deg, #bfc1c2 0%, #6e7b8b 100%);
+    /* Silver: light silver to steel blue */
+}
+.level-3 { 
+    background: linear-gradient(90deg, #ffe066 0%, #ffb300 100%);
+    /* Gold: bright yellow to rich gold */
+}
+.level-4 { 
+    background: linear-gradient(90deg, #43e97b 0%, #38f9d7 100%);
+    /* Emerald: fresh green to teal */
+}
+.level-5 { 
+    background: linear-gradient(90deg, #4f8cff 0%, #1e3c72 100%);
+    /* Sapphire: vivid blue to deep sapphire */
+}
 
 .badge-level:hover, .badge-level:focus {
     filter: brightness(1.10);
