@@ -74,7 +74,7 @@ def profile():
     if request.method == 'POST':
         comment = Comments(
                 Comment = request.form['Comment'], 
-                user_id = user.id,
+                user_id = request.form['user_id'],
                 note_id = request.form['note_id'], 
                 parentID = request.form['parentID'],
                 likes = 0 
@@ -291,18 +291,17 @@ def friends():
     if request.method == 'POST':
         comment = Comments(
                 Comment = request.form['Comment'], 
-                user_id = user.id,
+                user_id = request.form['user_id'],
                 note_id = request.form['note_id'], 
-                parentID = request.form['parentID'],
-                likes = 0 
+                parentID = request.form['parentID'], 
             )
         db.session.add(comment)
         db.session.commit()
-        return redirect(url_for('views.profile', user_id=user.id))
+        return redirect(url_for('views.friends', user_id=user.id))
 
     comments_by_review = {
         review.id: [comment.to_dict() for comment in review.comments]
-        for review in notes  # or whatever your review list is called
+        for review in notes 
     }
 
     return render_template(
@@ -593,7 +592,7 @@ def user_profile(user_id):
     if request.method == 'POST':
         comment = Comments(
                 Comment = request.form['Comment'], 
-                user_id = user.id,
+                user_id = request.form['user_id'],
                 note_id = request.form['note_id'], 
                 parentID = request.form['parentID'],
                 likes = 0 
