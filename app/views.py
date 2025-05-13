@@ -130,6 +130,8 @@ def new_post():
             image=image_filename, 
 
             location=request.form.get('location'),
+            latitude  = float(request.form.get('latitude') or 0),
+            longitude = float(request.form.get('longitude') or 0),
             user_id=user.id
         )
 
@@ -1063,3 +1065,17 @@ def api_user_stats(user_id):
         posts=len(notes),
         username=user.username
     )
+
+@views.route('/api/globe_reviews')
+def api_globe_reviews():
+    notes = Note.query.filter(Note.latitude.isnot(None), Note.longitude.isnot(None)).all()
+    return jsonify([
+        {
+          'lat':  n.latitude,
+          'lng':  n.longitude,
+          'title': n.Resturaunt,
+          'imageUrl': url_for('views.uploaded_file', filename=n.image),
+          'tooltip': n.Review
+        }
+        for n in notes
+    ])

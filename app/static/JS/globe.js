@@ -1,78 +1,86 @@
+// Apply animated theme
 am4core.useTheme(am4themes_animated);
 
 var chart = am4core.create("chartdiv", am4maps.MapChart);
 
-// Disable amCharts logo
+// Disable amCharts credit link
 chart.logo.disabled = true;
 
-// Set map definition
+// World map & orthographic projection
 chart.geodata = am4geodata_worldLow;
-
-// Set projection
 chart.projection = new am4maps.projections.Orthographic();
 chart.panBehavior = "rotateLongLat";
 chart.deltaLatitude = -20;
 chart.padding(20, 20, 20, 20);
 
-// Create map polygon series
+// Country polygons
 var polygonSeries = chart.series.push(new am4maps.MapPolygonSeries());
 polygonSeries.useGeodata = true;
+polygonSeries.exclude = ["AQ"];  // no Antarctica
 
-// Configure series
-var polygonTemplate = polygonSeries.mapPolygons.template;
-polygonTemplate.fill = am4core.color("#228B22");
-polygonTemplate.stroke = am4core.color("#000080");
-polygonTemplate.strokeWidth = 0.5;
+var polyTemplate = polygonSeries.mapPolygons.template;
+polyTemplate.fill = am4core.color("#228B22");
+polyTemplate.stroke = am4core.color("#000080");
+polyTemplate.strokeWidth = 0.5;
 
-// Exclude Antarctica
-polygonSeries.exclude = ["AQ"];
-
-// Add ocean background
+// Ocean background
 chart.backgroundSeries.mapPolygons.template.polygon.fill = am4core.color("#87CEEB");
 chart.backgroundSeries.mapPolygons.template.polygon.fillOpacity = 1;
 
-// Add data for stats
+// Image (pin) series
 var imageSeries = chart.series.push(new am4maps.MapImageSeries());
 var imageTemplate = imageSeries.mapImages.template;
-imageTemplate.propertyFields.latitude = "latitude";
+
+// 1) Bind latitude & longitude
+imageTemplate.propertyFields.latitude  = "latitude";
 imageTemplate.propertyFields.longitude = "longitude";
+
+// 2) Use custom HTML tooltip that shows the fetched image + text
 imageTemplate.tooltipHTML = `
-    <div style="text-align: center;">
-        <img src="{flag}" alt="Flag" style="width: 50px; height: 30px; margin-bottom: 5px;">
-        <div>{stat}: {value}</div>
-    </div>
+  <div style="text-align: center; max-width: 150px;">
+    <img src="{url}" alt="Pin image" style="width: 50px; height: 30px; margin-bottom: 5px; border-radius: 3px;">
+    <div style="font-weight: bold; margin-bottom: 4px;">{title}</div>
+    <div style="font-size: 0.9em;">{tooltip}</div>
+  </div>
 `;
 imageTemplate.nonScaling = true;
 
-// Add circular flag images
+// 3) Add the flag/image element, binding its href to your `url` field
 var flagImage = imageTemplate.createChild(am4core.Image);
-flagImage.propertyFields.href = "flag";
-flagImage.width = 30;
+flagImage.propertyFields.href = "url";
+flagImage.width  = 30;
 flagImage.height = 30;
 flagImage.horizontalCenter = "middle";
-flagImage.verticalCenter = "middle";
-flagImage.circle = true; // Make the image circular
-flagImage.stroke = am4core.color("#FFFFFF");
-flagImage.strokeWidth = 2;
+flagImage.verticalCenter   = "middle";
+flagImage.circle           = true;
+flagImage.stroke           = am4core.color("#FFFFFF");
+flagImage.strokeWidth      = 2;
 
-// Add data points
-imageSeries.data = [
-    { latitude: 35.6895, longitude: 139.6917, stat: "Spiciness", value: "9/10", flag: "https://cdn-icons-png.flaticon.com/512/197/197604.png" }, // Tokyo
-    { latitude: 48.8566, longitude: 2.3522, stat: "Service", value: "8/10", flag: "https://cdn-icons-png.flaticon.com/512/197/197560.png" }, // Paris
-    { latitude: 40.7128, longitude: -74.0060, stat: "Deliciousness", value: "7/10", flag: "https://cdn-icons-png.flaticon.com/512/197/197484.png" }, // New York
-    { latitude: -33.8688, longitude: 151.2093, stat: "Value", value: "6/10", flag: "https://cdn-icons-png.flaticon.com/512/197/197507.png" }, // Sydney
-    { latitude: 55.7558, longitude: 37.6173, stat: "Uniqueness", value: "8/10", flag: "https://cdn-icons-png.flaticon.com/512/197/197408.png" } // Moscow
-];
+// 4) Fetch your live data and map it into the series
+fetch(window.GLOBE_API_URL)
+  .then(r => r.json())
+  .then(data => {
+    imageSeries.data = data.map(d => ({
+      latitude:  d.lat,
+      longitude: d.lng,
+      title:     d.title,
+      tooltip:   d.tooltip,
+      url:       d.imageUrl
+    }));
+    // redraw with new data
+    chart.invalidateRawData();
+  })
+  .catch(err => console.error("Failed to load globe pins:", err));
 
-// Rotate globe animation
+// 5) Continuous rotation, pausing on user drag
 let animation = chart.animate({ property: "deltaLongitude", to: 100000 }, 20000000);
 
-chart.seriesContainer.events.on("down", function () {
-    if (animation) {
-        animation.stop();
-    }
+chart.seriesContainer.events.on("down", () => {
+  if (animation) {
+    animation.stop();
+  }
 });
 
-chart.seriesContainer.events.on("up", function () {
-    animation = chart.animate({ property: "deltaLongitude", to: 100000 }, 20000000);
+chart.seriesContainer.events.on("up", () => {
+  animation = chart.animate({ property: "deltaLongitude", to: 100000 }, 20000000);
 });
