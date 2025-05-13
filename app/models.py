@@ -16,7 +16,8 @@ class Note(db.Model):
     user_id         = db.Column(db.Integer, db.ForeignKey('user.id'))
     likes           = db.Column(db.Integer, default=0)  # New column for likes
     location        = db.Column(db.String(255), nullable=True, index=True)  # Add index for faster querying
-
+    latitude   = db.Column(db.Float, nullable=True, index=True)
+    longitude  = db.Column(db.Float, nullable=True, index=True)
 class User(db.Model):
     id       = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(150),  unique=True, nullable=False)
