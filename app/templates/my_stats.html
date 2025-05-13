@@ -4,6 +4,7 @@
 {% block content %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/general_styles.css') }}">
 <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/badge.css') }}">
 
 <div class="dashboard-container">
     <!-- Welcome Section -->
@@ -13,9 +14,32 @@
                 <img src="{{ url_for('views.uploaded_file', filename=user.profileImage) }}" class="profileImage" alt="profile image"> 
             {% endif %} 
             <div>
-                <h1>Welcome back, <span class="user-name">{{ user.username }}</span>!</h1>
+                <h1>
+                    Welcome back, <span class="user-name">{{ user.username }}</span>!
+                </h1>
                 <p>Your personalized food journey dashboard.</p>
             </div>
+        </div>
+    </div>
+
+    <!-- Level Progress Section -->
+    <div class="level-progress-card card stat-card mb-4">
+        <div class="level-progress-header">
+            <span class="level-label">Level {{ user_level }}</span>
+            <span class="level-desc">
+                {% set earned = badges|selectattr('earned')|list|length %}
+                {% set next_level = user_level + 1 if user_level < 5 else 5 %}
+                {% set needed = [1,2,4,6,6][user_level-1] %}
+                {% if user_level < 5 %}
+                    {{ earned }} / {{ needed }} achievements for Level {{ next_level }}
+                {% else %}
+                    All achievements unlocked!
+                {% endif %}
+            </span>
+        </div>
+        <div class="progress level-progress-bar">
+            {% set needed = [1,2,4,6,6][user_level-1] %}
+            <div class="progress-bar bg-warning" style="width: {{ (earned / needed * 100) | round(0) }}%;"></div>
         </div>
     </div>
 
@@ -66,6 +90,15 @@
         <p>{{ overall_average_rating | default(0) }}% average rating across all reviews</p>
     </div>
 
+    <!-- Favorite Cuisine Card -->
+    <div class="card stat-card mt-4" style="background: #fffbe6; border-color: #ffe066;">
+        <h3 class="card-title">🍽️ Favorite Cuisine</h3>
+        <div style="font-size: 2rem; font-weight: bold; color: #b8860b; margin: 10px 0;">
+            {{ favorite_cuisine or "No favorite cuisine yet" }}
+        </div>
+        <p class="text-muted">Based on your reviews</p>
+    </div>
+
     <!-- Recommended Food -->
     <div class="card stat-card mt-4">
         <h3 class="card-title">Today, I will be eating...</h3>
@@ -92,10 +125,6 @@
         <div class="card chart-card">
             <h3 class="card-title">🍴 Food Eaten/Reviewed</h3>
             <canvas id="foodChart"></canvas>
-        </div>
-        <div class="card chart-card">
-            <h3 class="card-title">🌍 Favorite Cuisine</h3>
-            <canvas id="cuisineChart"></canvas>
         </div>
     </div>
 

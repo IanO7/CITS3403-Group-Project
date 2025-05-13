@@ -112,6 +112,14 @@ body {
   background: #4b743e;
 }
 
+#password,
+#confirm_password {
+  font-family: inherit; /* or 'monospace' for fixed width */
+  letter-spacing: 0.05em; /* optional: helps mask dots look better */
+  width: 100%; /* ensures full width */
+  box-sizing: border-box;
+}
+
 .password-rules li {
   font-size: 0.9rem;
   list-style: none;

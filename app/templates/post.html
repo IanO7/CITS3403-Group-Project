@@ -94,16 +94,152 @@
                     <button class="btn btn-outline-primary like-button" data-note-id="{{ review.id }}">
                         <i class="bi bi-hand-thumbs-up"></i> 👍 <span class="action-count">{{ review.likes }}</span>
                     </button>
-                    <button class="btn btn-outline-secondary comment-button">
+                    <button class="btn btn-outline-secondary comment-button" data-bs-toggle="modal" data-bs-target="#commentsModal">
                         <i class="bi bi-chat"></i> 💬
                     </button>
-                    <button class="btn btn-outline-success share-button" data-note-id="{{ review.id }}">
-                        <i class="bi bi-share"></i> 🔗
-                    </button>
-                    <button class="btn btn-outline-danger delete-button" data-note-id="{{ review.id }}">
-                        <i class="bi bi-trash"></i> 🗑️
-                    </button>
+                    {% if show_actions is not defined or show_actions %}
+                        <button class="btn btn-outline-success share-button" data-note-id="{{ review.id }}">
+                            <i class="bi bi-share"></i> 🔗
+                        </button>
+                        <button class="btn btn-outline-danger delete-button" data-note-id="{{ review.id }}">
+                            <i class="bi bi-trash"></i> 🗑️
+                        </button>
+                    {% endif %}
                 </div>
             </div>
         </div>
+    <div class="modal fade" id="commentsModal" tabindex="-1" aria-labelledby="commentsModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+            
+            <div class="modal-header">
+                <h5 class="modal-title" id="commentsModalLabel">Comments</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            
+            <div class="modal-body">
+                <form method="POST">
+                    <div class="form-group p-3">
+                        <input type="hidden" name="note_id" value="{{ review.id }}">
+                        <input type="hidden" name="parentID" value="0">
+                        <textarea class="form-control w-100" id="Comment" name="Comment" required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary" id="Comment_button">Comment</button>
+                </form>
+            </div>
+            
+            <div id="comment-area" class="mb-4 p-3 border rounded bg-light shadow-sm"> </div>
+        
+        </div>
+    </div>
+
+    <script>
+        const comments = {{ comments_by_review[review.id] | tojson }};
+
+        function getComments() {
+            const commentContainer = document.getElementById("comment-area");
+
+            comments.forEach(comment => {
+                // Create comment wrapper
+                const commentWrapper = document.createElement("div");
+                commentWrapper.setAttribute("id", `comment-${comment.id}`);
+                commentWrapper.classList.add("p-3", "border", "rounded", "bg-light", "shadow-sm");
+                
+                commentWrapper.innerHTML = `
+                    <div> 
+                    <img src="${comment.profileImage}" alt="Profile Avatar" class="profileImageSmaller"> 
+                    <strong> {{review.user.username}} </strong> 
+                    </div> 
+                    <p> ${comment.Comment}</p>
+                    <button class="btn btn-sm btn-outline-primary reply-toggle" data-comment-id="${comment.id}" onClick='displayForm(${comment.id})'> reply </button> 
+                    <div class="d-none" id="reply-form-${comment.id}"> 
+                    <form method="POST">
+                        <div class="form-group p-3">
+                            <input type="hidden" name="note_id" value="{{review.id}}">
+                            <input type="hidden" name="parentID" value="${comment.id}">
+                            <input type="text-area" class="form-control" id="Comment" name="Comment" required>
+                        </div>
+                    <button type="submit" class="btn btn-primary" id="Comment_button">Reply</button>
+                    </form>
+                    </div> 
+                `;
+
+                if (comment.parentID === 0) {
+                    commentContainer.appendChild(commentWrapper);
+                } 
+                else {
+                    var parent = document.getElementById(`comment-${comment.parentID}`)
+                    let commentDetails = parent.querySelector('details')
+
+                    if (!commentDetails) {
+                        // Create one only if it doesn't already exist
+                        commentDetails = document.createElement("details");
+                        commentDetails.classList.add("mt-3", "ms-4");
+
+                        var commentSummary = document.createElement("summary");
+                        commentSummary.textContent = "Replies";
+                        commentDetails.appendChild(commentSummary);
+                        parent.appendChild(commentDetails);
+                    }
+                    if (parent) {
+                        commentWrapper.classList.add("mt-3", "ms-4");
+                        parent.appendChild(commentDetails);
+                        commentDetails.appendChild(commentWrapper);
+                    } else {
+                        commentContainer.appendChild(commentWrapper); // fallback
+                    }
+                }
+            });
+
+            document.querySelectorAll('.reply-toggle').forEach(button => {
+                button.addEventListener('click', () => {
+                    const commentId = button.dataset.commentId;
+                    const form = document.getElementById(`reply-form-${commentId}`);
+                    if (form) {
+                        form.classList.toggle('d-none');
+                    }
+                });
+            });
+        }
+
+
+        /*function displayForm(id) {
+            var form = document.getElementById(`reply-form-${id}`);
+            form.classList.toggle('d-none');
+
+        }*/ 
+
+
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('.comment-button').forEach(button => {
+                button.addEventListener('click', () => {
+                    getComments()
+                    const commentId = button.dataset.commentId;
+                    const replyForm = document.getElementById(`reply-form-${commentId}`);
+                });
+            });
+        }); 
+
+        /*document.querySelectorAll('.comment-form').forEach(form => {
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const formData = new FormData(form);
+
+                const response = await fetch('/api/comments', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (response.ok) {
+                    const comments = await response.json();
+                    console.log(comments); // Use this to re-render the comment section dynamically
+                } else {
+                    alert('Error submitting comment.');
+                }
+            });
+        });*/ 
+
+
+    </script>
+          
 {% endblock %}

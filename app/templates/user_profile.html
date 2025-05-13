@@ -10,7 +10,6 @@
     <!-- User Stats Section -->
     <div class="dashboard-header mb-4">
         <div class="profile-info d-flex align-items-center">
-              {# Only render avatar if it exists #}
             {% if selected_user.profileImage %}
             <img src="{{ url_for('views.uploaded_file', filename=selected_user.profileImage) }}" 
                  alt="{{ selected_user.username }}" 
@@ -20,11 +19,26 @@
             <div>
                 <h1>
                     {{ selected_user.username }}
-                    <span class="badge badge-level level-{{ selected_user.level }}">Level {{ selected_user.level }}</span>
+                    <!-- Show the badge next to the username -->
+                    <span class="badge badge-level level-{{ user_level }}">Level {{ user_level }}</span>
                 </h1>
                 <p>Statistics based on their reviews.</p>
             </div>
         </div>
+        {% if user.id != selected_user.id %}
+            <div id="follow-action">
+                {% if follow and follow.status == 'approved' %}
+                    <button class="btn btn-success" id="unfollow-btn">Following</button>
+                {% elif follow and follow.status == 'pending' %}
+                    <button class="btn btn-secondary" disabled>Request Sent</button>
+                {% elif incoming %}
+                    <button class="btn btn-primary" id="approve-btn" data-id="{{ incoming.id }}">Approve</button>
+                    <button class="btn btn-danger" id="reject-btn" data-id="{{ incoming.id }}">Reject</button>
+                {% else %}
+                    <button class="btn btn-primary" id="follow-btn">Send Follow Request</button>
+                {% endif %}
+            </div>
+        {% endif %}
     </div>
 
     <div class="stats-grid mb-5">
@@ -70,11 +84,78 @@
     </div>
 
     <!-- User Posts Section -->
-    <h2 class="text-center mt-5">Posts by {{ selected_user.username }}</h2>
-    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4">
-        {% for review in posts %}
-            {% include "post.html" %}
-        {% endfor %}
-    </div>
+    {% if user.id == selected_user.id or (follow and follow.status == 'approved') %}
+        <h2 class="text-center mt-5">Posts by {{ selected_user.username }}</h2>
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4">
+            {% for review in posts %}
+                {% set show_actions = False %}
+                {% include "post.html" with context %}
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="alert alert-info text-center mt-5">
+            You must be following {{ selected_user.username }} to view their posts.
+        </div>
+    {% endif %}
 </div>
+{% endblock %}
+
+{% block scripts %}
+    {{ super() }}
+    <script src="{{ url_for('static', filename='JS/my_friends.js') }}"></script>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const followAction = document.getElementById('follow-action');
+        if (!followAction) return;
+
+        // Send Follow Request
+        followAction.addEventListener('click', function(e) {
+            if (e.target && e.target.id === 'follow-btn') {
+                fetch('{{ url_for("views.follow", user_id=selected_user.id) }}', {method: 'POST'})
+                    .then(res => res.json())
+                    .then(data => {
+                        alert(data.message || data.error || "Request sent.");
+                        if (data.success) {
+                            followAction.innerHTML = '<button class="btn btn-secondary" disabled>Request Sent</button>';
+                        }
+                    });
+            }
+            // Unfollow
+            if (e.target && e.target.id === 'unfollow-btn') {
+                fetch('{{ url_for("views.unfollow", user_id=selected_user.id) }}', {method: 'POST'})
+                    .then(res => res.json())
+                    .then(data => {
+                        alert(data.message || data.error || "Unfollowed.");
+                        if (data.success) {
+                            followAction.innerHTML = '<button class="btn btn-primary" id="follow-btn">Send Follow Request</button>';
+                        }
+                    });
+            }
+            // Approve
+            if (e.target && e.target.id === 'approve-btn') {
+                const followId = e.target.getAttribute('data-id');
+                fetch(`/approve_follow/${followId}`, {method: 'POST'})
+                    .then(res => res.json())
+                    .then(data => {
+                        alert(data.message || data.error || "Approved.");
+                        if (data.success) {
+                            followAction.innerHTML = '<button class="btn btn-success" id="unfollow-btn">Following</button>';
+                        }
+                    });
+            }
+            // Reject
+            if (e.target && e.target.id === 'reject-btn') {
+                const followId = e.target.getAttribute('data-id');
+                fetch(`/reject_follow/${followId}`, {method: 'POST'})
+                    .then(res => res.json())
+                    .then(data => {
+                        alert(data.message || data.error || "Rejected.");
+                        if (data.success) {
+                            followAction.innerHTML = '<button class="btn btn-primary" id="follow-btn">Send Follow Request</button>';
+                        }
+                    });
+            }
+        });
+    });
+    </script>
 {% endblock %}

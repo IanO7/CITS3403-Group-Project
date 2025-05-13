@@ -31,7 +31,10 @@
                    class="profileImage"
                    style="width: 100px; height: 100px; object-fit: cover;">
             {% endif %}
-                <h5 class="card-title">{{ similar_user.username }}</h5>
+                <h5 class="card-title">
+                    {{ similar_user.username }}
+                    <span class="badge badge-level level-{{ user_levels[similar_user.id] }}">Level {{ user_levels[similar_user.id] }}</span>
+                </h5>
                 <p class="card-text">This user has similar taste preferences to you!</p>
                 <a href="{{ url_for('views.user_profile', user_id=similar_user.id) }}" class="btn btn-primary">View Profile</a>
             </div>
@@ -41,33 +44,18 @@
         {% endif %}
     </div>
 
-    <!-- Friends List -->
-    <div class="users-to-follow mt-5">
-        <h2>All Friends</h2>
-        <ul class="list-group">
-            {% for user in all_users %}
-            <li class="list-group-item d-flex justify-content-between align-items-center">
-                <span>
-                    {{ user.username }}
-                    <span class="badge badge-level level-{{ user_levels[user.id] }}">Level {{ user_levels[user.id] }}</span>
-                </span>
-                <button class="btn {% if user.id in followed_users %}btn-danger{% else %}btn-success{% endif %} follow-button" data-user-id="{{ user.id }}">
-                    {% if user.id in followed_users %}Unfollow{% else %}Follow{% endif %}
-                </button>
-            </li>
-            {% endfor %}
-        </ul>
-    </div>
-
     <!-- Friend Posts Carousel -->
     <div class="friend-posts-carousel mt-5">
         <h2 class="text-center">🔥 Posts from Your Friends</h2>
         <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4">
-            {% for review in notes %}
-                {% include "post.html" %}
+            {% if notes %}
+                {% for review in notes %}
+                    {% set show_actions = False %}
+                    {% include "post.html" with context %}
+                {% endfor %}
             {% else %}
-            <p class="text-muted text-center mt-5">No posts from your friends yet.</p>
-            {% endfor %}
+                <p class="text-muted text-center mt-5">No posts from your friends yet.</p>
+            {% endif %}
         </div>
     </div>
         

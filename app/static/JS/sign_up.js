@@ -57,24 +57,32 @@ document.addEventListener('DOMContentLoaded', function () {
   // Password Eye Toggle for Password
   let visible = false;
   if (password && togglePassword) {
-    togglePassword.addEventListener('click', function () {
+    togglePassword.addEventListener('mousedown', function (e) {
+      e.preventDefault(); // Prevents focus loss
+    });
+    togglePassword.addEventListener('click', function (e) {
       visible = !visible;
       password.type = visible ? 'text' : 'password';
       eyeIcon.innerHTML = visible
         ? `<path stroke="#888" stroke-width="2" d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12Z"/><circle cx="12" cy="12" r="3.5" stroke="#888" stroke-width="2"/><line x1="4" y1="20" x2="20" y2="4" stroke="#888" stroke-width="2"/>`
         : `<path stroke="#888" stroke-width="2" d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12Z"/><circle cx="12" cy="12" r="3.5" stroke="#888" stroke-width="2"/>`;
+      password.focus(); // Keep focus on input
     });
   }
 
   // Password Eye Toggle for Confirm Password
   let visibleConfirm = false;
   if (confirmPassword && toggleConfirmPassword) {
-    toggleConfirmPassword.addEventListener('click', function () {
+    toggleConfirmPassword.addEventListener('mousedown', function (e) {
+      e.preventDefault();
+    });
+    toggleConfirmPassword.addEventListener('click', function (e) {
       visibleConfirm = !visibleConfirm;
       confirmPassword.type = visibleConfirm ? 'text' : 'password';
       eyeIconConfirm.innerHTML = visibleConfirm
         ? `<path stroke="#888" stroke-width="2" d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12Z"/><circle cx="12" cy="12" r="3.5" stroke="#888" stroke-width="2"/><line x1="4" y1="20" x2="20" y2="4" stroke="#888" stroke-width="2"/>`
         : `<path stroke="#888" stroke-width="2" d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12Z"/><circle cx="12" cy="12" r="3.5" stroke="#888" stroke-width="2"/>`;
+      confirmPassword.focus();
     });
   }
 

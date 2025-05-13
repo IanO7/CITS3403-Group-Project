@@ -12,12 +12,29 @@
         </span>
     {% endif %}
 </h2>
+
+<!-- Incoming follow requests -->
+{% if incoming_requests %}
+    <h4>Follow Requests</h4>
+    <ul class="list-group mb-4">
+    {% for req in incoming_requests %}
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+            <span>
+                <strong>{{ req.follower.username }}</strong> wants to follow you.
+            </span>
+            <span>
+                <button class="btn btn-primary btn-sm approve-follow-btn" data-id="{{ req.id }}">Approve</button>
+                <button class="btn btn-danger btn-sm reject-follow-btn" data-id="{{ req.id }}">Reject</button>
+            </span>
+        </li>
+    {% endfor %}
+    </ul>
+{% endif %}
+
 {% if posts %}
     <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4">
     {% for item in posts %}
         <div class="card-header">
-            <strong>From: {{ item.sender.username }}</strong><br>
-            <em>{{ item.timestamp.strftime('%Y-%m-%d %H:%M') }}</em>
         {% set review = item.note %}
         {% include "post.html" %}
         </div>
@@ -26,4 +43,31 @@
 {% else %}
     <p>No shared posts yet.</p>
 {% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.approve-follow-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            fetch(`/approve_follow/${btn.dataset.id}`, {method: 'POST'})
+                .then(res => res.json())
+                .then(data => {
+                    alert(data.message || "Request approved.");
+                    btn.closest('li').remove();
+                });
+        });
+    });
+    document.querySelectorAll('.reject-follow-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            fetch(`/reject_follow/${btn.dataset.id}`, {method: 'POST'})
+                .then(res => res.json())
+                .then(data => {
+                    alert(data.message || "Request rejected.");
+                    btn.closest('li').remove();
+                });
+        });
+    });
+});
+</script>
 {% endblock %}
