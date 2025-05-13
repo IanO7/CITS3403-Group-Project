@@ -126,6 +126,22 @@
 <section id="stats" class="py-5 bg-light text-center">
   <div class="container">
     <h2 class="mb-4">Community Stats</h2>
+    <div class="info-box">
+      
+      <p>Explore global food statistics on the interactive globe below.</p>
+    </div>
+  
+    <div id="chartdiv"></div>
+  
+    <!-- amCharts Scripts -->
+    <script>window.GLOBE_API_URL = "{{ url_for('views.api_globe_reviews') }}";</script>
+    <script src="https://www.amcharts.com/lib/4/core.js"></script>
+    <script src="https://www.amcharts.com/lib/4/maps.js"></script>
+    <script src="https://www.amcharts.com/lib/4/geodata/worldLow.js"></script>
+    <script src="https://www.amcharts.com/lib/4/themes/animated.js"></script>
+  
+    <!-- Your globe logic -->
+    <script src="{{ url_for('static', filename='JS/globe.js') }}"></script>
     <div class="row">
       <div class="col-md-6">
         <div class="stat-card">
