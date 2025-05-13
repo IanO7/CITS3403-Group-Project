@@ -137,6 +137,8 @@
 <div id="userPosts">
     <div id="Posts" class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4">
         {% for review in reviews %}
+            {% set selected_user = user %}
+            {% set current_user = user %}
             {% include "post.html" %}
         {% endfor %}
     </div>

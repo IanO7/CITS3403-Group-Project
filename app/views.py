@@ -3,7 +3,7 @@ from flask import (
     url_for, session, jsonify, abort, flash, current_app, 
     send_from_directory )
 
-from .models import Note, User, Follow, Comments
+from .models import Note, User, Follow, Comments, SharedPost
 from . import db
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
@@ -67,29 +67,45 @@ def landing():
 def profile():
     user = current_user()
     if not user:
-        return redirect(url_for('auth.login'))
-
-    reviews = Note.query.filter_by(user_id=user.id).all()  # Fetch all notes for the user
+        return redirect(url_for('auth.login')) 
 
     if request.method == 'POST':
         comment = Comments(
                 Comment = request.form['Comment'], 
                 user_id = request.form['user_id'],
                 note_id = request.form['note_id'], 
-                parentID = request.form['parentID'],
-                likes = 0 
+                parentID = request.form['parentID']
             )
         db.session.add(comment)
         db.session.commit()
-        return redirect(url_for('views.profile', user_id=user.id, open_modal='note-' + str(request.form['note_id'])))
-
+        return redirect(url_for('views.profile', user_id=user.id))
+    
+    reviews = Note.query.filter_by(user_id=user.id).all()
+    
     comments_by_review = {
         review.id: [comment.to_dict() for comment in review.comments]
-        for review in reviews  # or whatever your review list is called
+        for review in reviews 
     }
 
-    return render_template('profile.html', user=user, reviews=reviews, comments_by_review=comments_by_review)
+    # Calculate badges and level
+    total = len(reviews) or 1
+    stats = {
+        'spiciness':     sum(n.Spiciness     for n in reviews) / total,
+        'deliciousness': sum(n.Deliciousness for n in reviews) / total,
+        'value':         sum(n.Value         for n in reviews) / total,
+        'service':       sum(n.Service       for n in reviews) / total
+    }
+    badges = [
+        {'name': 'First Post', 'earned': len(reviews) > 0},
+        {'name': 'Spice Master', 'earned': stats['spiciness'] > 80},
+        {'name': 'Service Perfectionist', 'earned': stats['service'] > 90},
+        {'name': 'Value Hunter', 'earned': stats['value'] > 85},
+        {'name': 'Food Critic', 'earned': len(reviews) > 20},
+        {'name': 'All-Rounder', 'earned': all(stat > 75 for stat in stats.values())}
+    ]
+    level = get_user_level(badges)
 
+    return render_template('profile.html', user=user, reviews=reviews, level=level, comments_by_review=comments_by_review)
 
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 
@@ -129,6 +145,8 @@ def new_post():
             image=image_filename, 
 
             location=request.form.get('location'),
+            latitude  = float(request.form.get('latitude') or 0),
+            longitude = float(request.form.get('longitude') or 0),
             user_id=user.id
         )
 
@@ -575,12 +593,11 @@ def user_profile(user_id):
                 Comment = request.form['Comment'], 
                 user_id = request.form['user_id'],
                 note_id = request.form['note_id'], 
-                parentID = request.form['parentID'],
-                likes = 0 
+                parentID = request.form['parentID']
             )
         db.session.add(comment)
         db.session.commit()
-        return redirect(url_for('views.user_profile', user_id=selected_user.id))
+        return redirect(url_for('views.user_profile', user_id=user_id))
 
     comments_by_review = {
         review.id: [comment.to_dict() for comment in review.comments]
@@ -622,32 +639,54 @@ def recommend_food():
     # Fetch all food items
     food_items = Note.query.all()
 
+    # Gather all unique cuisines and locations for one-hot encoding
+    all_cuisines = sorted({food.Cuisine for food in food_items if food.Cuisine})
+    all_locations = sorted({food.location for food in food_items if food.location})
+
+    def one_hot(value, all_values):
+        return [1 if value == v else 0 for v in all_values]
+
     # Prepare the data for KNN
     food_data = []
     food_ids = []
     for food in food_items:
-        food_data.append([
+        vector = [
             food.Spiciness,
             food.Deliciousness,
             food.Value,
             food.Service,
-            (food.Spiciness + food.Deliciousness + food.Value + food.Service) / 4  # Overall rating
-        ])
+            (food.Spiciness + food.Deliciousness + food.Value + food.Service) / 4,
+            getattr(food, 'Stars', 5)  # Default to 5 if missing
+        ]
+        vector += one_hot(food.Cuisine, all_cuisines)
+        vector += one_hot(food.location, all_locations)
+        food_data.append(vector)
         food_ids.append(food.id)
 
     food_data = np.array(food_data)
 
-    # User's preference vector (example: adjust weights based on user preferences)
-    user_preference = np.array([
+    # User's preference vector (from query params)
+    user_cuisine = request.args.get('cuisine', '')
+    user_location = request.args.get('location', '')
+
+    user_preference = [
         request.args.get('spiciness', 50, type=int),
         request.args.get('deliciousness', 50, type=int),
         request.args.get('value', 50, type=int),
         request.args.get('service', 50, type=int),
-        request.args.get('overall', 50, type=int)
-    ]).reshape(1, -1)
+        request.args.get('overall', 50, type=int),
+        request.args.get('stars', 5, type=int)
+    ]
+    user_preference += one_hot(user_cuisine, all_cuisines)
+    user_preference += one_hot(user_location, all_locations)
+    user_preference = np.array(user_preference).reshape(1, -1)
 
     # Fit the KNN model
-    knn = NearestNeighbors(n_neighbors=5, metric='euclidean')
+    n_neighbors = min(5, len(food_data)) if len(food_data) > 0 else 1
+    if n_neighbors == 0:
+        return jsonify(success=False, recommendations=[])
+
+    knn = NearestNeighbors(n_neighbors=n_neighbors, metric='euclidean')
     knn.fit(food_data)
 
     # Find the nearest neighbors
@@ -660,10 +699,13 @@ def recommend_food():
         recommendations.append({
             'id': food.id,
             'restaurant': food.Resturaunt,
+            'cuisine': food.Cuisine,
+            'location': food.location,
             'spiciness': food.Spiciness,
             'deliciousness': food.Deliciousness,
             'value': food.Value,
             'service': food.Service,
+            'stars': getattr(food, 'Stars', 5),
             'overall': (food.Spiciness + food.Deliciousness + food.Value + food.Service) / 4
         })
 
@@ -819,15 +861,91 @@ def search_reviews():
     if not query:
         return jsonify(success=False, results=[])
 
-    # Search for posts matching the query in restaurant name, review, or location
-    results = Note.query.filter(
-        (Note.Resturaunt.ilike(f"%{query}%")) |
-        (Note.Review.ilike(f"%{query}%")) |
-        (Note.Cuisine.ilike(f"%{query}%")) |
-        (Note.location.ilike(f"%{query}%"))
-    ).all()
+    import re
+    stat_map = {
+        'spiciness': Note.Spiciness,
+        'service': Note.Service,
+        'value': Note.Value,
+        'deliciousness': Note.Deliciousness,
+        'stars': Note.Stars if hasattr(Note, 'Stars') else None
+    }
 
-    # Prepare data for the frontend
+    # Map natural language keywords to stat filters
+    keyword_stat_map = {
+        'spicy': Note.Spiciness >= 75,
+        'spiciness': Note.Spiciness >= 75,
+        'delicious': Note.Deliciousness >= 75,
+        'tasty': Note.Deliciousness >= 75,
+        'cheap': Note.Value >= 75,        # Assuming higher Value means cheaper/better value
+        'expensive': Note.Value <= 40,    # Adjust threshold as needed
+        'good service': Note.Service >= 75,
+        'bad service': Note.Service <= 40,
+        'highly rated': Note.Stars >= 4,
+        'low rated': Note.Stars <= 2,
+    }
+
+    # Find all patterns like "spiciness 100"
+    stat_matches = re.findall(r'(spiciness|service|value|deliciousness|stars)\s*([0-9]+)', query, re.IGNORECASE)
+    stat_filters = []
+    used_numbers = set()
+    for stat, value in stat_matches:
+        column = stat_map.get(stat.lower())
+        if column is not None:
+            stat_filters.append(column == int(value))
+            used_numbers.add(value)
+
+    # Remove stat-value pairs from the query to get remaining keywords
+    query_cleaned = re.sub(r'(spiciness|service|value|deliciousness|stars)\s*[0-9]+', '', query, flags=re.IGNORECASE).strip()
+
+    # Find any standalone numbers in the remaining query and match them to any stat field
+    number_matches = re.findall(r'\b([0-9]+)\b', query_cleaned)
+    for num in number_matches:
+        if num not in used_numbers:
+            stat_filters.append(
+                db.or_(
+                    Note.Spiciness == int(num),
+                    Note.Deliciousness == int(num),
+                    Note.Value == int(num),
+                    Note.Service == int(num)
+                )
+            )
+    # Remove numbers from keywords
+    query_cleaned = re.sub(r'\b[0-9]+\b', '', query_cleaned).strip()
+
+    # Split remaining keywords and build OR filters for text fields and stat filters for mapped keywords
+    keyword_filters = []
+    if query_cleaned:
+        words = query_cleaned.lower().split()
+        skip_next = False
+        for i, word in enumerate(words):
+            if skip_next:
+                skip_next = False
+                continue
+            # Handle two-word phrases in mapping (e.g., "good service")
+            if i + 1 < len(words):
+                two_word = f"{word} {words[i+1]}"
+                if two_word in keyword_stat_map:
+                    stat_filters.append(keyword_stat_map[two_word])
+                    skip_next = True
+                    continue
+            # Single word mapping
+            if word in keyword_stat_map:
+                stat_filters.append(keyword_stat_map[word])
+            # Always add text search for each word
+            keyword_filters.append(Note.Resturaunt.ilike(f"%{word}%"))
+            keyword_filters.append(Note.Review.ilike(f"%{word}%"))
+            keyword_filters.append(Note.Cuisine.ilike(f"%{word}%"))
+            keyword_filters.append(Note.location.ilike(f"%{word}%"))
+
+    # Combine filters: must match all stat-value pairs AND at least one keyword (if any)
+    query_obj = db.session.query(Note)
+    if stat_filters:
+        query_obj = query_obj.filter(*stat_filters)
+    if keyword_filters:
+        query_obj = query_obj.filter(db.or_(*keyword_filters))
+
+    results = query_obj.all()
+
     results_data = [{
         'id': post.id,
         'restaurant': post.Resturaunt,
@@ -836,7 +954,9 @@ def search_reviews():
         'spiciness': post.Spiciness,
         'deliciousness': post.Deliciousness,
         'value': post.Value,
-        'service': post.Service
+        'service': post.Service,
+        'cuisine': post.Cuisine,
+        'location': post.location
     } for post in results]
 
     return jsonify(success=True, results=results_data)
@@ -928,17 +1048,37 @@ def inbox():
     if not user:
         return redirect(url_for('auth.login'))
 
-    # Get unseen shared posts as before
-    posts = []  # your existing logic
+    # Mark all unseen shared posts as seen
+    unseen_posts = SharedPost.query.filter_by(recipient_id=user.id, seen=False).all()
+    for sp in unseen_posts:
+        sp.seen = True
+    if unseen_posts:
+        db.session.commit()
+
+    # Fetch all shared posts sent to this user, newest first
+    shared_posts = SharedPost.query.filter_by(recipient_id=user.id).order_by(SharedPost.timestamp.desc()).all()
+
+    posts = []
+    for sp in shared_posts:
+        sender = User.query.get(sp.sender_id)
+        note = Note.query.get(sp.note_id)
+        if sender and note:
+            posts.append({
+                'sender': sender,
+                'note': note,
+                'timestamp': sp.timestamp,
+                'seen': sp.seen,
+            })
 
     # Get incoming follow requests
     incoming_requests = Follow.query.filter_by(followed_id=user.id, status='pending').all()
 
-    # Count unseen posts if needed
-    unseen_count = 0  # your existing logic
+    # Count unseen posts (should now be zero)
+    unseen_count = SharedPost.query.filter_by(recipient_id=user.id, seen=False).count()
 
     return render_template(
         'inbox.html',
+        user=user, 
         posts=posts,
         unseen_count=unseen_count,
         incoming_requests=incoming_requests
@@ -976,3 +1116,16 @@ def api_user_stats(user_id):
         username=user.username
     )
 
+@views.route('/api/globe_reviews')
+def api_globe_reviews():
+    notes = Note.query.filter(Note.latitude.isnot(None), Note.longitude.isnot(None)).all()
+    return jsonify([
+        {
+          'lat':  n.latitude,
+          'lng':  n.longitude,
+          'title': n.Resturaunt,
+          'imageUrl': url_for('views.uploaded_file', filename=n.image),
+          'tooltip': n.Review
+        }
+        for n in notes
+    ])
