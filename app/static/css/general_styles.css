@@ -27,18 +27,13 @@
 
 /* Header Styling */
 .position-relative {
-    background-color: #0078d7; /* Modern blue background */
+    /* background-color: #5F8D3B; */
     color: white; /* Text color */
     padding: 20px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
 }
 
-.text_main {
-    font-family: 'Lobster', cursive; /* Stylish font for the header title */
-    font-size: 2.5rem;
-    color: white;
-    text-align: center;
-}
+
 
 .d-flex {
     display: flex;
@@ -65,7 +60,7 @@ form textarea.form-control {
 }
 
 form .form-control:focus {
-    border-color: #005a9e; /* Highlight border on focus */
+    border-color: #5F8D3B; /* Highlight border on focus */
 }
 
 .ms-3 a {
