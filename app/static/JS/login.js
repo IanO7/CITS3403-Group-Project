@@ -1,16 +1,29 @@
 // File: static/js/login.js
 
+// Function to hadle login with Google
 function handleGoogleLogin() {
   alert("Redirecting to Google login...");
 }
 
+// Function to check if the email is valid
+function isValidEmail(email) {
+  const emailPattern = /^[^\s@]+@[^\s@]+\.[a-zA-Z]{2,}$/;
+  return emailPattern.test(email);
+}
+
 // Hide error when email input is focused
 document.addEventListener('DOMContentLoaded', function() {
-  var emailInput = document.getElementById('email-input');
-  var errorDiv = document.getElementById('login-error');
-  if(emailInput && errorDiv) {
-    emailInput.addEventListener('focus', function() {
-      errorDiv.style.display = 'none';
+  const emailInput = document.getElementById('email-input');
+  const errorDiv = document.getElementById('login-error');
+
+  if (emailInput && errorDiv) {
+    emailInput.addEventListener('blur', function() {
+      if (!isValidEmail(emailInput.value)) {
+        errorDiv.style.display = 'block';
+        errorDiv.textContent = 'Please enter a valid email address.';
+      } else {
+        errorDiv.style.display = 'none';
+      }
     });
   }
 
