@@ -1,0 +1,220 @@
+/* Color Variables */
+:root {
+    --primary: #5F8D3B;
+    --secondary: #DF6F1B;
+    --white: #fff;
+    --shadow: rgba(0, 0, 0, 0.1);
+    --text-dark: #333;
+    --bronze: #6E3A14;
+    --silver: #8E5F2B;
+    --gold: #DF6F1B;
+    --emerald: #5F8D3B;
+    --sapphire: #007BFF;
+    --hover-bg: #f0f0f0;
+    --border-radius-sm: 10px;
+    --border-radius-md: 12px;
+    --border-radius-lg: 25px;
+    --transition: all 0.3s ease;
+}
+
+/* Add Post Button */
+.addPost {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+    font-weight: 600;
+    background-color: var(--primary);
+    color: var(--white);
+    border: none;
+    border-radius: var(--border-radius-sm);
+    text-decoration: none;
+    white-space: nowrap;
+    transition: var(--transition);
+    width: auto;
+}
+
+.addPost:hover {
+    background-color: #4a7030;
+    transform: translateY(-2px);
+    cursor: pointer;
+    box-shadow: 0 4px 12px var(--shadow);
+}
+
+/* Profile Image */
+.profileImage {
+    width: 120px;
+    height: 120px;
+    margin-top: 1rem;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 2px solid var(--white);
+    box-shadow: 0 4px 8px var(--shadow);
+    transition: var(--transition);
+}
+
+.profileImage:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 12px var(--shadow);
+}
+
+/* Badge Levels */
+.badge-level {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+    font-weight: 700;
+    border-radius: var(--border-radius-md);
+    color: var(--white);
+    transition: var(--transition);
+}
+
+.badge-level:hover {
+    transform: translateY(-2px);
+}
+
+.level-1 { background-color: var(--bronze); }
+.level-2 { background-color: var(--silver); }
+.level-3 { background-color: var(--gold); }
+.level-4 { background-color: var(--emerald); }
+.level-5 { background-color: var(--sapphire); }
+
+/* Post Card Styles */
+.card-body {
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.post-image {
+    width: 100%;
+    height: 250px;
+    object-fit: cover;
+    border-radius: var(--border-radius-sm);
+    transition: var(--transition);
+}
+
+.post-image:hover {
+    transform: scale(1.02);
+}
+
+/* Reaction Buttons */
+.reaction-buttons {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: auto;
+    gap: 0.5rem;
+}
+
+.reaction-buttons button {
+    flex: 1;
+    padding: 0.75rem;
+    border-radius: var(--border-radius-lg);
+    font-size: 0.875rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    transition: var(--transition);
+    border: 1px solid transparent;
+}
+
+.reaction-buttons .btn:hover {
+    background-color: var(--hover-bg);
+    transform: translateY(-2px);
+}
+
+/* Make share button more prominent */
+.reaction-buttons .share-button {
+    background-color: var(--secondary);
+    color: var(--white);
+    font-weight: 600;
+    padding: 0.75rem 1.5rem;
+    border: none;
+}
+
+.reaction-buttons .share-button:hover {
+    background-color: #c85f15;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px var(--shadow);
+    color: var(--white);
+}
+
+.reaction-buttons .share-button i {
+    margin-right: 0.5rem;
+    font-size: 1.1rem;
+}
+
+/* Multi-share Mode */
+.multi-share-checkbox {
+    display: none;
+}
+
+.multi-share-mode .multi-share-checkbox {
+    display: block;
+    margin: 1rem 0;
+}
+
+/* Profile Header Styling */
+#profileSub {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.5rem;
+    margin-top: 5rem;
+}
+
+.username {
+    font-family: 'Lobster', serif;
+    font-size: 2.5rem;
+    margin: 0;
+    text-align: center;
+}
+
+/* Profile Actions */
+.profile-actions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 0.5rem;
+}
+
+/* Action Buttons */
+.addPost, 
+.btn-success#shareMultipleBtn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--white);
+    border: none;
+    border-radius: var(--border-radius-sm);
+    transition: var(--transition);
+}
+
+.btn-success#shareMultipleBtn {
+    background-color: var(--secondary);
+}
+
+.btn-success#shareMultipleBtn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px var(--shadow);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .reaction-buttons {
+        flex-wrap: wrap;
+    }
+    
+    .reaction-buttons button {
+        width: calc(50% - 0.5rem);
+    }
+}

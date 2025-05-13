@@ -1,0 +1,152 @@
+/* Settings Page Container */
+.container {
+    max-width: 700px;
+    padding: 2rem;
+    background-color: #fff;
+    border-radius: 15px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-top: 6rem !important; /* Account for fixed navbar */
+}
+
+/* Page Title */
+h1 {
+    color: #5F8D3B;
+    font-family: 'Lobster', serif;
+    margin-bottom: 2rem;
+}
+
+/* Section Headers */
+h3 {
+    color: #DF6F1B;
+    font-weight: 700;
+    margin: 1.5rem 0;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid #F6E7DA;
+}
+
+/* Form Groups */
+.mb-3 {
+    margin-bottom: 1.5rem !important;
+}
+
+/* Labels */
+.form-label {
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 0.5rem;
+}
+
+/* Input Fields */
+.form-control {
+    border: 2px solid #F6E7DA;
+    border-radius: 8px;
+    padding: 0.75rem;
+    transition: border-color 0.3s ease;
+}
+
+.form-control:focus {
+    border-color: #5F8D3B;
+    box-shadow: 0 0 0 0.2rem rgba(95, 141, 59, 0.25);
+}
+
+/* Buttons */
+.btn {
+    padding: 0.75rem 2rem;
+    font-weight: 600;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.btn-primary {
+    background-color: #5F8D3B;
+    border: none;
+}
+
+.btn-primary:hover {
+    background-color: #4a7030;
+    transform: translateY(-2px);
+}
+
+.btn-warning {
+    background-color: #5F8D3B;
+    border: none;
+    color: white;
+}
+
+.btn-warning:hover {
+    background-color: #4a7030;
+    color: white;
+    transform: translateY(-2px);
+}
+
+.btn-danger {
+    background-color: #dc3545;
+    border: none;
+}
+
+.btn-danger:hover {
+    background-color: #bb2d3b;
+    transform: translateY(-2px);
+}
+
+/* Dividers */
+hr {
+    margin: 2rem 0;
+    border-color: #F6E7DA;
+    opacity: 0.5;
+}
+
+/* Profile Image Input */
+#pictureStatus {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: #5F8D3B;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+/* Warning Text */
+.text-danger {
+    color: #dc3545;
+    font-weight: 500;
+    margin-bottom: 1rem;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .container {
+        padding: 1rem;
+        margin-top: 5rem !important;
+    }
+
+    .btn {
+        width: 100%;
+        margin-bottom: 0.5rem;
+    }
+    
+    #username, #email {
+        min-width: 100%; /* On mobile, use container width */
+    }
+}
+
+/* Input Fields */
+#username, #email {
+    border: 2px solid #F6E7DA;
+    border-radius: 8px;
+    padding: 0.75rem;
+    transition: all 0.3s ease;
+    font-weight: 500;
+    width: 100%;
+    min-width: 300px;
+}
+
+#username:focus, #email:focus {
+    box-shadow: 0 0 0 0.2rem rgba(95, 141, 59, 0.25);
+    background-color: #f8faf6;
+}
+
+/* Labels for username and email */
+label[for="username"], label[for="email"] {
+    color: #5F8D3B;
+    font-weight: 600;
+}
