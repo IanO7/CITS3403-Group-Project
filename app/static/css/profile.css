@@ -1,0 +1,102 @@
+.addPost {
+    display: inline-block;
+    padding: 8px 16px;
+    font-size: 1rem;
+    font-weight: 600;
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    text-align: center;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: background-color 0.3s ease;
+    width: auto;
+}
+
+.addPost:hover {
+    background-color: #0056b3;
+    cursor: pointer;
+}
+
+    .profileImage {
+        width: 120px;
+        height: 120px;
+        object-fit: cover;
+        border-radius: 50%;
+        border: 2px solid #fff;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .badge-level {
+        display: inline-block;
+        padding: 5px 10px;
+        font-size: 0.9rem;
+        font-weight: bold;
+        border-radius: 12px;
+        color: white;
+    }
+
+    .level-1 { background-color: #6E3A14; } /* Bronze */
+    .level-2 { background-color: #8E5F2B; } /* Silver */
+    .level-3 { background-color: #DF6F1B; } /* Gold */
+    .level-4 { background-color: #5F8D3B; } /* Emerald */
+    .level-5 { background-color: #007BFF; } /* Sapphire */
+
+    /* Post Styles */
+    .card-body {
+        padding: 15px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+    .post-image {
+        width: 100%;
+
+        height: 250px;
+
+        object-fit: cover;
+        border-radius: 10px;
+        margin-top: 15px;
+    }
+
+    .reaction-buttons {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: auto;
+    }
+
+    .reaction-buttons button {
+        width: 22%;
+        padding: 8px;
+        border-radius: 25px;
+        font-size: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .reaction-buttons .btn {
+        border-radius: 25px;
+        transition: background-color 0.3s;
+    }
+
+    .reaction-buttons .btn:hover {
+        background-color: #f0f0f0;
+    }
+
+    .reaction-buttons .like-button i,
+    .reaction-buttons .comment-button i,
+    .reaction-buttons .share-button i,
+    .reaction-buttons .delete-button i {
+        margin-right: 5px;
+    }
+
+    /* Hide multi-share checkboxes by default */
+    .multi-share-checkbox {
+        display: none;
+    }
+    .multi-share-mode .multi-share-checkbox {
+        display: block;
+    }
