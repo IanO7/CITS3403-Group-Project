@@ -88,6 +88,9 @@
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 
 <script>
+function updateValue(spanId, value) {
+        document.getElementById(spanId).textContent = value;
+}
 document.addEventListener('DOMContentLoaded', () => {
     const locationInput  = document.getElementById('location');
     const suggestionsBox = document.getElementById('location-suggestions');
