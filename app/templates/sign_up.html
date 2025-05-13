@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}Sign Up{% endblock %}
+{% block title %}OZfoody - Sign Up{% endblock %}
 
 {% block content %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/general_styles.css') }}">
@@ -63,11 +63,6 @@
       <li id="special-rule" class="invalid">❌ At least one special character (!@#$%)</li>
       <li id="match-rule" class="invalid">❌ Both passwords must be the same</li>
     </ul>
-
-    <div> 
-      <label for="profileImage">add profile picture</label>
-      <input type="file" class="form-control" id="image" name="profileImage" placeholder="Enter an image URL" required>
-    </div>
 
     <button type="submit" id="signupBtn" disabled>Sign Up</button>
   </form>
