@@ -15,11 +15,13 @@
 </div>
 
 <div id="profileSub" class="container mt-1">
-    <h1>
+    <h1 class="username">
         {{ user.username }}
     </h1>
-    <span class="badge badge-level level-{{ level }}">Level {{ level }}</span>
-    <button class="addPost" onclick="location.href='/new_post'">Add ➕ </button>
+    <div class="profile-actions">
+        <span class="badge badge-level level-{{ level }}">Level {{ level }}</span>
+        <button class="addPost" onclick="location.href='/new_post'">Add Post ➕</button>
+    </div>
 </div>
 
 <div class="mb-3">
