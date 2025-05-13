@@ -393,6 +393,16 @@ body {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
+.profileImageSmaller {
+    width:3rem; 
+    height:3rem; 
+    object-fit: cover;
+    object-position: top;
+    border-radius: 20%;
+    border:2px solid #fff; 
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
 
 .stats-grid, .charts-grid, .badges-grid {
     display: grid;

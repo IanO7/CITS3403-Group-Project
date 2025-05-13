@@ -1,7 +1,27 @@
 from . import db
+from flask import url_for
 from werkzeug.security import generate_password_hash, check_password_hash
 
-
+class Comments (db.Model):
+    id           = db.Column(db.Integer, primary_key=True)
+    Comment      = db.Column(db.String(1000), nullable=False)
+    user_id      = db.Column(db.Integer, db.ForeignKey('user.id'))
+    note_id      = db.Column(db.Integer, db.ForeignKey('note.id'))
+    likes        = db.Column(db.Integer, default=0)
+    parentID     = db.Column(db.Integer)
+    
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'Comment': self.Comment,
+            'user_id': self.user_id,
+            'note_id': self.note_id,
+            'parentID': self.parentID,
+            'username': self.user.username,
+            'profileImage': url_for('views.uploaded_file', filename=self.user.profileImage),
+            'likes': self.likes,
+            # Add other serializable fields as needed
+        }
 class Note(db.Model):
     id              = db.Column(db.Integer, primary_key=True)
     Resturaunt      = db.Column(db.String(100), nullable = False)
@@ -16,14 +36,16 @@ class Note(db.Model):
     user_id         = db.Column(db.Integer, db.ForeignKey('user.id'))
     likes           = db.Column(db.Integer, default=0)  # New column for likes
     location        = db.Column(db.String(255), nullable=True, index=True)  # Add index for faster querying
+    comments        = db.relationship(Comments, backref='note', lazy=True)
 
 class User(db.Model):
-    id       = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(150),  unique=True, nullable=False)
-    email    = db.Column(db.String(150), unique=True, nullable=False)
-    profileImage = db.Column(db.String(200))
-    password = db.Column(db.String(150), nullable=False)
-    Note       = db.relationship(Note, backref='user', lazy=True)
+    id          = db.Column(db.Integer, primary_key=True)
+    username    = db.Column(db.String(150),  unique=True, nullable=False)
+    email       = db.Column(db.String(150), unique=True, nullable=False)
+    profileImage= db.Column(db.String(200))
+    password    = db.Column(db.String(150), nullable=False)
+    Note        = db.relationship(Note, backref='user', lazy=True)
+    Comments    = db.relationship('Comments', backref='user', lazy=True)
 
     # ALways use generate_password_hash() & check_password_hash() for security => AUTOMATIC SALTING, NOT JUST HASHING ONLY!!
     def set_password(self, raw):

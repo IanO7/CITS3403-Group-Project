@@ -3,7 +3,7 @@ from flask import (
     url_for, session, jsonify, abort, flash, current_app, 
     send_from_directory )
 
-from .models import Note, User, Follow
+from .models import Note, User, Follow, Comments
 from . import db
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
@@ -11,7 +11,7 @@ import os
 import numpy as np
 from sklearn.neighbors import NearestNeighbors
 import re
-from collections import Counter
+from collections import Counter, defaultdict
 
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 
@@ -63,7 +63,7 @@ def landing():
     return render_template('landing.html', notes=notes, total_posts=total_posts, total_users=total_users, trending_dishes=trending_dishes)
 
 
-@views.route('/profile')
+@views.route('/profile', methods=['GET', 'POST'])
 def profile():
     user = current_user()
     if not user:
@@ -71,24 +71,26 @@ def profile():
 
     reviews = Note.query.filter_by(user_id=user.id).all()  # Fetch all notes for the user
 
+    if request.method == 'POST':
+        comment = Comments(
+                Comment = request.form['Comment'], 
+                user_id = user.id,
+                note_id = request.form['note_id'], 
+                parentID = request.form['parentID'],
+                likes = 0 
+            )
+        db.session.add(comment)
+        db.session.commit()
+        return redirect(url_for('views.profile', user_id=user.id, open_modal='note-' + str(request.form['note_id'])))
 
-    review_data = [{
-        "id": r.id,
-        "Resturaunt": r.Resturaunt,
-        "Spiciness": r.Spiciness,
-        "Deliciousness": r.Deliciousness,
-        "Value": r.Value,
-        "Service": r.Service,
-        "Review": r.Review,
-        "image": r.image,
-        "likes": r.likes,  # Include the latest likes count
-        "location": r.location  # Include the location field
-    } for r in reviews]
+    comments_by_review = {
+        review.id: [comment.to_dict() for comment in review.comments]
+        for review in reviews  # or whatever your review list is called
+    }
+
+    return render_template('profile.html', user=user, reviews=reviews, comments_by_review=comments_by_review)
 
 
-    return render_template('profile.html', user=user, reviews=reviews)
-
-UPLOAD_FOLDER = 'static/uploads'  # adjust as needed
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 
 def allowed_file(filename):
@@ -213,6 +215,7 @@ def friends():
     # Prepare data for KNN
     user_data = []
     user_ids = []
+
     for u in User.query.filter(User.id != user.id).all():
         u_notes = get_user_notes(u)
         if u_notes:
@@ -265,6 +268,23 @@ def friends():
             {'name': 'All-Rounder', 'earned': all(stat > 75 for stat in stats.values())}
         ]
         user_levels[u.id] = sum(1 for badge in badges if badge['earned'])
+    
+    if request.method == 'POST':
+        comment = Comments(
+                Comment = request.form['Comment'], 
+                user_id = user.id,
+                note_id = request.form['note_id'], 
+                parentID = request.form['parentID'],
+                likes = 0 
+            )
+        db.session.add(comment)
+        db.session.commit()
+        return redirect(url_for('views.profile', user_id=user.id))
+
+    comments_by_review = {
+        review.id: [comment.to_dict() for comment in review.comments]
+        for review in notes  # or whatever your review list is called
+    }
 
     return render_template(
         'my_friends.html',
@@ -275,7 +295,8 @@ def friends():
         similar_user=similar_user,
         user_levels=user_levels,
         user_stats=user_stats,      # <-- add this
-        user_notes=user_notes       # <-- add this
+        user_notes=user_notes,      # <-- add this
+        comments_by_review=comments_by_review
     )
 
 @views.route('/like/<int:note_id>', methods=['POST'])
@@ -515,7 +536,7 @@ def search():
     return render_template('search_results.html', user=user, query=query, search_results=search_results)
 
 
-@views.route('/user/<int:user_id>', methods=['GET'])
+@views.route('/user/<int:user_id>', methods=['GET', 'POST'])
 def user_profile(user_id):
     user = current_user()
     if not user:
@@ -550,6 +571,23 @@ def user_profile(user_id):
     ]
     user_level = sum(1 for badge in badges if badge['earned'])
 
+    if request.method == 'POST':
+        comment = Comments(
+                Comment = request.form['Comment'], 
+                user_id = user.id,
+                note_id = request.form['note_id'], 
+                parentID = request.form['parentID'],
+                likes = 0 
+            )
+        db.session.add(comment)
+        db.session.commit()
+        return redirect(url_for('views.user_profile', user_id=selected_user.id))
+
+    comments_by_review = {
+        review.id: [comment.to_dict() for comment in review.comments]
+        for review in posts  # or whatever your review list is called
+    }
+
     return render_template(
         'user_profile.html',
         user=user,
@@ -559,9 +597,10 @@ def user_profile(user_id):
         posts=posts,
         follow=follow,
         incoming=incoming,
-        user_level=user_level
+        user_level=user_level,
+        comments_by_review=comments_by_review
     )
-    
+
 
 @views.route('/api/search_suggestions', methods=['GET'])
 def search_suggestions():
