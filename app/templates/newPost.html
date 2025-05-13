@@ -3,172 +3,169 @@
 {% block content %}
 <div class="d-flex justify-content-center mt-5">
 
-    <form method="POST" enctype="multipart/form-data">
+    <div class="new-post-form-wrapper">
+        <form class="new-post-form" method="POST" enctype="multipart/form-data">
 
-        <button class="btn btn-secondary mb-3" onclick="history.back()">← Back</button>
+            <button class="btn btn-secondary mb-3" onclick="history.back()">← Back</button>
 
-        <div class="form-group">
-            <label for="Resturaunt">Restaurant Name</label>
-            <input type="text" class="form-control" id="Resturaunt" name="Resturaunt" required>
-        </div>
-        <div class="form-group">
-            <label for="Cuisine">Cuisine</label>
-            <select class="form-control" id="Cuisine" name="Cuisine" required>
-                <option value="">Select a cuisine</option>
-                <option value="Italian">Italian</option>
-                <option value="Chinese">Chinese</option>
-                <option value="Indian">Indian</option>
-                <option value="Mexican">Mexican</option>
-                <option value="Thai">Thai</option>
-                <option value="Japanese">Japanese</option>
-                <option value="French">French</option>
-                <option value="Greek">Greek</option>
-                <option value="Other">Other</option>
-            </select>
-        </div>
-        <div class="form-group">
-            <label for="location">Location</label>
-            <input type="text" class="form-control" id="location" name="location" placeholder="Enter a location or landmark" required>
-            <ul id="location-suggestions" class="list-group mt-2" style="display: none;"></ul>
-        </div>
-        <div class="form-group">
-            <label for="Stars" class="form-label">Stars</label>
-            <input type="number" class="form-control" name="Stars" id="Stars" min="0" max="5" value="0" required>
-        </div>
-        <div id="map" style="height: 300px; margin-top: 10px;"></div>
-        <div class="form-group">
-            <label for="Spiciness">Spiciness</label>
-            <input type="range" class="form-range spiciness-slider" id="Spiciness" name="Spiciness" min="0" max="100" value="0" oninput="updateValue('spicinessValue', this.value)">
-            <span id="spicinessValue" class="range-value">0</span>
-        </div>
-        <div class="form-group">
-            <label for="Deliciousness">Deliciousness</label>
-            <input type="range" class="form-range deliciousness-slider" id="Deliciousness" name="Deliciousness" min="0" max="100" value="0" oninput="updateValue('deliciousnessValue', this.value)">
-            <span id="deliciousnessValue" class="range-value">0</span>
-        </div>
-        <div class="form-group">
-            <label for="Value">Value</label>
-            <input type="range" class="form-range value-slider" id="Value" name="Value" min="0" max="100" value="0" oninput="updateValue('valueValue', this.value)">
-            <span id="valueValue" class="range-value">0</span>
-        </div>
-        <div class="form-group">
-            <label for="Service">Service</label>
-            <input type="range" class="form-range service-slider" id="Service" name="Service" min="0" max="100" value="0" oninput="updateValue('serviceValue', this.value)">
-            <span id="serviceValue" class="range-value">0</span>
-        </div>
-        <div class="form-group">
-            <label for="Review">Review</label>
-            <textarea class="form-control" id="Review" name="Review" rows="3" required></textarea>
-        </div>
-        <div class="form-group">
-            <label for="image">Upload Image</label>
+            <div class="form-group">
+                <label for="Resturaunt">Restaurant Name</label>
+                <input type="text" class="form-control" id="Resturaunt" name="Resturaunt" required>
+            </div>
+            <div class="form-group">
+                <label for="Cuisine">Cuisine</label>
+                <select class="form-control" id="Cuisine" name="Cuisine" required>
+                    <option value="">Select a cuisine</option>
+                    <option value="Italian">Italian</option>
+                    <option value="Chinese">Chinese</option>
+                    <option value="Indian">Indian</option>
+                    <option value="Mexican">Mexican</option>
+                    <option value="Thai">Thai</option>
+                    <option value="Japanese">Japanese</option>
+                    <option value="French">French</option>
+                    <option value="Greek">Greek</option>
+                    <option value="Other">Other</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="location">Location</label>
+                <input type="text" class="form-control" id="location" name="location" placeholder="Enter a location or landmark" required>
+                <input type="hidden" id="latitude"  name="latitude">
+                <input type="hidden" id="longitude" name="longitude">
 
-            <input type="file" class="form-control" id="image" name="image" required>
+                <ul id="location-suggestions" class="list-group mt-2" style="display: none;"></ul>
+        `            
+            </div>
+            <div class="form-group">
+                <label for="Stars" class="form-label">Stars</label>
+                <div class="star-rating" style="font-size:2rem;">
+                    <input type="radio" id="star5" name="Stars" value="5" required /><label for="star5" title="5 stars">★</label>
+                    <input type="radio" id="star4" name="Stars" value="4" required /><label for="star4" title="4 stars">★</label>
+                    <input type="radio" id="star3" name="Stars" value="3" required /><label for="star3" title="3 stars">★</label>
+                    <input type="radio" id="star2" name="Stars" value="2" required /><label for="star2" title="2 stars">★</label>
+                    <input type="radio" id="star1" name="Stars" value="1" required /><label for="star1" title="1 star">★</label>
+                </div>
+            </div>
+            <div id="map" style="height: 300px; margin-top: 10px;"></div>
+            <div class="form-group">
+                <label for="Spiciness">Spiciness</label>
+                <input type="range" class="form-range spiciness-slider" id="Spiciness" name="Spiciness" min="0" max="100" value="0" oninput="updateValue('spicinessValue', this.value)">
+                <span id="spicinessValue" class="range-value">0</span>
+            </div>
+            <div class="form-group">
+                <label for="Deliciousness">Deliciousness</label>
+                <input type="range" class="form-range deliciousness-slider" id="Deliciousness" name="Deliciousness" min="0" max="100" value="0" oninput="updateValue('deliciousnessValue', this.value)">
+                <span id="deliciousnessValue" class="range-value">0</span>
+            </div>
+            <div class="form-group">
+                <label for="Value">Value</label>
+                <input type="range" class="form-range value-slider" id="Value" name="Value" min="0" max="100" value="0" oninput="updateValue('valueValue', this.value)">
+                <span id="valueValue" class="range-value">0</span>
+            </div>
+            <div class="form-group">
+                <label for="Service">Service</label>
+                <input type="range" class="form-range service-slider" id="Service" name="Service" min="0" max="100" value="0" oninput="updateValue('serviceValue', this.value)">
+                <span id="serviceValue" class="range-value">0</span>
+            </div>
+            <div class="form-group">
+                <label for="Review">Review</label>
+                <textarea class="form-control" id="Review" name="Review" rows="3" required></textarea>
+            </div>
+            <div class="form-group">
+                <label for="image">Upload Image</label>
 
-            
-        </div>
-        <button type="submit" class="btn btn-primary">Submit</button>
-    </form>
+                <input type="file" class="form-control" id="image" name="image" required>
+
+                
+            </div>
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+    </div>
 </div>
 
-<style>
-    .form-range {
-        width: 100%;
-        appearance: none;
-        height: 8px;
-        background: #ddd;
-        border-radius: 5px;
-        outline: none;
-        transition: background 0.3s;
-    }
-
-    .form-range::-webkit-slider-thumb {
-        appearance: none;
-        width: 20px;
-        height: 20px;
-        background: #007bff;
-        border-radius: 50%;
-        cursor: pointer;
-        transition: background 0.3s;
-    }
-
-    .form-range::-webkit-slider-thumb:hover {
-        background: #0056b3;
-    }
-
-    .range-value {
-        display: inline-block;
-        margin-left: 10px;
-        font-weight: bold;
-        color: #333;
-    }
-</style>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
 <script>
-    function updateValue(spanId, value) {
-        document.getElementById(spanId).textContent = value;
-    }
-</script>
-<script>
-    document.addEventListener('DOMContentLoaded', () => {
-        const locationInput = document.getElementById('location');
-        const suggestionsBox = document.getElementById('location-suggestions');
-        const map = L.map('map').setView([0, 0], 2); // Default map view
-        const marker = L.marker([0, 0]).addTo(map);
+document.addEventListener('DOMContentLoaded', () => {
+    const locationInput  = document.getElementById('location');
+    const suggestionsBox = document.getElementById('location-suggestions');
+    const latInput       = document.getElementById('latitude');
+    const lngInput       = document.getElementById('longitude');
 
-        // Add OpenStreetMap tiles
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        }).addTo(map);
+    // Initialize map & draggable marker
+    const map    = L.map('map').setView([0, 0], 2);
+    const marker = L.marker([0, 0], { draggable: true }).addTo(map);
 
-        let debounceTimeout;
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
 
-        // Fetch location suggestions from Nominatim with debouncing
-        locationInput.addEventListener('input', () => {
-            const query = locationInput.value.trim();
-            if (query.length < 3) {
-                suggestionsBox.style.display = 'none';
-                return;
-            }
-
-            // Debounce to prevent excessive API calls
-            clearTimeout(debounceTimeout);
-            debounceTimeout = setTimeout(() => {
-                fetch(`https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&namedetails=1&q=${encodeURIComponent(query)}`)
-                    .then(response => response.json())
-                    .then(data => {
-                        suggestionsBox.innerHTML = '';
-                        if (data.length > 0) {
-                            data.forEach(location => {
-                                const displayName = location.namedetails?.name || location.display_name;
-                                const li = document.createElement('li');
-                                li.textContent = displayName;
-                                li.classList.add('list-group-item');
-                                li.addEventListener('click', () => {
-                                    locationInput.value = displayName;
-                                    suggestionsBox.style.display = 'none';
-                                    map.setView([location.lat, location.lon], 15);
-                                    marker.setLatLng([location.lat, location.lon]);
-                                });
-                                suggestionsBox.appendChild(li);
-                            });
-                            suggestionsBox.style.display = 'block';
-                        } else {
-                            suggestionsBox.style.display = 'none';
-                        }
-                    })
-                    .catch(error => console.error('Error fetching location suggestions:', error));
-            }, 300); // 300ms debounce delay
-        });
-
-        // Hide suggestions when clicking outside
-        document.addEventListener('click', (event) => {
-            if (!locationInput.contains(event.target) && !suggestionsBox.contains(event.target)) {
-                suggestionsBox.style.display = 'none';
-            }
-        });
+    // Whenever marker is dragged, update hidden lat/lng
+    marker.on('moveend', () => {
+        const { lat, lng } = marker.getLatLng();
+        latInput.value = lat;
+        lngInput.value = lng;
     });
+
+    let debounceTimeout;
+    locationInput.addEventListener('input', () => {
+        const query = locationInput.value.trim();
+        if (!query) {
+            suggestionsBox.style.display = 'none';
+            return;
+        }
+        clearTimeout(debounceTimeout);
+        debounceTimeout = setTimeout(() => {
+            fetch(`https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&q=${encodeURIComponent(query)}`)
+              .then(res => res.json())
+              .then(data => {
+                suggestionsBox.innerHTML = '';
+                if (data.length) {
+                  data.forEach(loc => {
+                    const name = loc.display_name;
+                    const li = document.createElement('li');
+                    li.textContent = name;
+                    li.classList.add('list-group-item');
+                    li.addEventListener('click', () => {
+                      // 1) Fill the text input
+                      locationInput.value = name;
+                      // 2) Hide suggestions
+                      suggestionsBox.style.display = 'none';
+                      // 3) Move map & marker
+                      const lat = parseFloat(loc.lat);
+                      const lon = parseFloat(loc.lon);
+                      map.setView([lat, lon], 15);
+                      marker.setLatLng([lat, lon]);
+                      // 4) Update hidden inputs
+                      latInput.value = lat;
+                      lngInput.value = lon;
+                    });
+                    suggestionsBox.appendChild(li);
+                  });
+                  suggestionsBox.style.display = 'block';
+                } else {
+                  suggestionsBox.style.display = 'none';
+                }
+              })
+              .catch(err => console.error('Error fetching suggestions:', err));
+        }, 300); // debounce
+    });
+
+    // Hide suggestions when clicking elsewhere
+    document.addEventListener('click', e => {
+      if (!locationInput.contains(e.target) && !suggestionsBox.contains(e.target)) {
+        suggestionsBox.style.display = 'none';
+      }
+    });
+
+    // Optional: allow clicking map to set marker & hidden fields
+    map.on('click', e => {
+      marker.setLatLng(e.latlng);
+      latInput.value = e.latlng.lat;
+      lngInput.value = e.latlng.lng;
+    });
+});
 </script>
 {% endblock %}

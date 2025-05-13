@@ -12,6 +12,7 @@ h1 {
 }
 
 body {
+  padding-top: 100px;
   background: #F6E7DA;
   font-family: 'Lato', sans-serif;
   color: #333;
@@ -20,7 +21,7 @@ body {
   min-height: 100vh;
 }
 
-/* Navbar Style */
+/* Navbar Style 
 .navbar {
   width: 100%;
   padding: 1rem 2rem;
@@ -54,6 +55,7 @@ body {
 .navbar .menu a:hover {
   text-decoration: underline;
 }
+*/
 
 /* Center the Login container */
 .login-container {
@@ -176,4 +178,8 @@ body {
   margin-top: 2rem;
   font-size: 0.8rem;
   color: #888;
+}
+
+#eye-icon.eye-off #eye-slash {
+  display: block !important;
 }

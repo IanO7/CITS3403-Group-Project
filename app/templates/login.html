@@ -2,6 +2,9 @@
 {% block title %}Log In{% endblock %}
 
 {% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/general_styles.css') }}"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
 <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}"/>
 
 <div class="login-container">
@@ -25,13 +28,15 @@
 
   <!-- Email/password form -->
   <form class="login-form" method="POST" action="{{ url_for('auth.login') }}">
-    <input name="email" id="email-input" type="email" placeholder="Email" required>
+    <input name="email" id="email-input" type="email" placeholder="Enter your Email" required>
+    <div id="login-error" style="display: none; color: red;"></div>
     <div style="position:relative;">
       <input name="password" id="password-input" type="password" placeholder="Password" required style="padding-right:2.5rem;">
       <span id="toggle-password" style="position:absolute;top:50%;right:0.75rem;transform:translateY(-50%);cursor:pointer;">
         <svg id="eye-icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" viewBox="0 0 24 24">
           <path stroke="#888" stroke-width="2" d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12Z"/>
           <circle cx="12" cy="12" r="3.5" stroke="#888" stroke-width="2"/>
+          <line id="eye-slash" x1="4" y1="20" x2="20" y2="4" stroke="#888" stroke-width="2" style="display:none"/>
         </svg>
       </span>
     </div>
@@ -47,6 +52,6 @@
   </div>
 </div>
 
-<script src="{{ url_for('static', filename='js/login.js')}}"></script>
+<script src="{{ url_for('static', filename='JS/login.js')}}"></script>
 
 {% endblock %}

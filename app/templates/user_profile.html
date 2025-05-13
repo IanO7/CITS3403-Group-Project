@@ -19,7 +19,8 @@
             <div>
                 <h1>
                     {{ selected_user.username }}
-                    <span class="badge badge-level level-{{ selected_user.level }}">Level {{ selected_user.level }}</span>
+                    <!-- Show the badge next to the username -->
+                    <span class="badge badge-level level-{{ user_level }}">Level {{ user_level }}</span>
                 </h1>
                 <p>Statistics based on their reviews.</p>
             </div>
@@ -83,13 +84,19 @@
     </div>
 
     <!-- User Posts Section -->
-    <h2 class="text-center mt-5">Posts by {{ selected_user.username }}</h2>
-    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4">
-        {% for review in posts %}
-            {% set show_actions = False %}
-            {% include "post.html" with context %}
-        {% endfor %}
-    </div>
+    {% if user.id == selected_user.id or (follow and follow.status == 'approved') %}
+        <h2 class="text-center mt-5">Posts by {{ selected_user.username }}</h2>
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4">
+            {% for review in posts %}
+                {% set show_actions = False %}
+                {% include "post.html" with context %}
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="alert alert-info text-center mt-5">
+            You must be following {{ selected_user.username }} to view their posts.
+        </div>
+    {% endif %}
 </div>
 {% endblock %}
 
