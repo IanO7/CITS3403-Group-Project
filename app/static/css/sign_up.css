@@ -13,6 +13,7 @@ h1 {
 
 body {
   background: #F6E7DA;
+  padding-top: 100px;
   font-family: 'Lato', sans-serif;
   color: #333;
   display: flex;
@@ -20,6 +21,7 @@ body {
   min-height: 100vh;
 }
 
+/* Navbar Style 
 .navbar {
   width: 100%;
   padding: 1rem 2rem;
@@ -53,6 +55,7 @@ body {
 .navbar .menu a:hover {
   text-decoration: underline;
 }
+*/
 
 /* Center the Sign-Up container */
 .sign-up-container {
@@ -109,7 +112,15 @@ body {
   background: #4b743e;
 }
 
-.validation-list li {
+#password,
+#confirm_password {
+  font-family: inherit; /* or 'monospace' for fixed width */
+  letter-spacing: 0.05em; /* optional: helps mask dots look better */
+  width: 100%; /* ensures full width */
+  box-sizing: border-box;
+}
+
+.password-rules li {
   font-size: 0.9rem;
   list-style: none;
   padding: 2px 0;
@@ -118,15 +129,15 @@ body {
   align-items: center;
 }
 
-.validation-list .valid {
+.password-rules .valid {
   color: green;
 }
 
-.validation-list .invalid {
+.password-rules .invalid {
   color: black;
 }
 
-.validation-list .emoji {
+.password-rules .emoji {
   margin-right: 0.5rem;
 }
 
