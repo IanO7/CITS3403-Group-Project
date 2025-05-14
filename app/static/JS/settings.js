@@ -35,26 +35,50 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
+    // Add debounce function
+    function debounce(func, wait) {
+        let timeout;
+        return function executedFunction(...args) {
+            const later = () => {
+                clearTimeout(timeout);
+                func(...args);
+            };
+            clearTimeout(timeout);
+            timeout = setTimeout(later, wait);
+        };
+    }
+
     // Add password verification
     async function verifyCurrentPassword() {
-        const response = await fetch('/verify_password', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                current_password: currentPassword.value
-            })
-        });
-        
-        const data = await response.json();
-        return data.valid;
+        // 1. First check - Don't send empty passwords
+        if (!currentPassword.value) return false;
+
+        try {
+            // 2. Send verification request to server
+            const response = await fetch('/verify_password', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    current_password: currentPassword.value
+                }),
+                credentials: 'same-origin'  // Important for session handling
+            });
+
+            // 3. Parse server response
+            const data = await response.json();
+            return data.valid;  // Returns true/false based on server verification
+        } catch (error) {
+            console.error('Error:', error);
+            return false;  // Fail safe on any error
+        }
     }
 
     // Password Validation
     async function validatePassword() {
         if (!newPassword || !confirmPassword || !currentPassword) return false;
-        
+
         const val = newPassword.value;
         const confirmVal = confirmPassword.value;
         let allValid = true;
@@ -81,32 +105,29 @@ document.addEventListener('DOMContentLoaded', function () {
             allValid = allValid && isCurrentValid;
         }
 
-        // Enable/disable update button
-        if (updateBtn) {
-            updateBtn.disabled = !allValid;
-        }
-
         return allValid;
     }
 
-    // Event Listeners
-    if (newPassword) {
-        newPassword.addEventListener('input', validatePassword);
-        newPassword.addEventListener('change', validatePassword);
-    }
-    
-    if (confirmPassword) {
-        confirmPassword.addEventListener('input', validatePassword);
-        confirmPassword.addEventListener('change', validatePassword);
-    }
-    
-    if (currentPassword) {
-        currentPassword.addEventListener('input', validatePassword);
-        currentPassword.addEventListener('change', validatePassword);
-    }
+    // Debounced validation function
+    const debouncedValidation = debounce(async () => {
+        const isValid = await validatePassword();
+        updateBtn.disabled = !isValid;
+        if (isValid) {
+            updateBtn.classList.remove('btn-warning');
+            updateBtn.classList.add('btn-success');
+        } else {
+            updateBtn.classList.remove('btn-success');
+            updateBtn.classList.add('btn-warning');
+        }
+    }, 500); // Wait 500ms after typing stops
+
+    // Update event listeners
+    if (currentPassword) currentPassword.addEventListener('input', debouncedValidation);
+    if (newPassword) newPassword.addEventListener('input', debouncedValidation);
+    if (confirmPassword) confirmPassword.addEventListener('input', debouncedValidation);
 
     // Initial validation check
-    validatePassword();
+    debouncedValidation();
 
     // Password Eye Toggle for Current Password
     let visibleCurrent = false;
@@ -160,7 +181,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const form = document.querySelector('.signup-form');
     if (form) {
         form.addEventListener('submit', function (e) {
-            validatePassword(); // Ensure the latest state
+            debouncedValidation(); // Ensure the latest state
 
             if (updateBtn.disabled) {
                 e.preventDefault();
@@ -172,35 +193,35 @@ document.addEventListener('DOMContentLoaded', function () {
     // Add form submission handler
     document.getElementById('update-password-form').addEventListener('submit', async function(e) {
         e.preventDefault();
-        
-        // Validate password first
-        if (!await validatePassword()) {
-            showOzfoodyNotification('Please fix validation errors first', 'error');
+
+        // Verify password one final time before submission
+        if (!await verifyCurrentPassword()) {
+            showOzfoodyNotification('Current password is incorrect', 'error');
             return;
         }
-        
-        const formData = new FormData(this);
-        formData.append('action', 'update_password');  // Add this line to specify the action
-        
+
+        const formData = new FormData(document.getElementById('update-password-form'));
+        formData.append('action', 'update_password');
+
         try {
             const response = await fetch('/settings', {
                 method: 'POST',
                 body: formData,
-                credentials: 'same-origin'  // Add this to maintain session
+                credentials: 'same-origin'
             });
-            
+
             const data = await response.json();
             if (data.success) {
                 showOzfoodyNotification('Password updated successfully', 'success');
-                this.reset();
-                // Reset validation states
-                rules.forEach(rule => updateRuleDisplay(rule, false));
+                setTimeout(() => {
+                    window.location.href = '/login';  // Redirect to login page
+                }, 1500);  // Wait 1.5s for notification to be visible
             } else {
                 showOzfoodyNotification(data.error || 'Failed to update password', 'error');
             }
         } catch (error) {
             console.error('Error:', error);
-            showOzfoodyNotification('An error occurred while updating password', 'error');
+            showOzfoodyNotification('An error occurred', 'error');
         }
     });
 });

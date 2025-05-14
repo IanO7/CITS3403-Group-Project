@@ -24,6 +24,7 @@ def create_app():
     app.config['SESSION_TYPE'] = 'filesystem'
     app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=1)
     app.config['SESSION_COOKIE_SECURE'] = False  # Set to True in production with HTTPS
+    app.config['SESSION_COOKIE_HTTPONLY'] = True
     
     app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{DB_NAME}'
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -33,11 +34,18 @@ def create_app():
     db.init_app(app)
     migrate.init_app(app, db)  # Initialize Flask-Migrate
 
-    # Initialize Flask-Login with session protection
+    # Initialize Flask-Login with stronger configuration
     login_manager.init_app(app)
     login_manager.login_view = 'auth.login'
     login_manager.login_message_category = 'info'
     login_manager.session_protection = 'strong'
+    login_manager.refresh_view = 'auth.login'
+    login_manager.needs_refresh_message = 'Please login again to verify your identity'
+
+    @login_manager.user_loader
+    def load_user(user_id):
+        from .models import User
+        return User.query.get(int(user_id))
 
     # Register blueprints
     app.register_blueprint(views, url_prefix='/')
@@ -46,10 +54,6 @@ def create_app():
     app.register_blueprint(auth, url_prefix='/')
 
     from .models import Note, User, SharedPost  # Import your models here
-
-    @login_manager.user_loader
-    def load_user(id):
-        return User.query.get(int(id))
 
     with app.app_context():
         db.create_all()

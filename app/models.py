@@ -51,10 +51,11 @@ class User(db.Model, UserMixin):
     Comments    = db.relationship('Comments', backref='user', lazy=True)
 
     # ALways use generate_password_hash() & check_password_hash() for security => AUTOMATIC SALTING, NOT JUST HASHING ONLY!!
-    def set_password(self, raw):
-        self.password = generate_password_hash(raw)
-    def check_password(self, raw):
-        return check_password_hash(self.password, raw)
+    def set_password(self, password):
+        self.password = generate_password_hash(password, method='pbkdf2:sha256')
+    
+    def check_password(self, password):
+        return check_password_hash(self.password, password)
 
 class Follow(db.Model):
     id = db.Column(db.Integer, primary_key=True)
