@@ -13,6 +13,7 @@ from sklearn.neighbors import NearestNeighbors
 import re
 from collections import Counter, defaultdict
 
+
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 
 
