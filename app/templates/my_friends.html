@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}My Friends{% endblock %}
+{% block title %}OZfoody - My Friends{% endblock %}
 
 {% block content %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/badge.css') }}">
@@ -31,7 +31,10 @@
                    class="profileImage"
                    style="width: 100px; height: 100px; object-fit: cover;">
             {% endif %}
-                <h5 class="card-title">{{ similar_user.username }}</h5>
+                <h5 class="card-title">
+                    {{ similar_user.username }}
+                    <span class="badge badge-level level-{{ user_levels[similar_user.id] }}">Level {{ user_levels[similar_user.id] }}</span>
+                </h5>
                 <p class="card-text">This user has similar taste preferences to you!</p>
                 <a href="{{ url_for('views.user_profile', user_id=similar_user.id) }}" class="btn btn-primary">View Profile</a>
             </div>

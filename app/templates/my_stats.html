@@ -1,9 +1,10 @@
 {% extends "base.html" %}
-{% block title %}My Stats Dashboard{% endblock %}
+{% block title %}OZfoody - My Stats Dashboard{% endblock %}
 
 {% block content %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/general_styles.css') }}">
 <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/badge.css') }}">
 
 <div class="dashboard-container">
     <!-- Welcome Section -->
@@ -52,7 +53,7 @@
             <div class="progress custom-progress">
                 <div class="progress-bar bg-danger" style="width: {{ stats.spiciness | default(0) }}%;"></div>
             </div>
-            <p>{{ stats.spiciness | default(0) }}% spicy dishes rated</p>
+            <p>{{ stats.spiciness | default(0) | round(0) |int }}% spicy dishes rated</p>
         </div>
 
         <div class="card stat-card">
@@ -60,7 +61,7 @@
             <div class="progress custom-progress">
                 <div class="progress-bar bg-success" style="width: {{ stats.deliciousness | default(0) }}%;"></div>
             </div>
-            <p>{{ stats.deliciousness | default(0) }}% delicious dishes rated</p>
+            <p>{{ stats.deliciousness | default(0) | round(0) |int }}% delicious dishes rated</p>
         </div>
 
         <div class="card stat-card">
@@ -68,7 +69,7 @@
             <div class="progress custom-progress">
                 <div class="progress-bar bg-warning" style="width: {{ stats.value | default(0) }}%;"></div>
             </div>
-            <p>{{ stats.value | default(0) }}% value-rated dishes</p>
+            <p>{{ stats.value | default(0) | round(0) |int }}% value-rated dishes</p>
         </div>
 
         <div class="card stat-card">
@@ -76,7 +77,7 @@
             <div class="progress custom-progress">
                 <div class="progress-bar bg-info" style="width: {{ stats.service | default(0) }}%;"></div>
             </div>
-            <p>{{ stats.service | default(0) }}% service-rated dishes</p>
+            <p>{{ stats.service | default(0) | round(0) |int }}% service-rated dishes</p>
         </div>
     </div>
 
@@ -86,7 +87,7 @@
         <div class="progress custom-progress">
             <div class="progress-bar bg-primary" style="width: {{ overall_average_rating | default(0) }}%;"></div>
         </div>
-        <p>{{ overall_average_rating | default(0) }}% average rating across all reviews</p>
+        <p>{{ overall_average_rating | default(0) | round(0) |int }}% average rating across all reviews</p>
     </div>
 
     <!-- Favorite Cuisine Card -->

@@ -19,7 +19,8 @@
             <div>
                 <h1>
                     {{ selected_user.username }}
-                    <span class="badge badge-level level-{{ selected_user.level }}">Level {{ selected_user.level }}</span>
+                    <!-- Show the badge next to the username -->
+                    <span class="badge badge-level level-{{ user_level }}">Level {{ user_level }}</span>
                 </h1>
                 <p>Statistics based on their reviews.</p>
             </div>
@@ -46,7 +47,7 @@
             <div class="progress custom-progress">
                 <div class="progress-bar bg-danger" style="width: {{ stats.spiciness | default(0) }}%;"></div>
             </div>
-            <p>{{ stats.spiciness | default(0) }}% spicy dishes rated</p>
+            <p>{{ stats.spiciness | default(0) | round(0) |int }}% spicy dishes rated</p>
         </div>
 
         <div class="card stat-card">
@@ -54,7 +55,7 @@
             <div class="progress custom-progress">
                 <div class="progress-bar bg-success" style="width: {{ stats.deliciousness | default(0) }}%;"></div>
             </div>
-            <p>{{ stats.deliciousness | default(0) }}% delicious dishes rated</p>
+            <p>{{ stats.deliciousness | default(0) | round(0) |int }}% delicious dishes rated</p>
         </div>
 
         <div class="card stat-card">
@@ -62,7 +63,7 @@
             <div class="progress custom-progress">
                 <div class="progress-bar bg-warning" style="width: {{ stats.value | default(0) }}%;"></div>
             </div>
-            <p>{{ stats.value | default(0) }}% value-rated dishes</p>
+            <p>{{ stats.value | default(0) | round(0) |int }}% value-rated dishes</p>
         </div>
 
         <div class="card stat-card">
@@ -70,7 +71,7 @@
             <div class="progress custom-progress">
                 <div class="progress-bar bg-info" style="width: {{ stats.service | default(0) }}%;"></div>
             </div>
-            <p>{{ stats.service | default(0) }}% service-rated dishes</p>
+            <p>{{ stats.service | default(0) | round(0) |int }}% service-rated dishes</p>
         </div>
     </div>
 
@@ -79,18 +80,24 @@
         <div class="progress custom-progress">
             <div class="progress-bar bg-primary" style="width: {{ overall_average_rating | default(0) }}%;"></div>
         </div>
-        <p>{{ overall_average_rating | default(0) }}% average rating across all reviews</p>
+        <p>{{ overall_average_rating | default(0) | round(0) |int }}% average rating across all reviews</p>
     </div>
 
     <!-- User Posts Section -->
-    <h2 class="text-center mt-5">Posts by {{ selected_user.username }}</h2>
-    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4">
-        {% for review in posts %}
-            {% set show_actions = False %}
-            {% set current_user = user %}
-            {% include "post.html" with context %}
-        {% endfor %}
-    </div>
+    {% if user.id == selected_user.id or (follow and follow.status == 'approved') %}
+        <h2 class="text-center mt-5">Posts by {{ selected_user.username }}</h2>
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4">
+            {% for review in posts %}
+                {% set show_actions = False %}
+                {% set current_user = user %}
+                {% include "post.html" with context %}
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="alert alert-info text-center mt-5">
+            You must be following {{ selected_user.username }} to view their posts.
+        </div>
+    {% endif %}
 </div>
 {% endblock %}
 

@@ -1,7 +1,10 @@
 {% extends "base.html" %}
-{% block title %}Sign Up{% endblock %}
+{% block title %}OZfoody - Sign Up{% endblock %}
 
 {% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/general_styles.css') }}">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
 <link rel="stylesheet" href="{{ url_for('static', filename='css/sign_up.css') }}">
 
 <div class="sign-up-container">
@@ -30,6 +33,7 @@
       <input name="email" type="email" class="form-control" placeholder="Email" required>
     </div>
 
+    <!-- Password Field -->
     <div class="mb-3 d-flex align-items-center" style="position:relative;">
       <input id="password" name="password" type="password" class="form-control" placeholder="Password" required style="padding-right:2.5rem;">
       <span id="toggle-password" style="position:absolute;right:0.75rem;top:50%;transform:translateY(-50%);cursor:pointer;">
@@ -39,7 +43,8 @@
         </svg>
       </span>
     </div>
-
+    
+    <!-- Confirm Password Field -->
     <div class="mb-3 d-flex align-items-center" style="position:relative;">
       <input id="confirm_password" name="confirm_password" type="password" class="form-control" placeholder="Confirm Password" required style="padding-right:2.5rem;">
       <span id="toggle-confirm-password" style="position:absolute;right:0.75rem;top:50%;transform:translateY(-50%);cursor:pointer;">
@@ -50,92 +55,21 @@
       </span>
     </div>
 
-    <ul class="validation-list mb-3 ps-4">
-      <li id="length" class="invalid"><span class="emoji">❌</span> At least 8 characters</li>
-      <li id="letter" class="invalid"><span class="emoji">❌</span> At least one letter (a-zA-Z)</li>
-      <li id="number" class="invalid"><span class="emoji">❌</span> At least one number (0-9)</li>
-      <li id="symbol" class="invalid"><span class="emoji">❌</span> At least one special character (!@#$%)</li>
-      <li id="match" class="invalid"><span class="emoji">❌</span> Both passwords must be the same</li>
+    <!-- Password Rules -->
+    <ul class="password-rules mb-3 ps-4">
+      <li id="length-rule" class="invalid">❌ At least 8 characters</li>
+      <li id="number-rule" class="invalid">❌ At least one number (0-9)</li>
+      <li id="uppercase-rule" class="invalid">❌ At least one uppercase letter (A-Z)</li>
+      <li id="special-rule" class="invalid">❌ At least one special character (!@#$%)</li>
+      <li id="match-rule" class="invalid">❌ Both passwords must be the same</li>
     </ul>
 
-    <div> 
-      <label for="profileImage">add profile picture</label>
-      <input type="file" class="form-control" id="image" name="profileImage" placeholder="Enter an image URL" required>
-    </div>
-
-
-    <button type="submit" class="btn btn-primary w-100" id="signupBtn" disabled>Sign Up</button>
+    <button type="submit" id="signupBtn" disabled>Sign Up</button>
   </form>
 
   <div class="footer">
     By continuing, you agree to our Terms and Privacy Policy.
   </div>
 </div>
-
-<script>
-  const password = document.getElementById("password");
-  const confirm = document.getElementById("confirm_password");
-  const signupBtn = document.getElementById("signupBtn");
-
-  const lengthCheck = document.getElementById("length");
-  const letterCheck = document.getElementById("letter");
-  const numberCheck = document.getElementById("number");
-  const symbolCheck = document.getElementById("symbol");
-  const matchCheck = document.getElementById("match");
-
-  function validatePassword() {
-    const val = password.value;
-    const confirmVal = confirm.value;
-
-    const hasLetter = /[a-zA-Z]/.test(val);
-    const hasNumber = /\d/.test(val);
-    const hasSymbol = /[^a-zA-Z0-9]/.test(val);
-    const isLong = val.length >= 8;
-    const isMatch = val === confirmVal && val !== "";
-
-    updateCheck(lengthCheck, isLong);
-    updateCheck(letterCheck, hasLetter);
-    updateCheck(numberCheck, hasNumber);
-    updateCheck(symbolCheck, hasSymbol);
-    updateCheck(matchCheck, isMatch);
-
-    signupBtn.disabled = !(isLong && hasLetter && hasNumber && hasSymbol && isMatch);
-  }
-
-  function updateCheck(element, isValid) {
-    element.className = isValid ? "valid" : "invalid";
-    element.innerHTML = isValid ? element.innerHTML.replace('❌', '✔️') : element.innerHTML.replace('✅', '❌');
-  }
-
-  password.addEventListener("input", validatePassword);
-  confirm.addEventListener("input", validatePassword);
-
-  // Password eye toggle for password
-  const togglePassword = document.getElementById('toggle-password');
-  const eyeIcon = document.getElementById('eye-icon');
-  let visible = false;
-  if(password && togglePassword) {
-    togglePassword.addEventListener('click', function() {
-      visible = !visible;
-      password.type = visible ? 'text' : 'password';
-      eyeIcon.innerHTML = visible
-        ? `<path stroke="#888" stroke-width="2" d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12Z"/><circle cx="12" cy="12" r="3.5" stroke="#888" stroke-width="2"/><line x1="4" y1="20" x2="20" y2="4" stroke="#888" stroke-width="2"/>`
-        : `<path stroke="#888" stroke-width="2" d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12Z"/><circle cx="12" cy="12" r="3.5" stroke="#888" stroke-width="2"/>`;
-    });
-  }
-
-  // Password eye toggle for confirm password
-  const toggleConfirmPassword = document.getElementById('toggle-confirm-password');
-  const eyeIconConfirm = document.getElementById('eye-icon-confirm');
-  let visibleConfirm = false;
-  if(confirm && toggleConfirmPassword) {
-    toggleConfirmPassword.addEventListener('click', function() {
-      visibleConfirm = !visibleConfirm;
-      confirm.type = visibleConfirm ? 'text' : 'password';
-      eyeIconConfirm.innerHTML = visibleConfirm
-        ? `<path stroke="#888" stroke-width="2" d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12Z"/><circle cx="12" cy="12" r="3.5" stroke="#888" stroke-width="2"/><line x1="4" y1="20" x2="20" y2="4" stroke="#888" stroke-width="2"/>`
-        : `<path stroke="#888" stroke-width="2" d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12Z"/><circle cx="12" cy="12" r="3.5" stroke="#888" stroke-width="2"/>`;
-    });
-  }
-</script>
+<script src={{ url_for('static', filename='JS/sign_up.js') }}></script>
 {% endblock %}
