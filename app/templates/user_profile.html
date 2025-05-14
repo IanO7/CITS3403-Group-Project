@@ -3,10 +3,15 @@
 
 {% block head %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/badge.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/my_friends.css') }}">
 {% endblock %}
 
-{% block content %}
+{% block content %} 
 <div class="container mt-5">
+    <!-- Back Button -->
+    <a href="{{ url_for('views.friends') }}" class="back-to-friends-btn mb-4">
+        ← Back to Friends
+    </a>
     <!-- User Stats Section -->
     <div class="dashboard-header mb-4">
         <div class="profile-info d-flex align-items-center">
