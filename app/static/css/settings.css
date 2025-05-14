@@ -129,8 +129,9 @@ hr {
     }
 }
 
-/* Input Fields */
-#username, #email {
+/* Input Fields - Username, Email, and Password */
+#username, #email, 
+input[type="password"] {
     border: 2px solid #F6E7DA;
     border-radius: 8px;
     padding: 0.75rem;
@@ -140,13 +141,18 @@ hr {
     min-width: 300px;
 }
 
-#username:focus, #email:focus {
+#username:focus, #email:focus,
+input[type="password"]:focus {
     box-shadow: 0 0 0 0.2rem rgba(95, 141, 59, 0.25);
     background-color: #f8faf6;
 }
 
-/* Labels for username and email */
-label[for="username"], label[for="email"] {
+/* Labels for username, email, and password */
+label[for="username"], 
+label[for="email"],
+label[for="current_password"],
+label[for="new_password"],
+label[for="confirm_password"] {
     color: #5F8D3B;
     font-weight: 600;
 }
