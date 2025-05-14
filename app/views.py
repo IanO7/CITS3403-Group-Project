@@ -96,13 +96,42 @@ def profile():
         'value':         sum(n.Value         for n in reviews) / total,
         'service':       sum(n.Service       for n in reviews) / total
     }
+
+    # Use the same badge logic as my_stats
+    min_reviews_spice = 5
+    min_reviews_service = 5
+    min_reviews_value = 5
+    min_reviews_critic = 20
+    min_reviews_allrounder = 10
+
     badges = [
-        {'name': 'First Post', 'earned': len(reviews) > 0},
-        {'name': 'Spice Master', 'earned': stats['spiciness'] > 80},
-        {'name': 'Service Perfectionist', 'earned': stats['service'] > 90},
-        {'name': 'Value Hunter', 'earned': stats['value'] > 85},
-        {'name': 'Food Critic', 'earned': len(reviews) > 20},
-        {'name': 'All-Rounder', 'earned': all(stat > 75 for stat in stats.values())}
+        {
+            'name': 'First Post',
+            'earned': len(reviews) > 0,
+        },
+        {
+            'name': 'Spice Master',
+            'earned': len(reviews) >= min_reviews_spice and stats['spiciness'] > 80,
+        },
+        {
+            'name': 'Service Perfectionist',
+            'earned': len(reviews) >= min_reviews_service and stats['service'] > 90,
+        },
+        {
+            'name': 'Value Hunter',
+            'earned': len(reviews) >= min_reviews_value and stats['value'] > 85,
+        },
+        {
+            'name': 'Food Critic',
+            'earned': len(reviews) >= min_reviews_critic,
+        },
+        {
+            'name': 'All-Rounder',
+            'earned': (
+                len(reviews) >= min_reviews_allrounder and
+                all(stat > 75 for stat in stats.values())
+            ),
+        },
     ]
     level = get_user_level(badges)
 
@@ -186,14 +215,47 @@ def my_stats():
     if cuisine_list:
         favorite_cuisine = Counter(cuisine_list).most_common(1)[0][0]
 
-    # Determine earned badges
+    # Determine earned badges (progressive, robust)
+    min_reviews_spice = 5
+    min_reviews_service = 5
+    min_reviews_value = 5
+    min_reviews_critic = 20
+    min_reviews_allrounder = 10
+
     badges = [
-        {'name': 'First Post', 'earned': len(notes) > 0, 'description': 'Write your first post!'},
-        {'name': 'Spice Master', 'earned': stats['spiciness'] > 80, 'description': 'Average spiciness above 80%'},
-        {'name': 'Service Perfectionist', 'earned': stats['service'] > 90, 'description': 'Average service above 90%'},
-        {'name': 'Value Hunter', 'earned': stats['value'] > 85, 'description': 'Average value above 85%'},
-        {'name': 'Food Critic', 'earned': len(notes) > 20, 'description': 'Write more than 20 reviews'},
-        {'name': 'All-Rounder', 'earned': all(stat > 75 for stat in stats.values()), 'description': 'All stats above 75%'},
+        {
+            'name': 'First Post',
+            'earned': len(notes) > 0,
+            'description': 'Write your first post!'
+        },
+        {
+            'name': 'Spice Master',
+            'earned': len(notes) >= min_reviews_spice and stats['spiciness'] > 80,
+            'description': f'Average spiciness above 80% (at least {min_reviews_spice} reviews)'
+        },
+        {
+            'name': 'Service Perfectionist',
+            'earned': len(notes) >= min_reviews_service and stats['service'] > 90,
+            'description': f'Average service above 90% (at least {min_reviews_service} reviews)'
+        },
+        {
+            'name': 'Value Hunter',
+            'earned': len(notes) >= min_reviews_value and stats['value'] > 85,
+            'description': f'Average value above 85% (at least {min_reviews_value} reviews)'
+        },
+        {
+            'name': 'Food Critic',
+            'earned': len(notes) >= min_reviews_critic,
+            'description': f'Write at least {min_reviews_critic} reviews'
+        },
+        {
+            'name': 'All-Rounder',
+            'earned': (
+                len(notes) >= min_reviews_allrounder and
+                all(stat > 75 for stat in stats.values())
+            ),
+            'description': f'All stats above 75% (at least {min_reviews_allrounder} reviews)'
+        },
     ]
 
     user_level = get_user_level(badges)
