@@ -224,32 +224,32 @@ def my_stats():
 
     badges = [
         {
-            'name': 'First Post',
+            'name': '👨‍🍳 First Post',
             'earned': len(notes) > 0,
             'description': 'Write your first post!'
         },
         {
-            'name': 'Spice Master',
+            'name': '🌶️ Spice Master',
             'earned': len(notes) >= min_reviews_spice and stats['spiciness'] > 80,
             'description': f'Average spiciness above 80% (at least {min_reviews_spice} reviews)'
         },
         {
-            'name': 'Service Perfectionist',
+            'name': '🍽️ Service Perfectionist',
             'earned': len(notes) >= min_reviews_service and stats['service'] > 90,
             'description': f'Average service above 90% (at least {min_reviews_service} reviews)'
         },
         {
-            'name': 'Value Hunter',
+            'name': '💰 Value Hunter',
             'earned': len(notes) >= min_reviews_value and stats['value'] > 85,
             'description': f'Average value above 85% (at least {min_reviews_value} reviews)'
         },
         {
-            'name': 'Food Critic',
+            'name': '🧑‍🎨 Food Critic',
             'earned': len(notes) >= min_reviews_critic,
             'description': f'Write at least {min_reviews_critic} reviews'
         },
         {
-            'name': 'All-Rounder',
+            'name': '👨‍🍳 All-Rounder',
             'earned': (
                 len(notes) >= min_reviews_allrounder and
                 all(stat > 75 for stat in stats.values())
