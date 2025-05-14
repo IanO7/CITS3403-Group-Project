@@ -39,7 +39,7 @@
         </div>
         <div class="progress level-progress-bar">
             {% set needed = [1,2,4,6,6][user_level-1] %}
-            <div class="progress-bar bg-warning" style="width: {{ (earned / needed * 100) | round(0) }}%;"></div>
+            <div class="progress-bar bg-warning animated-bar" style="width: {{ (earned / needed * 100) | default(0) }}%;" data-target="{{ (earned / needed * 100)  | default(0) }}"></div>
         </div>
     </div>
 
@@ -51,7 +51,7 @@
         <div class="card stat-card">
             <h3 class="card-title">🌶️ Spiciness</h3>
             <div class="progress custom-progress">
-                <div class="progress-bar bg-danger" style="width: {{ stats.spiciness | default(0) }}%;"></div>
+                <div class="progress-bar bg-danger animated-bar" style="width: {{ stats.spiciness | default(0) }}%;" data-target="{{ stats.spiciness | default(0) }}"></div>
             </div>
             <p>{{ stats.spiciness | default(0) | round(0) |int }}% spicy dishes rated</p>
         </div>
@@ -59,7 +59,7 @@
         <div class="card stat-card">
             <h3 class="card-title">🤤 Deliciousness</h3>
             <div class="progress custom-progress">
-                <div class="progress-bar bg-success" style="width: {{ stats.deliciousness | default(0) }}%;"></div>
+                <div class="progress-bar bg-success animated-bar" style="width: {{ stats.deliciousness | default(0) }}%;" data-target="{{ stats.deliciousness | default(0) }}"></div>
             </div>
             <p>{{ stats.deliciousness | default(0) | round(0) |int }}% delicious dishes rated</p>
         </div>
@@ -67,7 +67,7 @@
         <div class="card stat-card">
             <h3 class="card-title">💰 Value</h3>
             <div class="progress custom-progress">
-                <div class="progress-bar bg-warning" style="width: {{ stats.value | default(0) }}%;"></div>
+                <div class="progress-bar bg-warning animated-bar" style="width: {{ stats.value | default(0) }}%;" data-target="{{ stats.value | default(0) }}"></div>
             </div>
             <p>{{ stats.value | default(0) | round(0) |int }}% value-rated dishes</p>
         </div>
@@ -75,7 +75,7 @@
         <div class="card stat-card">
             <h3 class="card-title">🍽️ Service</h3>
             <div class="progress custom-progress">
-                <div class="progress-bar bg-info" style="width: {{ stats.service | default(0) }}%;"></div>
+                <div class="progress-bar bg-info animated-bar" style="width: {{ stats.service | default(0) }}%;" data-target="{{ stats.service | default(0) }}"></div>
             </div>
             <p>{{ stats.service | default(0) | round(0) |int }}% service-rated dishes</p>
         </div>
@@ -85,7 +85,7 @@
     <div class="card stat-card mt-4">
         <h3 class="card-title">⭐ Overall Average Rating</h3>
         <div class="progress custom-progress">
-            <div class="progress-bar bg-primary" style="width: {{ overall_average_rating | default(0) }}%;"></div>
+            <div class="progress-bar bg-primary animated-bar" style="width: {{ overall_average_rating | default(0) }}%;" data-target="{{ overall_average_rating | default(0) }}"></div>
         </div>
         <p>{{ overall_average_rating | default(0) | round(0) |int }}% average rating across all reviews</p>
     </div>
@@ -240,6 +240,19 @@
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
+    document.addEventListener('DOMContentLoaded', function() {
+    // Animate all bars with the 'animated-bar' class
+    document.querySelectorAll('.animated-bar').forEach(function(bar) {
+        const target = parseFloat(bar.getAttribute('data-target')) || 0;
+        bar.style.width = '0%';
+        bar.style.transition = 'width 1.2s cubic-bezier(.4,2,.6,1)';
+
+        // Trigger the animation after a short delay
+        setTimeout(() => {
+            bar.style.width = target + '%';
+        }, 200);
+    });
+});
     // Example Chart.js setup
     const foodChartCtx = document.getElementById('foodChart').getContext('2d');
     const foodChart = new Chart(foodChartCtx, {
