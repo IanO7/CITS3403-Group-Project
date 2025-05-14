@@ -95,6 +95,7 @@
         <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4">
             {% for review in posts %}
                 {% set show_actions = False %}
+                {% set current_user = user %}
                 {% include "post.html" with context %}
             {% endfor %}
         </div>
