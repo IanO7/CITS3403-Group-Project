@@ -140,6 +140,8 @@
         function getComments() {
             const commentContainer = document.getElementById("comment-area");
 
+            commentContainer.innerHTML = "";
+
             comments.forEach(comment => {
                 // Create comment wrapper
                 const commentWrapper = document.createElement("div");

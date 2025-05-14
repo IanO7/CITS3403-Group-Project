@@ -34,8 +34,9 @@
         <div class="card-header">
             <strong>From: {{ item.sender.username }}</strong><br>
             <em>{{ item.timestamp.strftime('%Y-%m-%d %H:%M') }}</em>
-        {% set review = item.note %}
-        {% include "post.html" %}
+            {% set review = item.note %}
+            {% set current_user = user %}
+            {% include "post.html" %}
         </div>
     {% endfor %}
     </div>

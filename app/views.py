@@ -1076,13 +1076,33 @@ def inbox():
     # Count unseen posts (should now be zero)
     unseen_count = SharedPost.query.filter_by(recipient_id=user.id, seen=False).count()
 
+    if request.method == 'POST':
+        comment = Comments(
+                Comment = request.form['Comment'], 
+                user_id = request.form['user_id'],
+                note_id = request.form['note_id'], 
+                parentID = request.form['parentID'], 
+            )
+        db.session.add(comment)
+        db.session.commit()
+        return redirect(url_for('views.friends', user_id=user.id))
+
+    review_ids = [post.note_id for post in shared_posts]
+    comments = Comments.query.filter(Comments.note_id.in_(review_ids)).all()
+
+    comments_by_review = defaultdict(list)
+    for comment in comments:
+        comments_by_review[comment.note_id].append(comment.to_dict())
+
     return render_template(
         'inbox.html',
         user=user, 
         posts=posts,
         unseen_count=unseen_count,
-        incoming_requests=incoming_requests
+        incoming_requests=incoming_requests, 
+        comments_by_review=comments_by_review
     )
+
 
 @views.route('/api/users')
 def api_users():
