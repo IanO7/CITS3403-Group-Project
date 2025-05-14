@@ -4,6 +4,7 @@
 {% block head %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/badge.css') }}">
 <link rel="stylesheet" href="{{ url_for('static', filename='css/my_friends.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/alert.css') }}">
 {% endblock %}
 
 {% block content %} 
@@ -94,6 +95,7 @@
         <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4">
             {% for review in posts %}
                 {% set show_actions = False %}
+                {% set current_user = user %}
                 {% include "post.html" with context %}
             {% endfor %}
         </div>
@@ -120,7 +122,7 @@
                 fetch('{{ url_for("views.follow", user_id=selected_user.id) }}', {method: 'POST'})
                     .then(res => res.json())
                     .then(data => {
-                        alert(data.message || data.error || "Request sent.");
+                        showOzfoodyNotification(data.message || data.error || "Request sent.", data.success ? "success" : "error");
                         if (data.success) {
                             followAction.innerHTML = '<button class="btn btn-secondary" disabled>Request Sent</button>';
                         }
@@ -131,7 +133,7 @@
                 fetch('{{ url_for("views.unfollow", user_id=selected_user.id) }}', {method: 'POST'})
                     .then(res => res.json())
                     .then(data => {
-                        alert(data.message || data.error || "Unfollowed.");
+                        showOzfoodyNotification(data.message || data.error || "Unfollowed.", data.success ? "success" : "error");
                         if (data.success) {
                             followAction.innerHTML = '<button class="btn btn-primary" id="follow-btn">Send Follow Request</button>';
                         }
@@ -143,7 +145,7 @@
                 fetch(`/approve_follow/${followId}`, {method: 'POST'})
                     .then(res => res.json())
                     .then(data => {
-                        alert(data.message || data.error || "Approved.");
+                        showOzfoodyNotification(data.message || data.error || "Approved.", data.success ? "success" : "error");
                         if (data.success) {
                             followAction.innerHTML = '<button class="btn btn-success" id="unfollow-btn">Following</button>';
                         }
@@ -155,7 +157,7 @@
                 fetch(`/reject_follow/${followId}`, {method: 'POST'})
                     .then(res => res.json())
                     .then(data => {
-                        alert(data.message || data.error || "Rejected.");
+                        showOzfoodyNotification(data.message || data.error || "Rejected.", data.success ? "success" : "error");
                         if (data.success) {
                             followAction.innerHTML = '<button class="btn btn-primary" id="follow-btn">Send Follow Request</button>';
                         }

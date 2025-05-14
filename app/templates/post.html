@@ -9,9 +9,9 @@
 
                     <div class="d-flex align-items-center mb-3 w-100">
                         {% if user.profileImage %}
-                          <img src="{{ url_for('views.uploaded_file', filename=user.profileImage) }}"
-                               alt="Profile Avatar"
-                               class="profileImageSmall">
+                          <img src="{{ url_for('views.uploaded_file', filename=review.user.profileImage) }}"
+                            alt="Profile Avatar"
+                            class="profileImageSmall"> 
                         {% else %}
                           <img src="{{ url_for('static', filename='default_profile.png') }}"
                                alt="Default Profile Avatar"
@@ -128,6 +128,7 @@
                     <div class="form-group p-3">
                         <input type="hidden" name="note_id" value="{{ review.id }}">
                         <input type="hidden" name="parentID" value="0">
+                        <input type="hidden" name="user_id" value="{{current_user.id}}">
                         <textarea class="form-control w-100" id="Comment" name="Comment" required></textarea>
                     </div>
                     <button type="submit" class="btn btn-primary" id="Comment_button">Comment</button>
@@ -145,6 +146,8 @@
         function getComments() {
             const commentContainer = document.getElementById("comment-area");
 
+            commentContainer.innerHTML = "";
+
             comments.forEach(comment => {
                 // Create comment wrapper
                 const commentWrapper = document.createElement("div");
@@ -154,7 +157,7 @@
                 commentWrapper.innerHTML = `
                     <div> 
                     <img src="${comment.profileImage}" alt="Profile Avatar" class="profileImageSmaller"> 
-                    <strong> {{review.user.username}} </strong> 
+                    <strong> ${comment.username} </strong> 
                     </div> 
                     <p> ${comment.Comment}</p>
                     <button class="btn btn-sm btn-outline-primary reply-toggle" data-comment-id="${comment.id}" onClick='displayForm(${comment.id})'> reply </button> 
@@ -163,6 +166,7 @@
                         <div class="form-group p-3">
                             <input type="hidden" name="note_id" value="{{review.id}}">
                             <input type="hidden" name="parentID" value="${comment.id}">
+                            <input type="hidden" name="user_id" value="{{current_user.id}}">
                             <input type="text-area" class="form-control" id="Comment" name="Comment" required>
                         </div>
                     <button type="submit" class="btn btn-primary" id="Comment_button">Reply</button>

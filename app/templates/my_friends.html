@@ -50,6 +50,7 @@
             {% if notes %}
                 {% for review in notes %}
                     {% set show_actions = False %}
+                    {% set current_user = user %}
                     {% include "post.html" with context %}
                 {% endfor %}
             {% else %}
