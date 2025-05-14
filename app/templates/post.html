@@ -122,7 +122,6 @@
                     <div class="form-group p-3">
                         <input type="hidden" name="note_id" value="{{ review.id }}">
                         <input type="hidden" name="parentID" value="0">
-                        <input type="hidden" name="user_id" value="{{user.id}}">
                         <textarea class="form-control w-100" id="Comment" name="Comment" required></textarea>
                     </div>
                     <button type="submit" class="btn btn-primary" id="Comment_button">Comment</button>
@@ -158,7 +157,6 @@
                         <div class="form-group p-3">
                             <input type="hidden" name="note_id" value="{{review.id}}">
                             <input type="hidden" name="parentID" value="${comment.id}">
-                            <input type="hidden" name="user_id" value="{{user.id}}">
                             <input type="text-area" class="form-control" id="Comment" name="Comment" required>
                         </div>
                     <button type="submit" class="btn btn-primary" id="Comment_button">Reply</button>
