@@ -40,14 +40,57 @@
     <!-- ────────────────  Update Password  ──────────────── -->
     <form id="update-password-form" method="POST" action="/settings">
         <h3>Change Password</h3>
-        <div class="mb-3">
+
+        <!-- Current Password -->
+        <div class="mb-3" style="position:relative;">
             <label for="current_password" class="form-label">Current Password</label>
-            <input type="password" class="form-control" id="current_password" name="current_password" required>
+            <div class="password-input-group">
+                <input id="current-password" name="current-password" type="password" class="form-control" required>
+                <span id="toggle-password" style="position:absolute;right:0.75rem;top:50%;transform:translateY(-50%);cursor:pointer;">
+                <svg id="eye-icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" viewBox="0 0 24 24">
+                    <path stroke="#888" stroke-width="2" d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12Z"/>
+                    <circle cx="12" cy="12" r="3.5" stroke="#888" stroke-width="2"/>
+                </svg>
+                </span>
+            </div>
         </div>
-        <div class="mb-3">
+
+        <!-- New Password -->
+        <div class="mb-3" style="position:relative;">
             <label for="new_password" class="form-label">New Password</label>
-            <input type="password" class="form-control" id="new_password" name="new_password" required>
+            <div class="password-input-group">
+                <input id="new-password" name="new-password" type="password" class="form-control" required>
+                <span id="toggle-password" style="position:absolute;right:0.75rem;top:50%;transform:translateY(-50%);cursor:pointer;">
+                <svg id="eye-icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" viewBox="0 0 24 24">
+                    <path stroke="#888" stroke-width="2" d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12Z"/>
+                    <circle cx="12" cy="12" r="3.5" stroke="#888" stroke-width="2"/>
+                </svg>
+                </span>
+            </div>
         </div>
+
+        <!-- Confirm New Password -->
+        <div class="mb-3" style="position:relative;">
+            <label for="confirm_password" class="form-label">Confirm New Password</label>
+            <div class="password-input-group">
+                <input id="confirm-password" name="confirm-password" type="password" class="form-control" required>
+                <span id="toggle-password" style="position:absolute;right:0.75rem;top:50%;transform:translateY(-50%);cursor:pointer;">
+                <svg id="eye-icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" viewBox="0 0 24 24">
+                    <path stroke="#888" stroke-width="2" d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12Z"/>
+                    <circle cx="12" cy="12" r="3.5" stroke="#888" stroke-width="2"/>
+                </svg>
+                </span>
+            </div>
+        </div>
+
+        <!-- Password validation rules -->
+        <ul class="password-rules mb-3 ps-4">
+            <li id="length-rule" class="invalid">❌ At least 8 characters</li>
+            <li id="number-rule" class="invalid">❌ At least one number (0-9)</li>
+            <li id="uppercase-rule" class="invalid">❌ At least one uppercase letter (A-Z)</li>
+            <li id="special-rule" class="invalid">❌ At least one special character (!@#$%)</li>
+            <li id="match-rule" class="invalid">❌ Both passwords must be the same</li>
+        </ul>
         <button type="submit" class="btn btn-warning" name="action" value="update_password">Change Password</button>
     </form>
 
