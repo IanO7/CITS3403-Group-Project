@@ -2,18 +2,29 @@ import flask
 from flask import Flask, session
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
+from flask_login import LoginManager
 from os import path
 import os  # Import os to access environment variables
+from datetime import timedelta  # Import timedelta for session configuration
 
 db = SQLAlchemy()
 migrate = Migrate()
+login_manager = LoginManager()
 DB_NAME = "database.db"
 
 from .views import views
 
 def create_app():
     app = Flask(__name__)
-    app.config['SECRET_KEY'] = os.environ.get("able", "default_secret_key")  # Use environment variable
+    # TODO: Change this to a secure key before deployment
+    # For development only - do not use this in production!
+    app.config['SECRET_KEY'] = os.environ.get("able", "default_secret_key")
+    
+    # Add session configuration
+    app.config['SESSION_TYPE'] = 'filesystem'
+    app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=1)
+    app.config['SESSION_COOKIE_SECURE'] = False  # Set to True in production with HTTPS
+    
     app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{DB_NAME}'
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     app.config['UPLOAD_FOLDER'] = os.path.join(app.root_path, 'uploads')
@@ -22,6 +33,12 @@ def create_app():
     db.init_app(app)
     migrate.init_app(app, db)  # Initialize Flask-Migrate
 
+    # Initialize Flask-Login with session protection
+    login_manager.init_app(app)
+    login_manager.login_view = 'auth.login'
+    login_manager.login_message_category = 'info'
+    login_manager.session_protection = 'strong'
+
     # Register blueprints
     app.register_blueprint(views, url_prefix='/')
 
@@ -29,7 +46,10 @@ def create_app():
     app.register_blueprint(auth, url_prefix='/')
 
     from .models import Note, User, SharedPost  # Import your models here
-    
+
+    @login_manager.user_loader
+    def load_user(id):
+        return User.query.get(int(id))
 
     with app.app_context():
         db.create_all()

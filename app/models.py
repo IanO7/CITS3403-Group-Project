@@ -1,6 +1,7 @@
 from . import db
 from flask import url_for
 from werkzeug.security import generate_password_hash, check_password_hash
+from flask_login import UserMixin
 
 class Comments (db.Model):
     id           = db.Column(db.Integer, primary_key=True)
@@ -40,7 +41,7 @@ class Note(db.Model):
     latitude        = db.Column(db.Float, nullable=True, index=True)
     longitude       = db.Column(db.Float, nullable=True, index=True)
     
-class User(db.Model):
+class User(db.Model, UserMixin):
     id          = db.Column(db.Integer, primary_key=True)
     username    = db.Column(db.String(150),  unique=True, nullable=False)
     email       = db.Column(db.String(150), unique=True, nullable=False)
