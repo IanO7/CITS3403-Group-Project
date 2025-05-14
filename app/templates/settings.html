@@ -60,7 +60,7 @@
             <label for="new_password" class="form-label">New Password</label>
             <div class="password-input-group">
                 <input id="new-password" name="new-password" type="password" class="form-control" required>
-                <span id="toggle-password" style="position:absolute;right:0.75rem;top:50%;transform:translateY(-50%);cursor:pointer;">
+                <span id="toggle-new-password" style="position:absolute;right:0.75rem;top:50%;transform:translateY(-50%);cursor:pointer;">
                 <svg id="eye-icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" viewBox="0 0 24 24">
                     <path stroke="#888" stroke-width="2" d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12Z"/>
                     <circle cx="12" cy="12" r="3.5" stroke="#888" stroke-width="2"/>
@@ -74,7 +74,7 @@
             <label for="confirm_password" class="form-label">Confirm New Password</label>
             <div class="password-input-group">
                 <input id="confirm-password" name="confirm-password" type="password" class="form-control" required>
-                <span id="toggle-password" style="position:absolute;right:0.75rem;top:50%;transform:translateY(-50%);cursor:pointer;">
+                <span id="toggle-confirm-password" style="position:absolute;right:0.75rem;top:50%;transform:translateY(-50%);cursor:pointer;">
                 <svg id="eye-icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" viewBox="0 0 24 24">
                     <path stroke="#888" stroke-width="2" d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12Z"/>
                     <circle cx="12" cy="12" r="3.5" stroke="#888" stroke-width="2"/>
@@ -91,7 +91,7 @@
             <li id="special-rule" class="invalid">❌ At least one special character (!@#$%)</li>
             <li id="match-rule" class="invalid">❌ Both passwords must be the same</li>
         </ul>
-        <button type="submit" class="btn btn-warning" name="action" value="update_password">Change Password</button>
+        <button type="submit" id="updateBtn" class="btn btn-warning" name="action" value="update_password" disabled>Change Password</button>
     </form>
 
     <hr>
@@ -104,32 +104,5 @@
     </form>
 </div>
 
-<script>
-    // Attach enhanced fetch handling to all three forms
-    document.querySelectorAll('form').forEach(form => {
-        form.addEventListener('submit', event => {
-            event.preventDefault();
-            // include the clicked button automatically
-            const formData = new FormData(form, event.submitter);
-            fetch('/settings', {
-                method: 'POST',
-                body: formData
-            })
-            .then(r => r.json())
-            .then(data => {
-                if (data.success) {
-                    showOzfoodyNotification(data.message, "success");
-                    if (form.id === 'delete-account-form') {
-                        // redirect to landing page after account deletion
-                        window.location.href = '/landing';
-                    }
-                } else {
-
-                    alert(data.error || 'An unexpected error occurred.');
-                }
-            })
-            .catch(err => console.error('Fetch error:', err));
-        });
-    });
-</script>
+<script src="{{ url_for('static', filename='JS/settings.js') }}"></script>
 {% endblock %}

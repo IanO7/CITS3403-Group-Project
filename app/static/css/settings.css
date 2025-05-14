@@ -156,3 +156,58 @@ label[for="confirm_password"] {
     color: #5F8D3B;
     font-weight: 600;
 }
+
+/* Password input group styling */
+.password-input-group {
+    position: relative;
+}
+
+.password-input-group input {
+    flex: 1;
+}
+
+.password-input-group button {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    border: none;
+    background: transparent;
+    padding: 5px;
+    cursor: pointer;
+}
+
+.password-input-group button:hover svg path,
+.password-input-group button:hover svg circle,
+.password-input-group button:hover svg line {
+    stroke: #5F8D3B;
+    transition: stroke 0.3s ease;
+}
+
+/* Remove any background color on hover */
+.password-input-group button:hover {
+    background: transparent;
+}
+
+/* Password validation rules styling */
+/* #password-rules div {
+    margin: 0.25rem 0;
+    color: #666;
+} */
+
+.password-rules li {
+    font-size: 0.9rem;
+    list-style: none;
+    padding: 2px 0;
+    color: #333;
+    display: flex;
+    align-items: center;
+  }
+  
+  .password-rules .valid {
+    color: green;
+  }
+  
+  .password-rules .invalid {
+    color: black;
+  }
