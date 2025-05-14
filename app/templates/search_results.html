@@ -19,7 +19,7 @@
         <li class="list-group-item d-flex justify-content-between align-items-center">
             <span>
                 {{ result.username }}
-                <span class="badge badge-level level-{{ result.level }}">Level {{ result.level }}</span>
+                <span class="badge badge-level level-{{ user_levels[result.id]|default(1) }}">Level {{ user_levels[result.id]|default(1) }}</span>
             </span>
             <a href="{{ url_for('views.user_profile', user_id=result.id) }}" class="btn btn-primary">View Profile</a>
         </li>
@@ -28,15 +28,5 @@
     {% else %}
     <p class="text-center text-muted">No users found matching "{{ query }}".</p>
     {% endif %}
-
-    <!-- Example -->
-    {% for result in results %}
-    <div>
-        <a href="{{ url_for('views.user_profile', user_id=result.id) }}">{{ result.username }}</a>
-        {% if result.id in followers_of_me %}
-            <span class="badge bg-info">Follows you</span>
-        {% endif %}
-    </div>
-    {% endfor %}
 </div>
 {% endblock %}
