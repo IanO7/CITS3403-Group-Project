@@ -53,7 +53,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Password Validation
     async function validatePassword() {
-        if (!newPassword || !confirmPassword || !currentPassword) return;
+        if (!newPassword || !confirmPassword || !currentPassword) return false;
         
         const val = newPassword.value;
         const confirmVal = confirmPassword.value;
@@ -85,6 +85,8 @@ document.addEventListener('DOMContentLoaded', function () {
         if (updateBtn) {
             updateBtn.disabled = !allValid;
         }
+
+        return allValid;
     }
 
     // Event Listeners
@@ -171,37 +173,34 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('update-password-form').addEventListener('submit', async function(e) {
         e.preventDefault();
         
-        if (await verifyCurrentPassword()) {
-            this.submit();
-        } else {
-            alert('Current password is incorrect');
+        // Validate password first
+        if (!await validatePassword()) {
+            showOzfoodyNotification('Please fix validation errors first', 'error');
+            return;
         }
-    });
-});
-
-// Attach enhanced fetch handling to all three forms
-document.querySelectorAll('form').forEach(form => {
-    form.addEventListener('submit', event => {
-        event.preventDefault();
-        // include the clicked button automatically
-        const formData = new FormData(form, event.submitter);
-        fetch('/settings', {
-            method: 'POST',
-            body: formData
-        })
-        .then(r => r.json())
-        .then(data => {
+        
+        const formData = new FormData(this);
+        formData.append('action', 'update_password');  // Add this line to specify the action
+        
+        try {
+            const response = await fetch('/settings', {
+                method: 'POST',
+                body: formData,
+                credentials: 'same-origin'  // Add this to maintain session
+            });
+            
+            const data = await response.json();
             if (data.success) {
-                showOzfoodyNotification(data.message, "success");
-                if (form.id === 'delete-account-form') {
-                    // redirect to landing page after account deletion
-                    window.location.href = '/landing';
-                }
+                showOzfoodyNotification('Password updated successfully', 'success');
+                this.reset();
+                // Reset validation states
+                rules.forEach(rule => updateRuleDisplay(rule, false));
             } else {
-
-                alert(data.error || 'An unexpected error occurred.');
+                showOzfoodyNotification(data.error || 'Failed to update password', 'error');
             }
-        })
-        .catch(err => console.error('Fetch error:', err));
+        } catch (error) {
+            console.error('Error:', error);
+            showOzfoodyNotification('An error occurred while updating password', 'error');
+        }
     });
 });
