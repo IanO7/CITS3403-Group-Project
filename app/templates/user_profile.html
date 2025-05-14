@@ -3,10 +3,15 @@
 
 {% block head %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/badge.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/my_friends.css') }}">
 {% endblock %}
 
-{% block content %}
+{% block content %} 
 <div class="container mt-5">
+    <!-- Back Button -->
+    <a href="{{ url_for('views.friends') }}" class="back-to-friends-btn mb-4">
+        ← Back to Friends
+    </a>
     <!-- User Stats Section -->
     <div class="dashboard-header mb-4">
         <div class="profile-info d-flex align-items-center">
@@ -45,7 +50,7 @@
         <div class="card stat-card">
             <h3 class="card-title">🌶️ Spiciness</h3>
             <div class="progress custom-progress">
-                <div class="progress-bar bg-danger" style="width: {{ stats.spiciness | default(0) }}%;"></div>
+                <div class="progress-bar bg-danger animated-bar" style="width: {{ stats.spiciness | default(0) }}%;" data-target="{{ stats.spiciness | default(0) }}"></div>
             </div>
             <p>{{ stats.spiciness | default(0) | round(0) |int }}% spicy dishes rated</p>
         </div>
@@ -53,7 +58,7 @@
         <div class="card stat-card">
             <h3 class="card-title">🤤 Deliciousness</h3>
             <div class="progress custom-progress">
-                <div class="progress-bar bg-success" style="width: {{ stats.deliciousness | default(0) }}%;"></div>
+                <div class="progress-bar bg-success animated-bar" style="width: {{ stats.deliciousness | default(0) }}%;" data-target="{{ stats.deliciousness | default(0) }}"></div>
             </div>
             <p>{{ stats.deliciousness | default(0) | round(0) |int }}% delicious dishes rated</p>
         </div>
@@ -61,7 +66,7 @@
         <div class="card stat-card">
             <h3 class="card-title">💰 Value</h3>
             <div class="progress custom-progress">
-                <div class="progress-bar bg-warning" style="width: {{ stats.value | default(0) }}%;"></div>
+                <div class="progress-bar bg-warning animated-bar" style="width: {{ stats.value | default(0) }}%;" data-target="{{ stats.value | default(0) }}"></div>
             </div>
             <p>{{ stats.value | default(0) | round(0) |int }}% value-rated dishes</p>
         </div>
@@ -69,7 +74,7 @@
         <div class="card stat-card">
             <h3 class="card-title">🍽️ Service</h3>
             <div class="progress custom-progress">
-                <div class="progress-bar bg-info" style="width: {{ stats.service | default(0) }}%;"></div>
+                <div class="progress-bar bg-info animated-bar" style="width: {{ stats.service | default(0) }}%;" data-target="{{ stats.service | default(0) }}"></div>
             </div>
             <p>{{ stats.service | default(0) | round(0) |int }}% service-rated dishes</p>
         </div>
@@ -78,7 +83,7 @@
     <div class="card stat-card">
         <h3 class="card-title">⭐ Overall Average Rating</h3>
         <div class="progress custom-progress">
-            <div class="progress-bar bg-primary" style="width: {{ overall_average_rating | default(0) }}%;"></div>
+            <div class="progress-bar bg-primary animated-bar" style="width: {{ overall_average_rating | default(0) }}%;" data-target="{{ overall_average_rating | default(0) }}"></div>
         </div>
         <p>{{ overall_average_rating | default(0) | round(0) |int }}% average rating across all reviews</p>
     </div>
@@ -102,6 +107,7 @@
 
 {% block scripts %}
     {{ super() }}
+    <script src="{{ url_for('static', filename='JS/stats.js') }}"></script>
     <script src="{{ url_for('static', filename='JS/my_friends.js') }}"></script>
     <script>
     document.addEventListener('DOMContentLoaded', function() {

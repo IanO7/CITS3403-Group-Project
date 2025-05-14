@@ -1,14 +1,14 @@
 /* Sleek, modern badge style for all levels */
 .badge-level {
     display: inline-block;
-    padding: 7px 18px;
+    padding: 4px 12px;           /* Reduced padding for compactness */
     font-size: 1rem;
-    font-weight: 700;
+    font-weight: 600;            /* Slightly lighter for subtlety */
     border-radius: 999px;
     color: #fff;
-    margin-left: 10px;
-    letter-spacing: 0.04em;
-    box-shadow: 0 4px 18px rgba(0,0,0,0.10);
+    margin-left: 8px;            /* Slightly less space from username */
+    letter-spacing: 0.03em;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.10);
     border: none;
     vertical-align: middle;
     background: #888;
@@ -19,34 +19,32 @@
     cursor: default;
     user-select: none;
     outline: none;
+    line-height: 1.2;
+    min-width: 0;                /* Prevents unnecessary width */
+    width: auto;
 }
 
 /* More distinct, vibrant gradients for each level */
 .level-1 { 
     background: linear-gradient(90deg, #c68642 0%, #8d5524 100%);
-    /* Bronze: warm brown to deep bronze */
 }
 .level-2 { 
     background: linear-gradient(90deg, #bfc1c2 0%, #6e7b8b 100%);
-    /* Silver: light silver to steel blue */
 }
 .level-3 { 
     background: linear-gradient(90deg, #ffe066 0%, #ffb300 100%);
-    /* Gold: bright yellow to rich gold */
 }
 .level-4 { 
     background: linear-gradient(90deg, #43e97b 0%, #38f9d7 100%);
-    /* Emerald: fresh green to teal */
 }
 .level-5 { 
     background: linear-gradient(90deg, #4f8cff 0%, #1e3c72 100%);
-    /* Sapphire: vivid blue to deep sapphire */
 }
 
 .badge-level:hover, .badge-level:focus {
     filter: brightness(1.10);
-    box-shadow: 0 8px 24px rgba(0,0,0,0.18);
-    transform: scale(1.07);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+    transform: scale(1.05);
     text-decoration: none;
     outline: none;
 }

@@ -245,3 +245,26 @@
     background: #fbc2eb;
     color: #5f8d3b;
 }
+
+.back-to-friends-btn {
+    border-radius: 20px;
+    font-weight: bold;
+    padding: 8px 24px;
+    letter-spacing: 0.5px;
+    background-color: #fff;
+    color: #6E3A14;
+    border: 2px solid #8E5F2B;
+    transition: background 0.2s, color 0.2s, border-color 0.2s, box-shadow 0.2s;
+    box-shadow: 0 2px 8px rgba(223, 111, 27, 0.07);
+    text-decoration: none;
+    display: inline-block;
+}
+
+.back-to-friends-btn:hover,
+.back-to-friends-btn:focus {
+    background-color: #F6E7DA;
+    color: #DF6F1B;
+    border-color: #DF6F1B;
+    text-decoration: none;
+    box-shadow: 0 4px 16px rgba(223, 111, 27, 0.13);
+}
