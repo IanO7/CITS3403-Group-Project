@@ -1,14 +1,13 @@
 from flask import (
     Blueprint, render_template, request, redirect,
-    url_for, flash, session, current_app
+    url_for, flash, session, current_app, jsonify
 )
 from .models import User
 from . import db
 from werkzeug.utils import secure_filename
+from werkzeug.security import check_password_hash, generate_password_hash
 import os
-
- 
-
+from flask_login import login_required, current_user
 
 auth = Blueprint('auth', __name__)
 
@@ -85,3 +84,36 @@ def logout():
     session.clear()
     flash('You have been logged out.', 'info')
     return redirect(url_for('auth.login'))
+
+
+@auth.route('/verify_password', methods=['POST'])
+@login_required
+def verify_password():
+    data = request.get_json()
+    current_password = data.get('current_password')
+    
+    if check_password_hash(current_user.password_hash, current_password):
+        return jsonify({'valid': True})
+    return jsonify({'valid': False})
+
+
+@auth.route('/settings', methods=['POST'])
+@login_required
+def update_settings():
+    if request.form.get('action') == 'update_password':
+        current_password = request.form.get('current-password')
+        new_password = request.form.get('new-password')
+        
+        # Verify current password
+        if not check_password_hash(current_user.password_hash, current_password):
+            flash('Current password is incorrect', 'error')
+            return redirect(url_for('settings'))
+        
+        # Update password
+        current_user.password_hash = generate_password_hash(new_password)
+        db.session.commit()
+        flash('Password updated successfully', 'success')
+        
+    return redirect(url_for('settings'))
+
+

@@ -16,7 +16,8 @@ def create_app():
     app.config['SECRET_KEY'] = os.environ.get("able", "default_secret_key")  # Use environment variable
     app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{DB_NAME}'
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-    app.config['UPLOAD_FOLDER'] = os.path.join(os.getcwd(), 'app/uploads')
+    app.config['UPLOAD_FOLDER'] = os.path.join(app.root_path, 'uploads')
+    os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 
     db.init_app(app)
     migrate.init_app(app, db)  # Initialize Flask-Migrate
