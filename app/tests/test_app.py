@@ -134,7 +134,7 @@ class AppTestCase(unittest.TestCase):
         with self.app.app_context():
             initial_note_count = Note.query.count()
         post_data = {
-            'Resturaunt': 'Testaurant',
+            'Restaurant': 'Testaurant',
             'Review': 'Great food!',
             'Spiciness': 5,
             'Deliciousness': 5,
@@ -149,7 +149,7 @@ class AppTestCase(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         with self.app.app_context():
             self.assertEqual(Note.query.count(), initial_note_count + 1)
-            created_note = Note.query.filter_by(Resturaunt='Testaurant', user_id=user.id).first()
+            created_note = Note.query.filter_by(Restaurant='Testaurant', user_id=user.id).first()
             self.assertIsNotNone(created_note)
             self.assertEqual(created_note.Review, 'Great food!')
             self.assertEqual(created_note.location, 'Test Location')
@@ -221,7 +221,7 @@ class AppTestCase(unittest.TestCase):
         user = self.create_user('invalidposter', 'invalidposter@example.com')
         self.login('invalidposter@example.com')
         post_data = {
-            'Resturaunt': '',
+            'Restaurant': '',
             'Review': '',
             'Spiciness': '',
             'Deliciousness': '',

@@ -24,13 +24,14 @@ class Comments (db.Model):
             'note_id': self.note_id,
             'parentID': self.parentID,
             'username': self.user.username,
-            'profileImage': url_for('views.uploaded_file', filename=self.user.profileImage),
             'likes': self.likes,
+            'profileImage': url_for('views.uploaded_file', filename=self.user.profileImage) if self.user.profileImage \
+                else url_for('static', filename='images/default-profile.png')
             # Add other serializable fields as needed
         }
 class Note(db.Model):
     id              = db.Column(db.Integer, primary_key=True)
-    Restaurant     = db.Column(db.String(100), nullable = False)
+    Restaurant      = db.Column(db.String(100), nullable = False)
     Spiciness       = db.Column(db.Integer, nullable=False)
     Deliciousness   = db.Column(db.Integer, nullable = False)
     Value           = db.Column(db.Integer, nullable=False)
