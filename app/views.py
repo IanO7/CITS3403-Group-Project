@@ -1348,7 +1348,7 @@ def api_globe_reviews():
           'lat':  n.latitude,
           'lng':  n.longitude,
           'title': n.Restaurant,
-          'imageUrl': url_for('views.uploaded_file', filename=n.image),
+          'imageUrl': url_for('views.uploaded_file', filename=n.images[0].filename) if n.images else None,
           'tooltip': n.Review
         }
         for n in notes
