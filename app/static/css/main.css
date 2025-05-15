@@ -834,6 +834,14 @@ input[type="range"].service-slider {
 }
 
 /* Navbar */
+/* Highlight the active nav tab */
+.navbar .nav-link.active {
+    color: #fff !important;              /* White text */
+    background-color: #5F8D3B !important; /* Your chosen highlight color */
+    border-radius: 20px;
+    font-weight: bold;
+    box-shadow: 0 2px 8px rgba(94, 81, 43, 0.08);
+}
 .navbar {
     background-color: #F6E7DA; /* Soft peach */
     color: #000;
