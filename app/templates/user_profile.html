@@ -3,10 +3,16 @@
 
 {% block head %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/badge.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/my_friends.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/alert.css') }}">
 {% endblock %}
 
-{% block content %}
+{% block content %} 
 <div class="container mt-5">
+    <!-- Back Button -->
+    <a href="{{ url_for('views.friends') }}" class="back-to-friends-btn mb-4">
+        ← Back to Friends
+    </a>
     <!-- User Stats Section -->
     <div class="dashboard-header mb-4">
         <div class="profile-info d-flex align-items-center">
@@ -45,42 +51,42 @@
         <div class="card stat-card">
             <h3 class="card-title">🌶️ Spiciness</h3>
             <div class="progress custom-progress">
-                <div class="progress-bar bg-danger" style="width: {{ stats.spiciness | default(0) }}%;"></div>
+                <div class="progress-bar bg-danger animated-bar" style="width: {{ stats.spiciness | default(0) }}%;" data-target="{{ stats.spiciness | default(0) }}"></div>
             </div>
-            <p>{{ stats.spiciness | default(0) }}% spicy dishes rated</p>
+            <p>{{ stats.spiciness | default(0) | round(0) |int }}% spicy dishes rated</p>
         </div>
 
         <div class="card stat-card">
             <h3 class="card-title">🤤 Deliciousness</h3>
             <div class="progress custom-progress">
-                <div class="progress-bar bg-success" style="width: {{ stats.deliciousness | default(0) }}%;"></div>
+                <div class="progress-bar bg-success animated-bar" style="width: {{ stats.deliciousness | default(0) }}%;" data-target="{{ stats.deliciousness | default(0) }}"></div>
             </div>
-            <p>{{ stats.deliciousness | default(0) }}% delicious dishes rated</p>
+            <p>{{ stats.deliciousness | default(0) | round(0) |int }}% delicious dishes rated</p>
         </div>
 
         <div class="card stat-card">
             <h3 class="card-title">💰 Value</h3>
             <div class="progress custom-progress">
-                <div class="progress-bar bg-warning" style="width: {{ stats.value | default(0) }}%;"></div>
+                <div class="progress-bar bg-warning animated-bar" style="width: {{ stats.value | default(0) }}%;" data-target="{{ stats.value | default(0) }}"></div>
             </div>
-            <p>{{ stats.value | default(0) }}% value-rated dishes</p>
+            <p>{{ stats.value | default(0) | round(0) |int }}% value-rated dishes</p>
         </div>
 
         <div class="card stat-card">
             <h3 class="card-title">🍽️ Service</h3>
             <div class="progress custom-progress">
-                <div class="progress-bar bg-info" style="width: {{ stats.service | default(0) }}%;"></div>
+                <div class="progress-bar bg-info animated-bar" style="width: {{ stats.service | default(0) }}%;" data-target="{{ stats.service | default(0) }}"></div>
             </div>
-            <p>{{ stats.service | default(0) }}% service-rated dishes</p>
+            <p>{{ stats.service | default(0) | round(0) |int }}% service-rated dishes</p>
         </div>
     </div>
 
     <div class="card stat-card">
         <h3 class="card-title">⭐ Overall Average Rating</h3>
         <div class="progress custom-progress">
-            <div class="progress-bar bg-primary" style="width: {{ overall_average_rating | default(0) }}%;"></div>
+            <div class="progress-bar bg-primary animated-bar" style="width: {{ overall_average_rating | default(0) }}%;" data-target="{{ overall_average_rating | default(0) }}"></div>
         </div>
-        <p>{{ overall_average_rating | default(0) }}% average rating across all reviews</p>
+        <p>{{ overall_average_rating | default(0) | round(0) |int }}% average rating across all reviews</p>
     </div>
 
     <!-- User Posts Section -->
@@ -89,6 +95,7 @@
         <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4">
             {% for review in posts %}
                 {% set show_actions = False %}
+                {% set current_user = user %}
                 {% include "post.html" with context %}
             {% endfor %}
         </div>
@@ -102,6 +109,7 @@
 
 {% block scripts %}
     {{ super() }}
+    <script src="{{ url_for('static', filename='JS/stats.js') }}"></script>
     <script src="{{ url_for('static', filename='JS/my_friends.js') }}"></script>
     <script>
     document.addEventListener('DOMContentLoaded', function() {
@@ -114,7 +122,7 @@
                 fetch('{{ url_for("views.follow", user_id=selected_user.id) }}', {method: 'POST'})
                     .then(res => res.json())
                     .then(data => {
-                        alert(data.message || data.error || "Request sent.");
+                        showOzfoodyNotification(data.message || data.error || "Request sent.", data.success ? "success" : "error");
                         if (data.success) {
                             followAction.innerHTML = '<button class="btn btn-secondary" disabled>Request Sent</button>';
                         }
@@ -125,7 +133,7 @@
                 fetch('{{ url_for("views.unfollow", user_id=selected_user.id) }}', {method: 'POST'})
                     .then(res => res.json())
                     .then(data => {
-                        alert(data.message || data.error || "Unfollowed.");
+                        showOzfoodyNotification(data.message || data.error || "Unfollowed.", data.success ? "success" : "error");
                         if (data.success) {
                             followAction.innerHTML = '<button class="btn btn-primary" id="follow-btn">Send Follow Request</button>';
                         }
@@ -137,7 +145,7 @@
                 fetch(`/approve_follow/${followId}`, {method: 'POST'})
                     .then(res => res.json())
                     .then(data => {
-                        alert(data.message || data.error || "Approved.");
+                        showOzfoodyNotification(data.message || data.error || "Approved.", data.success ? "success" : "error");
                         if (data.success) {
                             followAction.innerHTML = '<button class="btn btn-success" id="unfollow-btn">Following</button>';
                         }
@@ -149,7 +157,7 @@
                 fetch(`/reject_follow/${followId}`, {method: 'POST'})
                     .then(res => res.json())
                     .then(data => {
-                        alert(data.message || data.error || "Rejected.");
+                        showOzfoodyNotification(data.message || data.error || "Rejected.", data.success ? "success" : "error");
                         if (data.success) {
                             followAction.innerHTML = '<button class="btn btn-primary" id="follow-btn">Send Follow Request</button>';
                         }

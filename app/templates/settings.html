@@ -6,22 +6,41 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">      
 <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
 <link rel="stylesheet" href="{{ url_for('static', filename='css/settings.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/alert.css') }}">
+
+<!-- Ozfoody notification element -->
+<div id="ozfoody-notification" class="ozfoody-notification"></div>
+
 <div class="container mt-5">
     <h1 class="text-center mb-4">Settings</h1>
 
-    <!-- ────────────────  Update User Information  ──────────────── -->
-
-    <form id="update-info-form" method="POST" action="/settings" enctype="multipart/form-data">
-
-        <h3>Update Information</h3>
+    <!-- ────────────────  Update Username  ──────────────── -->
+    <form id="update-username-form" method="POST" action="/settings">
+        <h3>Update Username</h3>
         <div class="mb-3">
             <label for="username" class="form-label">Username</label>
             <input type="text" class="form-control" id="username" name="username" value="{{ user.username }}" required>
         </div>
+        <button type="submit" class="btn btn-primary" name="action" value="update_username">Update Username</button>
+    </form>
+
+    <hr>
+
+    <!-- ────────────────  Update Email  ──────────────── -->
+    <form id="update-email-form" method="POST" action="/settings">
+        <h3>Update Email</h3>
         <div class="mb-3">
             <label for="email" class="form-label">Email</label>
             <input type="email" class="form-control" id="email" name="email" value="{{ user.email }}" required>
         </div>
+        <button type="submit" class="btn btn-primary" name="action" value="update_email">Update Email</button>
+    </form>
+
+    <hr>
+
+    <!-- ────────────────  Update Profile Picture  ──────────────── -->
+    <form id="update-profile-form" method="POST" action="/settings" enctype="multipart/form-data">
+        <h3>Update Profile Picture</h3>
         <div class="mb-3">
             <label for="profileImage" id="pictureStatus">
                 {% if user.profileImage %}
@@ -29,10 +48,10 @@
                 {% else %}
                 Add Profile Picture
                 {% endif %}
-                </label>
-            <input type="file" class="form-control" id="image" name="profileImage" placeholder="Enter an image URL">
+            </label>
+            <input type="file" class="form-control" id="profileImage" name="profileImage" placeholder="Enter an image URL">
         </div>
-        <button type="submit" class="btn btn-primary" name="action" value="update_info">Update</button>
+        <button type="submit" class="btn btn-primary" name="action" value="update_profile">Update Picture</button>
     </form>
 
     <hr>
@@ -104,5 +123,111 @@
     </form>
 </div>
 
+<script src="{{ url_for('static', filename='JS/alert.js') }}"></script>
+<script>
+    // Username validation
+    document.getElementById('update-username-form').addEventListener('submit', function(event) {
+        const username = document.getElementById('username').value.trim();
+        if (username.length < 3) {
+            showOzfoodyNotification("Username must be at least 3 characters long.", "error");
+            event.preventDefault();
+            return false;
+        }
+    });
+
+    // Email validation
+    document.getElementById('update-email-form').addEventListener('submit', function(event) {
+        const email = document.getElementById('email').value.trim();
+        if (!email.includes('@')) {
+            showOzfoodyNotification("Please include an '@' in the email address.", "error");
+            event.preventDefault();
+            return false;
+        }
+    });
+
+    // Extra confirmation for delete account
+    document.getElementById('delete-account-form').addEventListener('submit', function(event) {
+        event.preventDefault();
+        showOzfoodyNotification(
+            `Are you sure you want to delete your account? This action cannot be undone.<br>
+            <button id="confirm-delete-btn" class="btn btn-danger mt-3 me-2">Yes, delete my account</button>
+            <button id="cancel-delete-btn" class="btn btn-secondary mt-3">No, keep my account</button>`,
+            "error",
+            10000
+        );
+        setTimeout(() => {
+            const yesBtn = document.getElementById('confirm-delete-btn');
+            const noBtn = document.getElementById('cancel-delete-btn');
+
+            if (yesBtn) {
+                yesBtn.onclick = function(e) {
+                    // Ensure the action field is present
+                    const form = document.getElementById('delete-account-form');
+                    let actionInput = form.querySelector('input[name="action"]');
+                    if (!actionInput) {
+                        actionInput = document.createElement('input');
+                        actionInput.type = 'hidden';
+                        actionInput.name = 'action';
+                        actionInput.value = 'delete_account';
+                        form.appendChild(actionInput);
+                    }
+                    // Submit via fetch
+                    const formData = new FormData(form);
+                    fetch('/settings', {
+                        method: 'POST',
+                        body: formData
+                    })
+                    .then(r => r.json())
+                    .then(data => {
+                        if (data.success) {
+                            showOzfoodyNotification(data.message, "success");
+                            window.location.href = '/landing';
+                        } else {
+                            showOzfoodyNotification(data.error || 'An unexpected error occurred.', "error");
+                        }
+                    })
+                    .catch(err => {
+                        showOzfoodyNotification('A network error occurred.', "error");
+                        console.error('Fetch error:', err);
+                    });
+                };
+            }
+
+            if (noBtn) {
+                noBtn.onclick = function(e) {
+                    const notif = document.getElementById("ozfoody-notification");
+                    notif.classList.remove("show");
+                    setTimeout(() => { notif.style.display = "none"; }, 300);
+                };
+            }
+        }, 100);
+    });
+
+    // Attach enhanced fetch handling to all forms except delete-account-form
+    document.querySelectorAll('form').forEach(form => {
+        if (form.id === 'delete-account-form') return;
+        form.addEventListener('submit', event => {
+            if (!form.checkValidity()) return;
+            event.preventDefault();
+            const formData = new FormData(form, event.submitter);
+            fetch('/settings', {
+                method: 'POST',
+                body: formData
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.success) {
+                    showOzfoodyNotification(data.message, "success");
+                } else {
+                    showOzfoodyNotification(data.error || 'An unexpected error occurred.', "error");
+                }
+            })
+            .catch(err => {
+                showOzfoodyNotification('A network error occurred.', "error");
+                console.error('Fetch error:', err);
+            });
+        });
+    });
+</script>
 <script src="{{ url_for('static', filename='JS/settings.js') }}"></script>
 {% endblock %}

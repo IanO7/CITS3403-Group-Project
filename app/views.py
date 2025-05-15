@@ -12,6 +12,8 @@ import numpy as np
 from sklearn.neighbors import NearestNeighbors
 import re
 from collections import Counter, defaultdict
+import math
+from difflib import get_close_matches
 
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 
@@ -67,25 +69,24 @@ def landing():
 def profile():
     user = current_user()
     if not user:
-        return redirect(url_for('auth.login'))
-
-    reviews = Note.query.filter_by(user_id=user.id).all()  # Fetch all notes for the user
+        return redirect(url_for('auth.login')) 
 
     if request.method == 'POST':
         comment = Comments(
                 Comment = request.form['Comment'], 
-                user_id = user.id,
+                user_id = request.form['user_id'],
                 note_id = request.form['note_id'], 
-                parentID = request.form['parentID'],
-                likes = 0 
+                parentID = request.form['parentID']
             )
         db.session.add(comment)
         db.session.commit()
         return redirect(url_for('views.profile', user_id=user.id))
-
+    
+    reviews = Note.query.filter_by(user_id=user.id).all()
+    
     comments_by_review = {
         review.id: [comment.to_dict() for comment in review.comments]
-        for review in reviews  # or whatever your review list is called
+        for review in reviews 
     }
 
     # Calculate badges and level
@@ -96,13 +97,42 @@ def profile():
         'value':         sum(n.Value         for n in reviews) / total,
         'service':       sum(n.Service       for n in reviews) / total
     }
+
+    # Use the same badge logic as my_stats
+    min_reviews_spice = 5
+    min_reviews_service = 5
+    min_reviews_value = 5
+    min_reviews_critic = 20
+    min_reviews_allrounder = 10
+
     badges = [
-        {'name': 'First Post', 'earned': len(reviews) > 0},
-        {'name': 'Spice Master', 'earned': stats['spiciness'] > 80},
-        {'name': 'Service Perfectionist', 'earned': stats['service'] > 90},
-        {'name': 'Value Hunter', 'earned': stats['value'] > 85},
-        {'name': 'Food Critic', 'earned': len(reviews) > 20},
-        {'name': 'All-Rounder', 'earned': all(stat > 75 for stat in stats.values())}
+        {
+            'name': 'First Post',
+            'earned': len(reviews) > 0,
+        },
+        {
+            'name': 'Spice Master',
+            'earned': len(reviews) >= min_reviews_spice and stats['spiciness'] > 80,
+        },
+        {
+            'name': 'Service Perfectionist',
+            'earned': len(reviews) >= min_reviews_service and stats['service'] > 90,
+        },
+        {
+            'name': 'Value Hunter',
+            'earned': len(reviews) >= min_reviews_value and stats['value'] > 85,
+        },
+        {
+            'name': 'Food Critic',
+            'earned': len(reviews) >= min_reviews_critic,
+        },
+        {
+            'name': 'All-Rounder',
+            'earned': (
+                len(reviews) >= min_reviews_allrounder and
+                all(stat > 75 for stat in stats.values())
+            ),
+        },
     ]
     level = get_user_level(badges)
 
@@ -186,14 +216,47 @@ def my_stats():
     if cuisine_list:
         favorite_cuisine = Counter(cuisine_list).most_common(1)[0][0]
 
-    # Determine earned badges
+    # Determine earned badges (progressive, robust)
+    min_reviews_spice = 5
+    min_reviews_service = 5
+    min_reviews_value = 5
+    min_reviews_critic = 20
+    min_reviews_allrounder = 10
+
     badges = [
-        {'name': 'First Post', 'earned': len(notes) > 0, 'description': 'Write your first post!'},
-        {'name': 'Spice Master', 'earned': stats['spiciness'] > 80, 'description': 'Average spiciness above 80%'},
-        {'name': 'Service Perfectionist', 'earned': stats['service'] > 90, 'description': 'Average service above 90%'},
-        {'name': 'Value Hunter', 'earned': stats['value'] > 85, 'description': 'Average value above 85%'},
-        {'name': 'Food Critic', 'earned': len(notes) > 20, 'description': 'Write more than 20 reviews'},
-        {'name': 'All-Rounder', 'earned': all(stat > 75 for stat in stats.values()), 'description': 'All stats above 75%'},
+        {
+            'name': '👨‍🍳 First Post',
+            'earned': len(notes) > 0,
+            'description': 'Write your first post!'
+        },
+        {
+            'name': '🌶️ Spice Master',
+            'earned': len(notes) >= min_reviews_spice and stats['spiciness'] > 80,
+            'description': f'Average spiciness above 80% (at least {min_reviews_spice} reviews)'
+        },
+        {
+            'name': '🍽️ Service Perfectionist',
+            'earned': len(notes) >= min_reviews_service and stats['service'] > 90,
+            'description': f'Average service above 90% (at least {min_reviews_service} reviews)'
+        },
+        {
+            'name': '💰 Value Hunter',
+            'earned': len(notes) >= min_reviews_value and stats['value'] > 85,
+            'description': f'Average value above 85% (at least {min_reviews_value} reviews)'
+        },
+        {
+            'name': '🧑‍🎨 Food Critic',
+            'earned': len(notes) >= min_reviews_critic,
+            'description': f'Write at least {min_reviews_critic} reviews'
+        },
+        {
+            'name': '👨‍🍳 All-Rounder',
+            'earned': (
+                len(notes) >= min_reviews_allrounder and
+                all(stat > 75 for stat in stats.values())
+            ),
+            'description': f'All stats above 75% (at least {min_reviews_allrounder} reviews)'
+        },
     ]
 
     user_level = get_user_level(badges)
@@ -291,18 +354,17 @@ def friends():
     if request.method == 'POST':
         comment = Comments(
                 Comment = request.form['Comment'], 
-                user_id = user.id,
+                user_id = request.form['user_id'],
                 note_id = request.form['note_id'], 
-                parentID = request.form['parentID'],
-                likes = 0 
+                parentID = request.form['parentID'], 
             )
         db.session.add(comment)
         db.session.commit()
-        return redirect(url_for('views.profile', user_id=user.id))
+        return redirect(url_for('views.friends', user_id=user.id))
 
     comments_by_review = {
         review.id: [comment.to_dict() for comment in review.comments]
-        for review in notes  # or whatever your review list is called
+        for review in notes 
     }
 
     return render_template(
@@ -441,17 +503,8 @@ def unfollow(user_id):
     db.session.delete(follow)
     db.session.commit()
     return jsonify(success=True), 200
-
-
 @views.route("/settings", methods=["GET", "POST"])
 def settings():
-    """
-    Handle user-settings actions:
-      • update_info       → username / email
-      • update_password   → change password
-      • delete_account    → hard delete + logout
-    All POST calls return JSON so the front-end fetch() can react accordingly.
-    """
     user = current_user()
     if not user:
         return redirect(url_for("auth.login"))
@@ -459,10 +512,9 @@ def settings():
     if request.method == "POST":
         action = request.form.get("action", "").strip()
 
-
+        # Handle profile image upload for relevant actions
         image_file = request.files.get('profileImage')
         image_filename = None
-
         if image_file:
             filename = secure_filename(os.path.basename(image_file.filename))
             upload_folder = current_app.config['UPLOAD_FOLDER']
@@ -471,73 +523,63 @@ def settings():
             image_file.save(image_path)
             image_filename = filename
 
-
-        # 1. ─────────────────────────────  UPDATE USERNAME / EMAIL  ───────────────────────────
-        if action == "update_info":
+        # ──────────────── INDIVIDUAL FIELD UPDATES ────────────────
+        if action == "update_username":
             new_username = request.form.get("username", "").strip()
-            new_email    = request.form.get("email", "").strip().lower()
-
-            # Basic format checks ------------------------------------------------------------
             username_ok = 3 <= len(new_username) <= 30 and re.match(r"^[A-Za-z0-9_.-]+$", new_username)
-            email_ok    = re.match(r"^[^@]+@[^@]+\.[^@]+$", new_email)
-
             if not username_ok:
-                return jsonify(success=False,
-                               error="Username must be 3-30 chars and contain only letters, digits, underscores, dots or dashes."), 400
-            if not email_ok:
-                return jsonify(success=False, error="Please enter a valid e-mail address."), 400
-
-            # Uniqueness checks --------------------------------------------------------------
+                return jsonify(success=False, error="Username must be 3-30 chars and contain only letters, digits, underscores, dots or dashes."), 400
             if new_username != user.username and User.query.filter_by(username=new_username).first():
                 return jsonify(success=False, error="That username is already taken."), 409
+            user.username = new_username
+            db.session.commit()
+            return jsonify(success=True, message="Username updated successfully."), 200
+
+        elif action == "update_email":
+            new_email = request.form.get("email", "").strip().lower()
+            email_ok = re.match(r"^[^@]+@[^@]+\.[^@]+$", new_email)
+            if not email_ok:
+                return jsonify(success=False, error="Please enter a valid e-mail address."), 400
             if new_email != user.email and User.query.filter_by(email=new_email).first():
                 return jsonify(success=False, error="That e-mail is already registered."), 409
-
-            # Persist changes ----------------------------------------------------------------
-            user.username = new_username
-            user.email    = new_email
-
-            user.profileImage = image_filename
-
+            user.email = new_email
             db.session.commit()
-            return jsonify(success=True, message="Profile updated successfully."), 200
+            return jsonify(success=True, message="Email updated successfully."), 200
 
-        # 2. ─────────────────────────────  UPDATE PASSWORD  ──────────────────────────────────
+        elif action == "update_profile":
+            if not image_filename:
+                return jsonify(success=False, error="No image uploaded."), 400
+            user.profileImage = image_filename
+            db.session.commit()
+            return jsonify(success=True, message="Profile picture updated."), 200
+
+        # ──────────────── EXISTING ACTIONS ────────────────
         elif action == "update_password":
             current_pw = request.form.get("current_password", "")
             new_pw     = request.form.get("new_password", "")
-
-            # Verify current password --------------------------------------------------------
             if not check_password_hash(user.password, current_pw):
                 return jsonify(success=False, error="Current password is incorrect."), 401
-
-            # Simple strength rules (adapt to your policy) -----------------------------------
             if len(new_pw) < 8 or len(new_pw) > 128:
-                return jsonify(success=False,
-                               error="Password must be between 8 and 128 characters long."), 400
+                return jsonify(success=False, error="Password must be between 8 and 128 characters long."), 400
             if new_pw.isalpha() or new_pw.isdigit():
-                return jsonify(success=False,
-                               error="Password must include at least one letter and one number/symbol."), 400
-
-            # Hash & save --------------------------------------------------------------------
+                return jsonify(success=False, error="Password must include at least one letter and one number/symbol."), 400
             user.password = generate_password_hash(new_pw)
             db.session.commit()
             return jsonify(success=True, message="Password changed."), 200
 
-        # 3. ─────────────────────────────  DELETE ACCOUNT  ──────────────────────────────────
         elif action == "delete_account":
-            # If you configured ON DELETE CASCADE, children (notes, follows, etc.) go too.
             db.session.delete(user)
             db.session.commit()
             session.clear()
             return jsonify(success=True, message="Account deleted. Goodbye!"), 200
 
-
-        # ─────────────────────────────────────────────────────────────────────────────────────
+        # ──────────────── UNKNOWN ACTION ────────────────
         return jsonify(success=False, error="Unknown action."), 400
 
     # GET → render page
     return render_template("settings.html", user=user)
+
+
 
 @views.route('/search', methods=['GET'])
 def search():
@@ -593,14 +635,13 @@ def user_profile(user_id):
     if request.method == 'POST':
         comment = Comments(
                 Comment = request.form['Comment'], 
-                user_id = user.id,
+                user_id = request.form['user_id'],
                 note_id = request.form['note_id'], 
-                parentID = request.form['parentID'],
-                likes = 0 
+                parentID = request.form['parentID']
             )
         db.session.add(comment)
         db.session.commit()
-        return redirect(url_for('views.user_profile', user_id=selected_user.id))
+        return redirect(url_for('views.user_profile', user_id=user_id))
 
     comments_by_review = {
         review.id: [comment.to_dict() for comment in review.comments]
@@ -709,7 +750,8 @@ def recommend_food():
             'value': food.Value,
             'service': food.Service,
             'stars': getattr(food, 'Stars', 5),
-            'overall': (food.Spiciness + food.Deliciousness + food.Value + food.Service) / 4
+            'overall': (food.Spiciness + food.Deliciousness + food.Value + food.Service) / 4,
+            'image': food.image  # <-- Add this line
         })
 
     return jsonify(success=True, recommendations=recommendations)
@@ -860,109 +902,185 @@ def location_suggestions():
 
 @views.route('/api/search_reviews', methods=['GET'])
 def search_reviews():
-    query = request.args.get('q', '').strip()
-    if not query:
-        return jsonify(success=False, results=[])
+    query = request.args.get('q', '').strip().lower()
+    lat = request.args.get('lat', type=float)
+    lng = request.args.get('lng', type=float)
+
+    ATTR_SYNONYMS = {
+        'spiciness': ['spicy', 'heat', 'hot', 'smpicy', 'spiciness'],
+        'deliciousness': ['delicious', 'tasty', 'yummy', 'delish', 'deliciousness'],
+        'value': ['cheap', 'affordable', 'value for money', 'cheep', 'value'],
+        'service': ['service', 'staff', 'waiter'],
+        'stars': ['rating', 'stars', 'starred', 'star'],
+        'location': ['near me', 'around here', 'nearby', 'close by', 'close to me'],
+    }
+    COMMON_CUISINES = [
+        'indian', 'korean', 'japanese', 'ramen', 'pizza', 'italian', 'thai', 'chinese', 'mexican', 'burger', 'curry', 'sushi', 'noodle', 'bbq', 'seafood', 'french', 'greek'
+    ]
+    MODIFIERS = {
+        'high': ['high', 'very', 'super', 'extreme', 'max', 'maximum', 'most'],
+        'low': ['low', 'little', 'not', 'no', 'none', 'minimal', 'least', 'zero'],
+    }
 
     import re
-    stat_map = {
-        'spiciness': Note.Spiciness,
-        'service': Note.Service,
-        'value': Note.Value,
-        'deliciousness': Note.Deliciousness,
-        'stars': Note.Stars if hasattr(Note, 'Stars') else None
-    }
+    tokens = re.findall(r'\w+', query)
+    matched_attrs = set()
+    attr_thresholds = {}
+    attr_ranges = {}
+    cuisine_match = None
+    location_trigger = False
 
-    # Map natural language keywords to stat filters
-    keyword_stat_map = {
-        'spicy': Note.Spiciness >= 75,
-        'spiciness': Note.Spiciness >= 75,
-        'delicious': Note.Deliciousness >= 75,
-        'tasty': Note.Deliciousness >= 75,
-        'cheap': Note.Value >= 75,        # Assuming higher Value means cheaper/better value
-        'expensive': Note.Value <= 40,    # Adjust threshold as needed
-        'good service': Note.Service >= 75,
-        'bad service': Note.Service <= 40,
-        'highly rated': Note.Stars >= 4,
-        'low rated': Note.Stars <= 2,
-    }
+    def fuzzy_match(token, group):
+        matches = get_close_matches(token, group, n=1, cutoff=0.7)
+        return matches[0] if matches else None
 
-    # Find all patterns like "spiciness 100"
-    stat_matches = re.findall(r'(spiciness|service|value|deliciousness|stars)\s*([0-9]+)', query, re.IGNORECASE)
-    stat_filters = []
-    used_numbers = set()
-    for stat, value in stat_matches:
-        column = stat_map.get(stat.lower())
-        if column is not None:
-            stat_filters.append(column == int(value))
-            used_numbers.add(value)
+    def extract_number(text):
+        nums = re.findall(r'\d+', text)
+        return int(nums[0]) if nums else None
 
-    # Remove stat-value pairs from the query to get remaining keywords
-    query_cleaned = re.sub(r'(spiciness|service|value|deliciousness|stars)\s*[0-9]+', '', query, flags=re.IGNORECASE).strip()
+    # Detect modifiers for each attribute
+    for attr, synonyms in ATTR_SYNONYMS.items():
+        for mod_type, mod_words in MODIFIERS.items():
+            for mod in mod_words:
+                for syn in synonyms:
+                    # e.g. "high spicy", "very spicy", "no stars"
+                    if f"{mod} {syn}" in query or f"{syn} {mod}" in query:
+                        matched_attrs.add(attr)
+                        if attr == 'stars':
+                            if mod_type == 'low':
+                                attr_ranges[attr] = ('<=', 1)
+                            elif mod_type == 'high':
+                                attr_ranges[attr] = ('>=', 4)
+                        else:
+                            if mod_type == 'low':
+                                attr_ranges[attr] = ('<=', 40)
+                            elif mod_type == 'high':
+                                attr_ranges[attr] = ('>=', 80)
+    # Detect "not" or "no" as negative for attributes
+    for attr, synonyms in ATTR_SYNONYMS.items():
+        for syn in synonyms:
+            if f"not {syn}" in query or f"no {syn}" in query:
+                matched_attrs.add(attr)
+                if attr == 'stars':
+                    attr_ranges[attr] = ('<=', 1)
+                else:
+                    attr_ranges[attr] = ('<=', 20)
 
-    # Find any standalone numbers in the remaining query and match them to any stat field
-    number_matches = re.findall(r'\b([0-9]+)\b', query_cleaned)
-    for num in number_matches:
-        if num not in used_numbers:
-            stat_filters.append(
-                db.or_(
-                    Note.Spiciness == int(num),
-                    Note.Deliciousness == int(num),
-                    Note.Value == int(num),
-                    Note.Service == int(num)
-                )
+    # Fuzzy match tokens to attributes and cuisines, and extract numbers
+    for token in tokens:
+        for attr, synonyms in ATTR_SYNONYMS.items():
+            match = fuzzy_match(token, synonyms)
+            if match:
+                matched_attrs.add(attr)
+                num = extract_number(query)
+                if num is not None:
+                    attr_thresholds[attr] = num
+        cuisine = fuzzy_match(token, COMMON_CUISINES)
+        if cuisine:
+            cuisine_match = cuisine
+
+    # Fuzzy match for location trigger (multi-word)
+    for loc_kw in ATTR_SYNONYMS['location']:
+        if get_close_matches(loc_kw, [query], n=1, cutoff=0.7):
+            location_trigger = True
+            break
+
+    # Proximity search
+    if location_trigger and lat is not None and lng is not None:
+        def haversine(lat1, lon1, lat2, lon2):
+            R = 6371
+            phi1, phi2 = math.radians(lat1), math.radians(lat2)
+            dphi = math.radians(lat2 - lat1)
+            dlambda = math.radians(lon2 - lon1)
+            a = math.sin(dphi/2)**2 + math.cos(phi1)*math.cos(phi2)*math.sin(dlambda/2)**2
+            return R * 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
+        notes = Note.query.filter(
+            Note.latitude.isnot(None),
+            Note.longitude.isnot(None),
+            Note.latitude != 0,
+            Note.longitude != 0
+        ).all()
+        results = []
+        for n in notes:
+            distance = haversine(lat, lng, n.latitude, n.longitude)
+            if distance <= 5:
+                results.append(n)
+    else:
+        notes_query = Note.query
+        # Apply attribute filters with modifiers and thresholds
+        if 'spiciness' in matched_attrs:
+            if 'spiciness' in attr_ranges:
+                op, val = attr_ranges['spiciness']
+                if op == '>=':
+                    notes_query = notes_query.filter(Note.Spiciness >= val)
+                else:
+                    notes_query = notes_query.filter(Note.Spiciness <= val)
+            else:
+                val = attr_thresholds.get('spiciness', 80)
+                notes_query = notes_query.filter(Note.Spiciness >= val)
+        if 'deliciousness' in matched_attrs:
+            if 'deliciousness' in attr_ranges:
+                op, val = attr_ranges['deliciousness']
+                if op == '>=':
+                    notes_query = notes_query.filter(Note.Deliciousness >= val)
+                else:
+                    notes_query = notes_query.filter(Note.Deliciousness <= val)
+            else:
+                val = attr_thresholds.get('deliciousness', 80)
+                notes_query = notes_query.filter(Note.Deliciousness >= val)
+        if 'value' in matched_attrs:
+            if 'value' in attr_ranges:
+                op, val = attr_ranges['value']
+                if op == '>=':
+                    notes_query = notes_query.filter(Note.Value >= val)
+                else:
+                    notes_query = notes_query.filter(Note.Value <= val)
+            else:
+                val = attr_thresholds.get('value', 80)
+                notes_query = notes_query.filter(Note.Value >= val)
+        if 'service' in matched_attrs:
+            if 'service' in attr_ranges:
+                op, val = attr_ranges['service']
+                if op == '>=':
+                    notes_query = notes_query.filter(Note.Service >= val)
+                else:
+                    notes_query = notes_query.filter(Note.Service <= val)
+            else:
+                val = attr_thresholds.get('service', 80)
+                notes_query = notes_query.filter(Note.Service >= val)
+        if 'stars' in matched_attrs:
+            if 'stars' in attr_ranges:
+                op, val = attr_ranges['stars']
+                if op == '>=':
+                    notes_query = notes_query.filter(Note.Stars >= val)
+                else:
+                    notes_query = notes_query.filter(Note.Stars <= val)
+            else:
+                val = attr_thresholds.get('stars', 4)
+                notes_query = notes_query.filter(Note.Stars >= val)
+        if cuisine_match:
+            notes_query = notes_query.filter(Note.Cuisine.ilike(f"%{cuisine_match}%"))
+        if not matched_attrs and not cuisine_match:
+            notes_query = notes_query.filter(
+                (Note.Resturaunt.ilike(f"%{query}%")) | (Note.Review.ilike(f"%{query}%"))
             )
-    # Remove numbers from keywords
-    query_cleaned = re.sub(r'\b[0-9]+\b', '', query_cleaned).strip()
-
-    # Split remaining keywords and build OR filters for text fields and stat filters for mapped keywords
-    keyword_filters = []
-    if query_cleaned:
-        words = query_cleaned.lower().split()
-        skip_next = False
-        for i, word in enumerate(words):
-            if skip_next:
-                skip_next = False
-                continue
-            # Handle two-word phrases in mapping (e.g., "good service")
-            if i + 1 < len(words):
-                two_word = f"{word} {words[i+1]}"
-                if two_word in keyword_stat_map:
-                    stat_filters.append(keyword_stat_map[two_word])
-                    skip_next = True
-                    continue
-            # Single word mapping
-            if word in keyword_stat_map:
-                stat_filters.append(keyword_stat_map[word])
-            # Always add text search for each word
-            keyword_filters.append(Note.Resturaunt.ilike(f"%{word}%"))
-            keyword_filters.append(Note.Review.ilike(f"%{word}%"))
-            keyword_filters.append(Note.Cuisine.ilike(f"%{word}%"))
-            keyword_filters.append(Note.location.ilike(f"%{word}%"))
-
-    # Combine filters: must match all stat-value pairs AND at least one keyword (if any)
-    query_obj = db.session.query(Note)
-    if stat_filters:
-        query_obj = query_obj.filter(*stat_filters)
-    if keyword_filters:
-        query_obj = query_obj.filter(db.or_(*keyword_filters))
-
-    results = query_obj.all()
+        results = notes_query.all()
 
     results_data = [{
-        'id': post.id,
-        'restaurant': post.Resturaunt,
-        'review': post.Review,
-        'image': post.image,
-        'spiciness': post.Spiciness,
-        'deliciousness': post.Deliciousness,
-        'value': post.Value,
-        'service': post.Service,
-        'cuisine': post.Cuisine,
-        'location': post.location
-    } for post in results]
-
+        'id': n.id,
+        'restaurant': n.Resturaunt,
+        'review': n.Review,
+        'image': n.image,
+        'spiciness': n.Spiciness,
+        'deliciousness': n.Deliciousness,
+        'value': n.Value,
+        'service': n.Service,
+        'cuisine': n.Cuisine,
+        'location': n.location,
+        'stars': getattr(n, 'Stars', 5)
+    } for n in results]
     return jsonify(success=True, results=results_data)
+
 
 @views.route('/share_post', methods=['POST'])
 def share_post():
@@ -1079,13 +1197,33 @@ def inbox():
     # Count unseen posts (should now be zero)
     unseen_count = SharedPost.query.filter_by(recipient_id=user.id, seen=False).count()
 
+    if request.method == 'POST':
+        comment = Comments(
+                Comment = request.form['Comment'], 
+                user_id = request.form['user_id'],
+                note_id = request.form['note_id'], 
+                parentID = request.form['parentID'], 
+            )
+        db.session.add(comment)
+        db.session.commit()
+        return redirect(url_for('views.friends', user_id=user.id))
+
+    review_ids = [post.note_id for post in shared_posts]
+    comments = Comments.query.filter(Comments.note_id.in_(review_ids)).all()
+
+    comments_by_review = defaultdict(list)
+    for comment in comments:
+        comments_by_review[comment.note_id].append(comment.to_dict())
+
     return render_template(
         'inbox.html',
         user=user, 
         posts=posts,
         unseen_count=unseen_count,
-        incoming_requests=incoming_requests
+        incoming_requests=incoming_requests, 
+        comments_by_review=comments_by_review
     )
+
 
 @views.route('/api/users')
 def api_users():
