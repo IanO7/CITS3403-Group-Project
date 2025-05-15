@@ -112,7 +112,7 @@
     <div class="card stat-card mt-4">
         <h3 class="card-title">🔍 Search Reviews</h3>
         <div class="form-group">
-            <input type="text" id="search-query" class="form-control" placeholder="Search for food (e.g., 'spicy food', 'food near me')">
+            <input type="text" id="search-query" class="form-control" placeholder="Search food near me......or...spicy food">
         </div>
         <button id="search-button" class="btn btn-primary mt-3">Search</button>
         <div id="search-results" class="recommendation-box mt-3">
@@ -240,6 +240,10 @@
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
+    // Add these lines at the top of your script
+    const userProfileImageUrl = "{{ url_for('views.uploaded_file', filename=user.profileImage) if user.profileImage else url_for('static', filename='default_profile.png') }}";
+    const uploadedFileUrl = "{{ url_for('views.uploaded_file', filename='') }}"; // This will be used as a prefix
+
     // Example Chart.js setup
     const foodChartCtx = document.getElementById('foodChart').getContext('2d');
     const foodChart = new Chart(foodChartCtx, {
@@ -259,6 +263,9 @@
         let recommendationIndex = 0; // Track the current recommendation index
         let recommendations = []; // Store all recommendations
 
+        const getRecommendationBtn = document.getElementById('get-recommendation');
+        const recommendationBox = document.getElementById('recommended-food');
+
         // Fetch recommendations from the server
         const fetchRecommendations = () => {
             fetch(`/recommend_food`)
@@ -266,39 +273,40 @@
                 .then(data => {
                     if (data.success) {
                         recommendations = data.recommendations;
+                        recommendationIndex = 0;
                         if (recommendations.length > 0) {
-                            // Automatically display the first recommendation
-                            displayRecommendation(recommendations[0]);
+                            recommendationBox.innerHTML = renderPostCard(recommendations[recommendationIndex], userProfileImageUrl, '{{ user.username }}');
+                            getRecommendationBtn.disabled = false;
+                            getRecommendationBtn.innerText = "Get More Recommendations";
                             recommendationIndex = 1; // Start from the second recommendation
                         } else {
-                            document.getElementById('recommended-food').innerText = 'No recommendations found.';
+                            recommendationBox.innerText = 'No recommendations found.';
+                            getRecommendationBtn.disabled = true;
+                            getRecommendationBtn.innerText = "No More Recommendations";
                         }
                     }
                 })
                 .catch(error => console.error('Error:', error));
         };
 
-        // Display a single recommendation
-        const displayRecommendation = (food) => {
-            const recommendationBox = document.getElementById('recommended-food');
-            const recommendationCard = `
-                <div class="recommendation-card">
-                    <img src="${food.image || 'https://via.placeholder.com/300'}" alt="${food.restaurant}">
-                    <h5>${food.restaurant}</h5>
-                    <p>Spiciness: ${food.spiciness}, Deliciousness: ${food.deliciousness}, Value: ${food.value}, Service: ${food.service}, Overall: ${food.overall}</p>
-                </div>
-            `;
-            recommendationBox.innerHTML += recommendationCard;
+        const displayRecommendation = (post) => {
+            recommendationBox.innerHTML = renderPostCard(post, userProfileImageUrl, '{{ user.username }}');
         };
 
         // Load the next recommendation on button click
-        document.getElementById('get-recommendation').addEventListener('click', () => {
+        getRecommendationBtn.addEventListener('click', () => {
             if (recommendationIndex < recommendations.length) {
                 displayRecommendation(recommendations[recommendationIndex]);
                 recommendationIndex++;
+                if (recommendationIndex >= recommendations.length) {
+                    getRecommendationBtn.disabled = true;
+                    getRecommendationBtn.innerText = "No More Recommendations";
+                    recommendationBox.innerHTML += `<div class="text-muted mt-2">No more recommendations.</div>`;
+                }
             } else {
-                document.getElementById('get-recommendation').innerText = 'No more recommendations';
-                document.getElementById('get-recommendation').disabled = true;
+                recommendationBox.innerHTML += `<div class="text-muted mt-2">No more recommendations.</div>`;
+                getRecommendationBtn.disabled = true;
+                getRecommendationBtn.innerText = "No More Recommendations";
             }
         });
 
@@ -312,40 +320,156 @@
         const searchResults = document.getElementById('search-results');
 
         // Handle search button click
-        searchButton.addEventListener('click', () => {
-            const query = searchQuery.value.trim();
-            if (!query) {
-                searchResults.innerHTML = '<p class="text-muted">Please enter a search term.</p>';
-                return;
-            }
-
-            // Fetch search results from the backend
-            fetch(`/api/search_reviews?q=${encodeURIComponent(query)}`)
-                .then(response => response.json())
-                .then(data => {
-                    searchResults.innerHTML = '';
-                    if (data.success && data.results.length > 0) {
-                        data.results.forEach(post => {
-                            const resultCard = `
-                                <div class="recommendation-card">
-                                    <img src="${post.image || 'https://via.placeholder.com/300'}" alt="${post.restaurant}">
-                                    <h5>${post.restaurant}</h5>
-                                    <p>${post.review}</p>
-                                    <p>Spiciness: ${post.spiciness}, Deliciousness: ${post.deliciousness}, Value: ${post.value}, Service: ${post.service}</p>
-                                </div>
-                            `;
-                            searchResults.innerHTML += resultCard;
+        searchButton.addEventListener('click', function() {
+            const query = searchQuery.value.trim().toLowerCase();
+            const searchResults = document.getElementById('search-results');
+            if (query.includes('near me') && navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function(position) {
+                    fetch(`/api/search_reviews?q=near me&lat=${position.coords.latitude}&lng=${position.coords.longitude}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            searchResults.innerHTML = '';
+                            if (data.success && data.results.length > 0) {
+                                data.results.forEach(post => {
+                                    searchResults.innerHTML += renderPostCard(post, '{{ user.profileImage|default("/static/default_profile.png") }}', '{{ user.username }}');
+                                });
+                            } else {
+                                searchResults.innerHTML = '<p class="text-muted">No results found for your search.</p>';
+                            }
+                        })
+                        .catch(error => {
+                            searchResults.innerHTML = '<p class="text-danger">No food recommendations 😢</p>';
                         });
-                    } else {
-                        searchResults.innerHTML = '<p class="text-muted">No results found for your search.</p>';
-                    }
-                })
-                .catch(error => {
-                    console.error('Error fetching search results:', error);
-                    searchResults.innerHTML = '<p class="text-danger">An error occurred while fetching search results.</p>';
                 });
+            } else {
+                // regular search
+                fetch(`/api/search_reviews?q=${encodeURIComponent(query)}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        searchResults.innerHTML = '';
+                        if (data.success && data.results.length > 0) {
+                            data.results.forEach(post => {
+                                searchResults.innerHTML += renderPostCard(post, '{{ user.profileImage|default("/static/default_profile.png") }}', '{{ user.username }}');
+                            });
+                        } else {
+                            searchResults.innerHTML = '<p class="text-muted">No results found for your search.</p>';
+                        }
+                    })
+                    .catch(error => {
+                        searchResults.innerHTML = '<p class="text-danger">No food recommendations 😢</p>';
+                    });
+            }
+        });
+
+        // Enhanced search functionality
+        document.getElementById('search-button').addEventListener('click', function() {
+            const query = document.getElementById('search-query').value.trim().toLowerCase();
+            if (query.includes('near me') && navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function(position) {
+                    fetch(`/api/search_reviews?q=near me&lat=${position.coords.latitude}&lng=${position.coords.longitude}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            // handle results
+                        });
+                });
+            } else {
+                // regular search
+            }
+        });
+
+        // Get user's geolocation
+        navigator.geolocation.getCurrentPosition(function(position) {
+            const lat = position.coords.latitude;
+            const lng = position.coords.longitude;
+            // Send lat/lng to your backend for searching
         });
     });
+
+    function renderPostCard(post, userProfileImage, username) {
+        // Use the correct profile image URL
+        const profileImg = userProfileImageUrl;
+
+        // Build the correct post image URL if image exists
+        let postImg = '';
+        if (post.image) {
+            // Avoid double slashes
+            postImg = uploadedFileUrl.endsWith('/') ? uploadedFileUrl + post.image : uploadedFileUrl + '/' + post.image;
+        }
+
+        return `
+        <div class="card mb-4 shadow-sm rounded-4 h-100" style="min-height: 500px;">
+            <div class="card-body">
+                <div class="d-flex align-items-center mb-3 w-100">
+                    <img src="${profileImg}"
+                        alt="Profile Avatar"
+                        class="profileImageSmall">
+                    <h5 class="card-title mb-1" style="margin-left:10px;">${post.restaurant || post.Resturaunt || ''}</h5>
+                    <div class="star-rating text-warning" style="margin-left:10px;">
+                        ${(() => {
+                            let stars = parseInt(post.stars || post.Stars || 0);
+                            let html = '';
+                            for (let i = 0; i < stars; i++) html += '<i class="fa fa-star text-warning"></i>';
+                            for (let i = stars; i < 5; i++) html += '<i class="fa fa-star text-muted"></i>';
+                            return html;
+                        })()}
+                    </div>
+                </div>
+                <div class="card-body d-flex flex-column p-3" style="overflow-y: auto; max-height: 150px;">
+                    <p class="card-text mb-0">${post.review || post.Review || ''}</p>
+                </div>
+                <h5 class="card-text">${post.cuisine || post.Cuisine || ''}</h5>
+                <p class="card-text"><strong>Location:</strong> ${post.location || "Not specified"}</p>
+                ${post.image ? `<img src="${postImg}" class="post-image" alt="Dish Image">` : ''}
+                <div class="row text-center">
+                    <div class="col">
+                        <h6>Deliciousness</h6>
+                        <div class="progress">
+                            <div class="progress-bar bg-warning"
+                                role="progressbar"
+                                style="width: ${(post.deliciousness || post.Deliciousness || 0)}%;"
+                                aria-valuenow="${post.deliciousness || post.Deliciousness || 0}"
+                                aria-valuemin="0"
+                                aria-valuemax="100"></div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <h6>Spiciness</h6>
+                        <div class="progress">
+                            <div class="progress-bar bg-danger"
+                                role="progressbar"
+                                style="width: ${(post.spiciness || post.Spiciness || 0)}%;"
+                                aria-valuenow="${post.spiciness || post.Spiciness || 0}"
+                                aria-valuemin="0"
+                                aria-valuemax="100"></div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <h6>Value</h6>
+                        <div class="progress">
+                            <div class="progress-bar bg-success"
+                                role="progressbar"
+                                style="width: ${(post.value || post.Value || 0)}%;"
+                                aria-valuenow="${post.value || post.Value || 0}"
+                                aria-valuemin="0"
+                                aria-valuemax="100"></div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <h6>Service</h6>
+                        <div class="progress">
+                            <div class="progress-bar bg-info"
+                                role="progressbar"
+                                style="width: ${(post.service || post.Service || 0)}%;"
+                                aria-valuenow="${post.service || post.Service || 0}"
+                                aria-valuemin="0"
+                                aria-valuemax="100"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        `;
+    }
 </script>
 {% endblock %}
 {% block scripts %}
