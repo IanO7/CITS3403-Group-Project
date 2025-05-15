@@ -129,8 +129,9 @@ hr {
     }
 }
 
-/* Input Fields */
-#username, #email {
+/* Input Fields - Username, Email, and Password */
+#username, #email, 
+input[type="password"] {
     border: 2px solid #F6E7DA;
     border-radius: 8px;
     padding: 0.75rem;
@@ -140,13 +141,82 @@ hr {
     min-width: 300px;
 }
 
-#username:focus, #email:focus {
+#username:focus, #email:focus,
+input[type="password"]:focus {
     box-shadow: 0 0 0 0.2rem rgba(95, 141, 59, 0.25);
     background-color: #f8faf6;
 }
 
-/* Labels for username and email */
-label[for="username"], label[for="email"] {
+/* Labels for username, email, and password */
+label[for="username"], 
+label[for="email"],
+label[for="current_password"],
+label[for="new_password"],
+label[for="confirm_password"] {
     color: #5F8D3B;
     font-weight: 600;
 }
+
+/* Password input group styling */
+.password-input-group {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+.password-input-group input {
+    flex: 1;
+    width: 100%;
+    min-width: 300px;
+    padding-right: 40px; /* Make room for the eye icon */
+}
+
+.password-input-group button {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    border: none;
+    background: transparent;
+    padding: 5px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    min-width: 30px; /* Prevent button from shrinking */
+    z-index: 2;
+}
+
+/* Ensure input maintains width when type changes */
+input[type="text"],
+input[type="password"] {
+    width: 100%;
+    min-width: 300px;
+    transition: none; /* Prevent transition on type change */
+}
+
+/* Password validation rules styling */
+/* #password-rules div {
+    margin: 0.25rem 0;
+    color: #666;
+} */
+
+.password-rules li {
+    font-size: 0.9rem;
+    list-style: none;
+    padding: 2px 0;
+    color: #333;
+    display: flex;
+    align-items: center;
+  }
+  
+  .password-rules .valid {
+    color: green;
+  }
+  
+  .password-rules .invalid {
+    color: black;
+  }
