@@ -1,0 +1,7 @@
+Username: alice
+Email: alice@example.com
+Password: alicepass
+
+Username: bob
+Email: bob@example.com
+Password: bobpass
