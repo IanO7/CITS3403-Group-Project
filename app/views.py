@@ -1306,6 +1306,30 @@ def api_user_stats(user_id):
         posts=len(notes),
         username=user.username
     )
+    
+
+@views.route('/api/stats')
+def get_stats():
+    try:
+        # Count active users (users with accounts)
+        total_users = User.query.count()
+        
+        # Count total reviews (using Note model, not Reviews)
+        total_posts = Note.query.count()
+        
+        return jsonify({
+            'success': True,
+            'stats': {
+                'posts': total_posts,
+                'users': total_users
+            }
+        })
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': 'Failed to fetch statistics'
+        }), 500
+    
 
 @views.route('/api/globe_reviews')
 def api_globe_reviews():
