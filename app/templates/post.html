@@ -1,4 +1,5 @@
 {% block content %}
+
 <div class="col"> 
            
     <div class="card mb-4 shadow-sm rounded-4 h-100" style="min-height: 500px;">
@@ -8,16 +9,12 @@
         <div class="card-body">
 
             <div class="d-flex align-items-center mb-3 w-100">
-                {% if user.profileImage %}
-                    <img src="{{ url_for('views.uploaded_file', filename=review.user.profileImage) }}"
-                    alt="Profile Avatar"
-                    class="profileImageSmall"> 
-                {% else %}
-                    <img src="{{ url_for('static', filename='default_profile.png') }}"
-                        alt="Default Profile Avatar"
-                        class="profileImageSmall">
+                {% if not request.endpoint == 'views.profile' %}
+                    <!-- Only show profile picture if NOT in profile page -->
+                    <img src="{% if user.profileImage %}{{ url_for('views.uploaded_file', filename=user.profileImage) }}{% else %}{{ url_for('static', filename='images/default-profile.png') }}{% endif %}"
+                        alt="{{ user.username }}'s profile picture"
+                        class="profile-image">
                 {% endif %}
-
                 <h5 class="card-title mb-1">{{ review.Resturaunt }}</h5>
 
                 <div class="star-rating text-warning">

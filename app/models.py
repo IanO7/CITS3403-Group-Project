@@ -1,6 +1,7 @@
 from . import db
 from flask import url_for
 from werkzeug.security import generate_password_hash, check_password_hash
+from flask_login import UserMixin
 
 class ReviewImage(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -29,7 +30,7 @@ class Comments (db.Model):
         }
 class Note(db.Model):
     id              = db.Column(db.Integer, primary_key=True)
-    Resturaunt      = db.Column(db.String(100), nullable = False)
+    Restaurant     = db.Column(db.String(100), nullable = False)
     Spiciness       = db.Column(db.Integer, nullable=False)
     Deliciousness   = db.Column(db.Integer, nullable = False)
     Value           = db.Column(db.Integer, nullable=False)
@@ -46,7 +47,8 @@ class Note(db.Model):
     longitude       = db.Column(db.Float, nullable=True, index=True)
     images          = db.relationship('ReviewImage', backref='review', lazy=True, cascade="all, delete-orphan")
 
-class User(db.Model):
+    
+class User(db.Model, UserMixin):
     id          = db.Column(db.Integer, primary_key=True)
     username    = db.Column(db.String(150),  unique=True, nullable=False)
     email       = db.Column(db.String(150), unique=True, nullable=False)
@@ -56,10 +58,11 @@ class User(db.Model):
     Comments    = db.relationship('Comments', backref='user', lazy=True)
 
     # ALways use generate_password_hash() & check_password_hash() for security => AUTOMATIC SALTING, NOT JUST HASHING ONLY!!
-    def set_password(self, raw):
-        self.password = generate_password_hash(raw)
-    def check_password(self, raw):
-        return check_password_hash(self.password, raw)
+    def set_password(self, password):
+        self.password = generate_password_hash(password, method='pbkdf2:sha256')
+    
+    def check_password(self, password):
+        return check_password_hash(self.password, password)
 
 class Follow(db.Model):
     id = db.Column(db.Integer, primary_key=True)
