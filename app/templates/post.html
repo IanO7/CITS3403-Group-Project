@@ -15,7 +15,9 @@
                         alt="{{ user.username }}'s profile picture"
                         class="profile-image">
                 {% endif %}
-                <h5 class="card-title mb-1">{{ review.Resturaunt }}</h5>
+                
+                <h5 class="card-title mb-1">{{ review.Restaurant }}</h5>
+
 
                 <div class="star-rating text-warning">
                     {% set stars = review.Stars | int %}
@@ -50,6 +52,7 @@
                             alt="Dish Image">
                         </div>
                     {% endfor %}
+                    
                 </div>
                 {% if review.images|length > 1 %}
                     <button class="carousel-control-prev" type="button" data-bs-target="#carousel-{{ review.id }}" data-bs-slide="prev">

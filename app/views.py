@@ -158,7 +158,7 @@ def new_post():
 
        
         note = Note(
-            Resturaunt=request.form['Resturaunt'],
+            Restaurant=request.form['Restaurant'],
             Cuisine=request.form['Cuisine'],
             Spiciness=int(request.form['Spiciness']),
             Deliciousness=int(request.form['Deliciousness']),
@@ -797,7 +797,7 @@ def recommend_food():
         food = Note.query.get(food_ids[idx])
         recommendations.append({
             'id': food.id,
-            'restaurant': food.Resturaunt,
+            'restaurant': food.Restaurant,
             'cuisine': food.Cuisine,
             'location': food.location,
             'spiciness': food.Spiciness,
@@ -862,7 +862,7 @@ def trending_dishes():
     # Prepare data for the frontend
     trending_data = [{
         'id': dish.id,
-        'restaurant': dish.Resturaunt,
+        'restaurant': dish.Restaurant,
         'review': dish.Review,
         'image': dish.image,
         'likes': dish.likes,
@@ -890,7 +890,7 @@ def merged_posts():
     # Prepare data for the frontend
     posts_data = [{
         'id': post.id,
-        'restaurant': post.Resturaunt,
+        'restaurant': post.Restaurant,
         'review': post.Review,
         'image': post.image,
         'likes': post.likes,
@@ -905,7 +905,7 @@ def merged_posts():
     if non_followed_post:
         posts_data.append({
             'id': non_followed_post.id,
-            'restaurant': non_followed_post.Resturaunt,
+            'restaurant': non_followed_post.Restaurant,
             'review': non_followed_post.Review,
             'image': non_followed_post.image,
             'likes': non_followed_post.likes,
@@ -931,7 +931,7 @@ def friend_posts():
     # Prepare data for the frontend
     posts_data = [{
         'id': post.id,
-        'restaurant': post.Resturaunt,
+        'restaurant': post.Restaurant,
         'review': post.Review,
         'image': post.image,
         'likes': post.likes,
@@ -950,7 +950,7 @@ def location_suggestions():
         return jsonify(success=False, suggestions=[])
 
     # Fetch similar restaurant names and their locations
-    suggestions = Note.query.filter(Note.Resturaunt.ilike(f"%{query}%")).with_entities(Note.Resturaunt, Note.location).distinct().all()
+    suggestions = Note.query.filter(Note.Restaurant.ilike(f"%{query}%")).with_entities(Note.Restaurant, Note.location).distinct().all()
 
     # Return unique restaurant name suggestions with locations
     return jsonify(success=True, suggestions=[{'name': s[0], 'location': s[1]} for s in suggestions if s[0]])
@@ -1118,7 +1118,7 @@ def search_reviews():
             notes_query = notes_query.filter(Note.Cuisine.ilike(f"%{cuisine_match}%"))
         if not matched_attrs and not cuisine_match:
             notes_query = notes_query.filter(
-                (Note.Resturaunt.ilike(f"%{query}%")) | (Note.Review.ilike(f"%{query}%"))
+                (Note.Restaurant.ilike(f"%{query}%")) | (Note.Review.ilike(f"%{query}%"))
             )
         results = notes_query.all()
 
@@ -1127,7 +1127,7 @@ def search_reviews():
 
     results_data = [{
         'id': n.id,
-        'restaurant': n.Resturaunt,
+        'restaurant': n.Restaurant,
         'review': n.Review,
         'image': n.image,
         'spiciness': n.Spiciness,
@@ -1347,7 +1347,7 @@ def api_globe_reviews():
         {
           'lat':  n.latitude,
           'lng':  n.longitude,
-          'title': n.Resturaunt,
+          'title': n.Restaurant,
           'imageUrl': url_for('views.uploaded_file', filename=n.image),
           'tooltip': n.Review
         }

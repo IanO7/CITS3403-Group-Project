@@ -362,8 +362,12 @@
         <div class="card mb-4 shadow-sm rounded-4 h-100" style="min-height: 500px;">
             <div class="card-body">
                 <div class="d-flex align-items-center mb-3 w-100">
-                    <img src="${profileImg}" alt="Profile Avatar" class="profileImageSmall">
-                    <h5 class="card-title mb-1" style="margin-left:10px;">${post.restaurant || post.Resturaunt || ''}</h5>
+
+                    <img src="${profileImg}"
+                        alt="Profile Avatar"
+                        class="profileImageSmall">
+                    <h5 class="card-title mb-1" style="margin-left:10px;">${post.restaurant || post.Restaurant || ''}</h5>
+                    
                     <div class="star-rating text-warning" style="margin-left:10px;">
                         ${(() => {
                             let stars = parseInt(post.stars || post.Stars || 0);
