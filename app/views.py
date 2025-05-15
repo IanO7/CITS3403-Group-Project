@@ -15,6 +15,7 @@ from collections import Counter, defaultdict
 import math
 from difflib import get_close_matches
 
+
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 
 
