@@ -503,17 +503,8 @@ def unfollow(user_id):
     db.session.delete(follow)
     db.session.commit()
     return jsonify(success=True), 200
-
-
 @views.route("/settings", methods=["GET", "POST"])
 def settings():
-    """
-    Handle user-settings actions:
-      • update_info       → username / email
-      • update_password   → change password
-      • delete_account    → hard delete + logout
-    All POST calls return JSON so the front-end fetch() can react accordingly.
-    """
     user = current_user()
     if not user:
         return redirect(url_for("auth.login"))
@@ -521,10 +512,9 @@ def settings():
     if request.method == "POST":
         action = request.form.get("action", "").strip()
 
-
+        # Handle profile image upload for relevant actions
         image_file = request.files.get('profileImage')
         image_filename = None
-
         if image_file:
             filename = secure_filename(os.path.basename(image_file.filename))
             upload_folder = current_app.config['UPLOAD_FOLDER']
@@ -533,73 +523,63 @@ def settings():
             image_file.save(image_path)
             image_filename = filename
 
-
-        # 1. ─────────────────────────────  UPDATE USERNAME / EMAIL  ───────────────────────────
-        if action == "update_info":
+        # ──────────────── INDIVIDUAL FIELD UPDATES ────────────────
+        if action == "update_username":
             new_username = request.form.get("username", "").strip()
-            new_email    = request.form.get("email", "").strip().lower()
-
-            # Basic format checks ------------------------------------------------------------
             username_ok = 3 <= len(new_username) <= 30 and re.match(r"^[A-Za-z0-9_.-]+$", new_username)
-            email_ok    = re.match(r"^[^@]+@[^@]+\.[^@]+$", new_email)
-
             if not username_ok:
-                return jsonify(success=False,
-                               error="Username must be 3-30 chars and contain only letters, digits, underscores, dots or dashes."), 400
-            if not email_ok:
-                return jsonify(success=False, error="Please enter a valid e-mail address."), 400
-
-            # Uniqueness checks --------------------------------------------------------------
+                return jsonify(success=False, error="Username must be 3-30 chars and contain only letters, digits, underscores, dots or dashes."), 400
             if new_username != user.username and User.query.filter_by(username=new_username).first():
                 return jsonify(success=False, error="That username is already taken."), 409
+            user.username = new_username
+            db.session.commit()
+            return jsonify(success=True, message="Username updated successfully."), 200
+
+        elif action == "update_email":
+            new_email = request.form.get("email", "").strip().lower()
+            email_ok = re.match(r"^[^@]+@[^@]+\.[^@]+$", new_email)
+            if not email_ok:
+                return jsonify(success=False, error="Please enter a valid e-mail address."), 400
             if new_email != user.email and User.query.filter_by(email=new_email).first():
                 return jsonify(success=False, error="That e-mail is already registered."), 409
-
-            # Persist changes ----------------------------------------------------------------
-            user.username = new_username
-            user.email    = new_email
-
-            user.profileImage = image_filename
-
+            user.email = new_email
             db.session.commit()
-            return jsonify(success=True, message="Profile updated successfully."), 200
+            return jsonify(success=True, message="Email updated successfully."), 200
 
-        # 2. ─────────────────────────────  UPDATE PASSWORD  ──────────────────────────────────
+        elif action == "update_profile":
+            if not image_filename:
+                return jsonify(success=False, error="No image uploaded."), 400
+            user.profileImage = image_filename
+            db.session.commit()
+            return jsonify(success=True, message="Profile picture updated."), 200
+
+        # ──────────────── EXISTING ACTIONS ────────────────
         elif action == "update_password":
             current_pw = request.form.get("current_password", "")
             new_pw     = request.form.get("new_password", "")
-
-            # Verify current password --------------------------------------------------------
             if not check_password_hash(user.password, current_pw):
                 return jsonify(success=False, error="Current password is incorrect."), 401
-
-            # Simple strength rules (adapt to your policy) -----------------------------------
             if len(new_pw) < 8 or len(new_pw) > 128:
-                return jsonify(success=False,
-                               error="Password must be between 8 and 128 characters long."), 400
+                return jsonify(success=False, error="Password must be between 8 and 128 characters long."), 400
             if new_pw.isalpha() or new_pw.isdigit():
-                return jsonify(success=False,
-                               error="Password must include at least one letter and one number/symbol."), 400
-
-            # Hash & save --------------------------------------------------------------------
+                return jsonify(success=False, error="Password must include at least one letter and one number/symbol."), 400
             user.password = generate_password_hash(new_pw)
             db.session.commit()
             return jsonify(success=True, message="Password changed."), 200
 
-        # 3. ─────────────────────────────  DELETE ACCOUNT  ──────────────────────────────────
         elif action == "delete_account":
-            # If you configured ON DELETE CASCADE, children (notes, follows, etc.) go too.
             db.session.delete(user)
             db.session.commit()
             session.clear()
             return jsonify(success=True, message="Account deleted. Goodbye!"), 200
 
-
-        # ─────────────────────────────────────────────────────────────────────────────────────
+        # ──────────────── UNKNOWN ACTION ────────────────
         return jsonify(success=False, error="Unknown action."), 400
 
     # GET → render page
     return render_template("settings.html", user=user)
+
+
 
 @views.route('/search', methods=['GET'])
 def search():
