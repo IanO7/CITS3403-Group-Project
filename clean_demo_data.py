@@ -5,7 +5,9 @@ app = create_app()
 app.app_context().push()
 
 # List of demo usernames to delete
-demo_usernames = ["alice", "bob"]
+demo_usernames = [
+    "alice", "bob", "carol", "dan", "eve", "frank", "grace", "heidi"
+]
 
 # Delete notes for each demo user
 for username in demo_usernames:
