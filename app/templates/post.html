@@ -44,11 +44,28 @@
 
             <p class="card-text"><strong>Location:</strong> {{ review.location or "Not specified"}}</p>
         
-            {% if review.image %}
-            <img src="{{ url_for('views.uploaded_file', filename=review.image) }}"
-                class="post-image"
-                alt="Dish Image">
-            {% endif %}
+            <div id="carousel-{{ review.id }}" class="carousel slide" data-bs-ride="carousel">
+                <div class="carousel-inner">
+                    {% for image in review.images %}
+                        <div class="carousel-item {% if loop.first %}active{% endif %}">
+                            <img src="{{ url_for('views.uploaded_file', filename=image.filename) }}"
+                            class="d-block w-100 post-image"
+                            alt="Dish Image">
+                        </div>
+                    {% endfor %}
+                </div>
+                {% if review.images|length > 1 %}
+                    <button class="carousel-control-prev" type="button" data-bs-target="#carousel-{{ review.id }}" data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Previous</span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#carousel-{{ review.id }}" data-bs-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Next</span>
+                    </button>
+                {% endif %}
+            </div>
+
 
             <div class="row text-center">
                 <div class="col">
