@@ -112,7 +112,7 @@
         <div class="trend-card">
           <img src="{{ url_for('static', filename=dish.image) if dish.image else 'https://via.placeholder.com/350x200' }}" alt="Dish Image" class="img-fluid">
           <div class="trend-info">
-            <h5>{{ dish.Resturaunt or 'Unknown Restaurant' }}</h5>
+            <h5>{{ dish.Restaurant or 'Unknown Restaurant' }}</h5>
             <p class="mb-1"><i class="fas fa-map-marker-alt"></i> {{ dish.location or 'Unknown' }}</p>
             <span class="emoji-rating">&#x1F44D; {{ dish.likes or 0 }} Likes</span>
             <div class="text-muted" style="font-size:0.9em;">by Anonymous</div>
@@ -125,7 +125,27 @@
 <!-- Stats Section -->
 <section id="stats" class="py-5 text-center">
   <div class="container">
+
     <h2 class="mb-4">📊 OZfoody by Numbers 📊</h2>
+
+    <h2 class="mb-4">Community Stats</h2>
+    <div class="info-box">
+      
+      <p>Explore global food statistics on the interactive globe below.</p>
+    </div>
+  
+    <div id="chartdiv"></div>
+  
+    <!-- amCharts Scripts -->
+    <script>window.GLOBE_API_URL = "{{ url_for('views.api_globe_reviews') }}";</script>
+    <script src="https://www.amcharts.com/lib/4/core.js"></script>
+    <script src="https://www.amcharts.com/lib/4/maps.js"></script>
+    <script src="https://www.amcharts.com/lib/4/geodata/worldLow.js"></script>
+    <script src="https://www.amcharts.com/lib/4/themes/animated.js"></script>
+  
+    <!-- Your globe logic -->
+    <script src="{{ url_for('static', filename='JS/globe.js') }}"></script>
+
     <div class="row">
       <div class="col-md-6">
         <div class="stat-card">

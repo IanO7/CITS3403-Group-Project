@@ -92,7 +92,7 @@
     <!-- User Posts Section -->
     {% if user.id == selected_user.id or (follow and follow.status == 'approved') %}
         <h2 class="text-center mt-5">Posts by {{ selected_user.username }}</h2>
-        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4">
+        <div class="card-body">
             {% for review in posts %}
                 {% set show_actions = False %}
                 {% set current_user = user %}
