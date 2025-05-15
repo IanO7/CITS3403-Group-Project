@@ -79,6 +79,8 @@
             </div>
             <p>{{ stats.service | default(0) | round(0) |int }}% service-rated dishes</p>
         </div>
+
+
     </div>
 
     <!-- Overall Average Rating -->
@@ -90,6 +92,7 @@
         <p>{{ overall_average_rating | default(0) | round(0) |int }}% average rating across all reviews</p>
     </div>
 
+    
     <!-- Favorite Cuisine Card -->
     <div class="card stat-card mt-4" style="background: #fffbe6; border-color: #ffe066;">
         <h3 class="card-title">🍽️ Favorite Cuisine</h3>
@@ -117,14 +120,6 @@
         <button id="search-button" class="btn btn-primary mt-3">Search</button>
         <div id="search-results" class="recommendation-box mt-3">
             <!-- Search results will be displayed here -->
-        </div>
-    </div>
-
-    <!-- Charts Section -->
-    <div class="charts-grid">
-        <div class="card chart-card">
-            <h3 class="card-title">🍴 My Taste</h3>
-            <canvas id="foodChart"></canvas>
         </div>
     </div>
 
