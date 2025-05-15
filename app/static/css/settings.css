@@ -160,10 +160,16 @@ label[for="confirm_password"] {
 /* Password input group styling */
 .password-input-group {
     position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
 }
 
 .password-input-group input {
     flex: 1;
+    width: 100%;
+    min-width: 300px;
+    padding-right: 40px; /* Make room for the eye icon */
 }
 
 .password-input-group button {
@@ -175,18 +181,21 @@ label[for="confirm_password"] {
     background: transparent;
     padding: 5px;
     cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    min-width: 30px; /* Prevent button from shrinking */
+    z-index: 2;
 }
 
-.password-input-group button:hover svg path,
-.password-input-group button:hover svg circle,
-.password-input-group button:hover svg line {
-    stroke: #5F8D3B;
-    transition: stroke 0.3s ease;
-}
-
-/* Remove any background color on hover */
-.password-input-group button:hover {
-    background: transparent;
+/* Ensure input maintains width when type changes */
+input[type="text"],
+input[type="password"] {
+    width: 100%;
+    min-width: 300px;
+    transition: none; /* Prevent transition on type change */
 }
 
 /* Password validation rules styling */

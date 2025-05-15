@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}Settings{% endblock %}
+{% block title %}OZfoody - Settings{% endblock %}
 
 {% block content %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/general_styles.css') }}">
@@ -15,7 +15,7 @@
     <h1 class="text-center mb-4">Settings</h1>
 
     <!-- ────────────────  Update Username  ──────────────── -->
-    <form id="update-username-form" method="POST" action="/settings">
+    <form id="update-username-form" method="POST" action="{{ url_for('views.settings') }}">
         <h3>Update Username</h3>
         <div class="mb-3">
             <label for="username" class="form-label">Username</label>
@@ -27,7 +27,7 @@
     <hr>
 
     <!-- ────────────────  Update Email  ──────────────── -->
-    <form id="update-email-form" method="POST" action="/settings">
+    <form id="update-email-form" method="POST" action="{{ url_for('views.settings') }}">
         <h3>Update Email</h3>
         <div class="mb-3">
             <label for="email" class="form-label">Email</label>
@@ -39,7 +39,7 @@
     <hr>
 
     <!-- ────────────────  Update Profile Picture  ──────────────── -->
-    <form id="update-profile-form" method="POST" action="/settings" enctype="multipart/form-data">
+    <form id="update-profile-form" method="POST" action="{{ url_for('views.settings') }}" enctype="multipart/form-data">
         <h3>Update Profile Picture</h3>
         <div class="mb-3">
             <label for="profileImage" id="pictureStatus">
@@ -57,30 +57,16 @@
     <hr>
 
     <!-- ────────────────  Update Password  ──────────────── -->
-    <form id="update-password-form" method="POST" action="/settings">
+    <form id="update-password-form" method="POST" action="{{ url_for('views.settings') }}">
         <h3>Change Password</h3>
-
-        <!-- Current Password -->
-        <div class="mb-3" style="position:relative;">
-            <label for="current_password" class="form-label">Current Password</label>
-            <div class="password-input-group">
-                <input id="current-password" name="current-password" type="password" class="form-control" required>
-                <span id="toggle-password" style="position:absolute;right:0.75rem;top:50%;transform:translateY(-50%);cursor:pointer;">
-                <svg id="eye-icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" viewBox="0 0 24 24">
-                    <path stroke="#888" stroke-width="2" d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12Z"/>
-                    <circle cx="12" cy="12" r="3.5" stroke="#888" stroke-width="2"/>
-                </svg>
-                </span>
-            </div>
-        </div>
 
         <!-- New Password -->
         <div class="mb-3" style="position:relative;">
             <label for="new_password" class="form-label">New Password</label>
             <div class="password-input-group">
-                <input id="new-password" name="new-password" type="password" class="form-control" required>
+                <input id="new-password" name="new_password" type="password" class="form-control" required>
                 <span id="toggle-new-password" style="position:absolute;right:0.75rem;top:50%;transform:translateY(-50%);cursor:pointer;">
-                <svg id="eye-icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" viewBox="0 0 24 24">
+                <svg id="eye-icon-new" xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" viewBox="0 0 24 24">
                     <path stroke="#888" stroke-width="2" d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12Z"/>
                     <circle cx="12" cy="12" r="3.5" stroke="#888" stroke-width="2"/>
                 </svg>
@@ -92,9 +78,9 @@
         <div class="mb-3" style="position:relative;">
             <label for="confirm_password" class="form-label">Confirm New Password</label>
             <div class="password-input-group">
-                <input id="confirm-password" name="confirm-password" type="password" class="form-control" required>
+                <input id="confirm-password" name="confirm_password" type="password" class="form-control" required>
                 <span id="toggle-confirm-password" style="position:absolute;right:0.75rem;top:50%;transform:translateY(-50%);cursor:pointer;">
-                <svg id="eye-icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" viewBox="0 0 24 24">
+                <svg id="eye-icon-confirm" xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" viewBox="0 0 24 24">
                     <path stroke="#888" stroke-width="2" d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12Z"/>
                     <circle cx="12" cy="12" r="3.5" stroke="#888" stroke-width="2"/>
                 </svg>
@@ -116,7 +102,7 @@
     <hr>
 
     <!-- ────────────────  Delete Account  ──────────────── -->
-    <form id="delete-account-form" method="POST" action="/settings">
+    <form id="delete-account-form" method="POST" action="{{ url_for('views.settings') }}">
         <h3>Delete Account</h3>
         <p class="text-danger">Warning: This action cannot be undone.</p>
         <button type="submit" class="btn btn-danger" name="action" value="delete_account">Delete Account</button>
@@ -124,110 +110,5 @@
 </div>
 
 <script src="{{ url_for('static', filename='JS/alert.js') }}"></script>
-<script>
-    // Username validation
-    document.getElementById('update-username-form').addEventListener('submit', function(event) {
-        const username = document.getElementById('username').value.trim();
-        if (username.length < 3) {
-            showOzfoodyNotification("Username must be at least 3 characters long.", "error");
-            event.preventDefault();
-            return false;
-        }
-    });
-
-    // Email validation
-    document.getElementById('update-email-form').addEventListener('submit', function(event) {
-        const email = document.getElementById('email').value.trim();
-        if (!email.includes('@')) {
-            showOzfoodyNotification("Please include an '@' in the email address.", "error");
-            event.preventDefault();
-            return false;
-        }
-    });
-
-    // Extra confirmation for delete account
-    document.getElementById('delete-account-form').addEventListener('submit', function(event) {
-        event.preventDefault();
-        showOzfoodyNotification(
-            `Are you sure you want to delete your account? This action cannot be undone.<br>
-            <button id="confirm-delete-btn" class="btn btn-danger mt-3 me-2">Yes, delete my account</button>
-            <button id="cancel-delete-btn" class="btn btn-secondary mt-3">No, keep my account</button>`,
-            "error",
-            10000
-        );
-        setTimeout(() => {
-            const yesBtn = document.getElementById('confirm-delete-btn');
-            const noBtn = document.getElementById('cancel-delete-btn');
-
-            if (yesBtn) {
-                yesBtn.onclick = function(e) {
-                    // Ensure the action field is present
-                    const form = document.getElementById('delete-account-form');
-                    let actionInput = form.querySelector('input[name="action"]');
-                    if (!actionInput) {
-                        actionInput = document.createElement('input');
-                        actionInput.type = 'hidden';
-                        actionInput.name = 'action';
-                        actionInput.value = 'delete_account';
-                        form.appendChild(actionInput);
-                    }
-                    // Submit via fetch
-                    const formData = new FormData(form);
-                    fetch('/settings', {
-                        method: 'POST',
-                        body: formData
-                    })
-                    .then(r => r.json())
-                    .then(data => {
-                        if (data.success) {
-                            showOzfoodyNotification(data.message, "success");
-                            window.location.href = '/landing';
-                        } else {
-                            showOzfoodyNotification(data.error || 'An unexpected error occurred.', "error");
-                        }
-                    })
-                    .catch(err => {
-                        showOzfoodyNotification('A network error occurred.', "error");
-                        console.error('Fetch error:', err);
-                    });
-                };
-            }
-
-            if (noBtn) {
-                noBtn.onclick = function(e) {
-                    const notif = document.getElementById("ozfoody-notification");
-                    notif.classList.remove("show");
-                    setTimeout(() => { notif.style.display = "none"; }, 300);
-                };
-            }
-        }, 100);
-    });
-
-    // Attach enhanced fetch handling to all forms except delete-account-form
-    document.querySelectorAll('form').forEach(form => {
-        if (form.id === 'delete-account-form') return;
-        form.addEventListener('submit', event => {
-            if (!form.checkValidity()) return;
-            event.preventDefault();
-            const formData = new FormData(form, event.submitter);
-            fetch('/settings', {
-                method: 'POST',
-                body: formData
-            })
-            .then(r => r.json())
-            .then(data => {
-                if (data.success) {
-                    showOzfoodyNotification(data.message, "success");
-                } else {
-                    showOzfoodyNotification(data.error || 'An unexpected error occurred.', "error");
-                }
-            })
-            .catch(err => {
-                showOzfoodyNotification('A network error occurred.', "error");
-                console.error('Fetch error:', err);
-            });
-        });
-    });
-</script>
 <script src="{{ url_for('static', filename='JS/settings.js') }}"></script>
 {% endblock %}
