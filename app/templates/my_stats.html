@@ -263,6 +263,9 @@
         let recommendationIndex = 0; // Track the current recommendation index
         let recommendations = []; // Store all recommendations
 
+        const getRecommendationBtn = document.getElementById('get-recommendation');
+        const recommendationBox = document.getElementById('recommended-food');
+
         // Fetch recommendations from the server
         const fetchRecommendations = () => {
             fetch(`/recommend_food`)
@@ -270,40 +273,40 @@
                 .then(data => {
                     if (data.success) {
                         recommendations = data.recommendations;
+                        recommendationIndex = 0;
                         if (recommendations.length > 0) {
-                            // Automatically display the first recommendation
-                            const recommendationBox = document.getElementById('recommended-food');
-                            recommendationBox.innerHTML = renderPostCard(recommendations[recommendationIndex], '{{ user.profileImage|default("/static/default_profile.png") }}', '{{ user.username }}');
+                            recommendationBox.innerHTML = renderPostCard(recommendations[recommendationIndex], userProfileImageUrl, '{{ user.username }}');
+                            getRecommendationBtn.disabled = false;
+                            getRecommendationBtn.innerText = "Get More Recommendations";
                             recommendationIndex = 1; // Start from the second recommendation
                         } else {
-                            document.getElementById('recommended-food').innerText = 'No recommendations found.';
+                            recommendationBox.innerText = 'No recommendations found.';
+                            getRecommendationBtn.disabled = true;
+                            getRecommendationBtn.innerText = "No More Recommendations";
                         }
                     }
                 })
                 .catch(error => console.error('Error:', error));
         };
 
-        // Display a single recommendation
-        const displayRecommendation = (food) => {
-            const recommendationBox = document.getElementById('recommended-food');
-            const recommendationCard = `
-                <div class="recommendation-card">
-                    <img src="${food.image || 'https://via.placeholder.com/300'}" alt="${food.restaurant}">
-                    <h5>${food.restaurant}</h5>
-                    <p>Spiciness: ${food.spiciness}, Deliciousness: ${food.deliciousness}, Value: ${food.value}, Service: ${food.service}, Overall: ${food.overall}</p>
-                </div>
-            `;
-            recommendationBox.innerHTML += recommendationCard;
+        const displayRecommendation = (post) => {
+            recommendationBox.innerHTML = renderPostCard(post, userProfileImageUrl, '{{ user.username }}');
         };
 
         // Load the next recommendation on button click
-        document.getElementById('get-recommendation').addEventListener('click', () => {
+        getRecommendationBtn.addEventListener('click', () => {
             if (recommendationIndex < recommendations.length) {
                 displayRecommendation(recommendations[recommendationIndex]);
                 recommendationIndex++;
+                if (recommendationIndex >= recommendations.length) {
+                    getRecommendationBtn.disabled = true;
+                    getRecommendationBtn.innerText = "No More Recommendations";
+                    recommendationBox.innerHTML += `<div class="text-muted mt-2">No more recommendations.</div>`;
+                }
             } else {
-                document.getElementById('get-recommendation').innerText = 'No more recommendations';
-                document.getElementById('get-recommendation').disabled = true;
+                recommendationBox.innerHTML += `<div class="text-muted mt-2">No more recommendations.</div>`;
+                getRecommendationBtn.disabled = true;
+                getRecommendationBtn.innerText = "No More Recommendations";
             }
         });
 

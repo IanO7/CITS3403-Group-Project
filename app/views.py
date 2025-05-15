@@ -769,7 +769,8 @@ def recommend_food():
             'value': food.Value,
             'service': food.Service,
             'stars': getattr(food, 'Stars', 5),
-            'overall': (food.Spiciness + food.Deliciousness + food.Value + food.Service) / 4
+            'overall': (food.Spiciness + food.Deliciousness + food.Value + food.Service) / 4,
+            'image': food.image  # <-- Add this line
         })
 
     return jsonify(success=True, recommendations=recommendations)
