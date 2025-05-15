@@ -23,8 +23,9 @@ class Comments (db.Model):
             'note_id': self.note_id,
             'parentID': self.parentID,
             'username': self.user.username,
-            'profileImage': url_for('views.uploaded_file', filename=self.user.profileImage),
             'likes': self.likes,
+            'profileImage': url_for('views.uploaded_file', filename=self.user.profileImage) if self.user.profileImage \
+                else url_for('static', filename='images/default-profile.png')
             # Add other serializable fields as needed
         }
 class Note(db.Model):
