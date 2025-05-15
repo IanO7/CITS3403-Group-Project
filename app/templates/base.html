@@ -34,7 +34,7 @@
             <!-- Collapsible menu -->
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
-                    {% if session.get('user_id') %}
+                    {% if current_user.is_authenticated %}
                     <li class="nav-item">
                         <a class="nav-link {% if request.endpoint == 'views.profile' %}active{% endif %}" href="{{ url_for('views.profile') }}">Profile</a>
                     </li>
