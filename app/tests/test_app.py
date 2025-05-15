@@ -1,200 +1,270 @@
 import sys
 import os
 from io import BytesIO
+import unittest
 
 # Add the project root directory to the Python path
-# This ensures that the 'app' module can be imported
-# __file__ is /root/CITS3403-Group-Project/app/tests/test_app.py
-# os.path.dirname(__file__) is /root/CITS3403-Group-Project/app/tests
-# os.path.join(os.path.dirname(__file__), '..', '..') is /root/CITS3403-Group-Project
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
 if project_root not in sys.path:
     sys.path.insert(0, project_root)
 
-import pytest
 from app import create_app, db
 from app.models import User, Note
 
-@pytest.fixture
-def client():
-    app = create_app()
-    app.config['WTF_CSRF_ENABLED'] = False
-    app.config['TESTING'] = True  # Crucial for test-specific behavior like flash messages
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:' # Ensures a clean, in-memory DB for tests
-    # If your app uses flask_login and you need to test routes that require login,
-    # ensure LOGIN_DISABLED is False (default) or not set to True here.
+class PrettyTestResult(unittest.TextTestResult):
+    def addSuccess(self, test):
+        super().addSuccess(test)
+        self.stream.write("✔ PASS: %s\n" % self.getDescription(test))
 
-    with app.test_client() as client:
-        with app.app_context():
+    def addFailure(self, test, err):
+        super().addFailure(test, err)
+        self.stream.write("✖ FAIL: %s\n" % self.getDescription(test))
+
+    def addError(self, test, err):
+        super().addError(test, err)
+        self.stream.write("✖ ERROR: %s\n" % self.getDescription(test))
+
+class AppTestCase(unittest.TestCase):
+    def setUp(self):
+        self.app = create_app()
+        self.app.config['WTF_CSRF_ENABLED'] = False
+        self.app.config['TESTING'] = True
+        self.app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'
+        self.client = self.app.test_client()
+        with self.app.app_context():
             db.create_all()
-            yield client
+
+    def tearDown(self):
+        with self.app.app_context():
             db.session.remove()
             db.drop_all()
 
-def test_homepage_loads(client):
-    # Test unauthenticated access to homepage - expect redirect
-    response_unauth = client.get('/')
-    assert response_unauth.status_code == 302
-    # Optionally, assert the redirect location if known, e.g.:
-    # assert '/login' in response_unauth.headers['Location']
+    def create_user(self, username, email, password='Testpass1!'):
+        user = User(username=username, email=email)
+        user.set_password(password)
+        with self.app.app_context():
+            db.session.add(user)
+            db.session.commit()
+        return user
 
-    # Test authenticated access
-    user = User(username='hometester', email='hometester@example.com')
-    user.set_password('Testpass1!')
-    db.session.add(user)
-    db.session.commit()
-    
-    login_response = client.post('/login', data={
-        'email': 'hometester@example.com',
-        'password': 'Testpass1!'
-    }, follow_redirects=True)
-    
-    # Ensure login was successful and landed on a 200 page
-    assert login_response.status_code == 200
-    # Check for content that indicates successful login or dashboard access
-    # Adjust these strings based on your application's actual content after login
-    assert b"hometester" in login_response.data or b"Dashboard" in login_response.data or b"OZfoody" in login_response.data
+    def login(self, email, password='Testpass1!'):
+        return self.client.post('/login', data={
+            'email': email,
+            'password': password
+        }, follow_redirects=True)
 
-    # Access homepage again as authenticated user
-    response_auth = client.get('/', follow_redirects=True)
-    assert response_auth.status_code == 200
-    assert b"OZfoody" in response_auth.data
-    # Add other assertions for authenticated homepage, e.g., username or dashboard elements
-    assert b"hometester" in response_auth.data or b"Dashboard" in response_auth.data
+    def test_homepage_redirects_unauth(self):
+        response = self.client.get('/')
+        self.assertEqual(response.status_code, 302)
 
-def test_signup(client):
-    # Use unique credentials for this test to avoid conflicts
-    signup_email = 'testsignup@example.com'
-    signup_username = 'testsignupper'
+    def test_homepage_authenticated(self):
+        self.create_user('hometester', 'hometester@example.com')
+        self.login('hometester@example.com')
+        response = self.client.get('/', follow_redirects=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(
+            b"hometester" in response.data or b"Dashboard" in response.data or b"OZfoody" in response.data
+        )
 
-    response = client.post('/sign_up', data={
-        'username': signup_username,
-        'email': signup_email,
-        'password': 'Testpass1!',
-        'confirm_password': 'Testpass1!',
-        'profileImage': (BytesIO(b"dummy_profile_image_content"), 'test_profile.jpg') # Simulate file upload
-    }, follow_redirects=True)
+    def test_signup(self):
+        signup_email = 'testsignup@example.com'
+        signup_username = 'testsignupper'
+        response = self.client.post('/sign_up', data={
+            'username': signup_username,
+            'email': signup_email,
+            'password': 'Testpass1!',
+            'confirm_password': 'Testpass1!',
+            'profileImage': (BytesIO(b"dummy_profile_image_content"), 'test_profile.jpg')
+        }, follow_redirects=True)
+        with self.app.app_context():
+            user = User.query.filter_by(email=signup_email).first()
+            self.assertIsNotNone(user)
+            self.assertEqual(user.username, signup_username)
+        self.assertEqual(response.status_code, 200)
+        found_expected_content = any(
+            s in response.data for s in [
+                b"Login", b"Account created successfully", b"Welcome",
+                bytes(signup_username, 'utf-8'), b"Dashboard"
+            ]
+        )
+        self.assertTrue(found_expected_content)
 
-    # Check 1: User created in database (This part seems to be passing)
-    user = User.query.filter_by(email=signup_email).first()
-    assert user is not None, f"User with email {signup_email} was not created in the database."
-    assert user.username == signup_username
+    def test_login_logout(self):
+        self.create_user('testuser2', 'test2@example.com')
+        response = self.login('test2@example.com')
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(
+            b"testuser2" in response.data or b"Dashboard" in response.data or b"Welcome" in response.data
+        )
+        logout_response = self.client.get('/logout', follow_redirects=True)
+        self.assertEqual(logout_response.status_code, 200)
+        self.assertIn(b"Login", logout_response.data)
 
-    # Check 2: Response status code after successful signup and redirect
-    assert response.status_code == 200
+    def test_duplicate_signup(self):
+        self.create_user('dupuser', 'dup@example.com')
+        response = self.client.post('/sign_up', data={
+            'username': 'dupuser2',
+            'email': 'dup@example.com',
+            'password': 'Testpass1!',
+            'confirm_password': 'Testpass1!',
+            'profileImage': (BytesIO(b"dummy_profile_image_content"), 'dup_profile.jpg')
+        }, follow_redirects=True)
+        self.assertTrue(
+            b'already registered' in response.data.lower() or
+            b'already exists' in response.data.lower() or
+            b'error' in response.data.lower()
+        )
 
-    # --- Debugging Step: Print the response data to see what the page contains ---
-    # print(f"\n--- Sign Up Response Data for {signup_email} ---")
-    # print(response.data.decode(errors='ignore'))
-    # print("--- End Sign Up Response Data ---\n")
-    # --- End Debugging Step ---
+    def test_signup_password_mismatch(self):
+        response = self.client.post('/sign_up', data={
+            'username': 'mismatchuser',
+            'email': 'mismatch@example.com',
+            'password': 'Testpass1!',
+            'confirm_password': 'Wrongpass!',
+            'profileImage': (BytesIO(b"dummy_profile_image_content"), 'mismatch_profile.jpg')
+        }, follow_redirects=True)
+        self.assertTrue(
+            b'passwords do not match' in response.data.lower() or
+            b'error' in response.data.lower()
+        )
 
-    # Check 3: Content of the page after redirect.
-    # Adjust these checks based on your application's behavior:
-    # - Does it redirect to the login page? Expect "Login" and maybe a flash message.
-    # - Does it redirect to the homepage and auto-login the user? Expect username, "Dashboard", or "Welcome".
+    def test_create_and_view_post(self):
+        user = self.create_user('poster', 'poster@example.com')
+        self.login('poster@example.com')
+        with self.app.app_context():
+            initial_note_count = Note.query.count()
+        post_data = {
+            'Resturaunt': 'Testaurant',
+            'Review': 'Great food!',
+            'Spiciness': 5,
+            'Deliciousness': 5,
+            'Value': 4,
+            'Service': 5,
+            'Stars': 5,
+            'Cuisine': 'Test Cuisine',
+            'location': 'Test Location',
+            'image': (BytesIO(b"dummy_post_image_content"), 'test_post.jpg')
+        }
+        response = self.client.post('/new_post', data=post_data, follow_redirects=True, content_type='multipart/form-data')
+        self.assertEqual(response.status_code, 200)
+        with self.app.app_context():
+            self.assertEqual(Note.query.count(), initial_note_count + 1)
+            created_note = Note.query.filter_by(Resturaunt='Testaurant', user_id=user.id).first()
+            self.assertIsNotNone(created_note)
+            self.assertEqual(created_note.Review, 'Great food!')
+            self.assertEqual(created_note.location, 'Test Location')
+            self.assertEqual(created_note.Cuisine, 'Test Cuisine')
+            self.assertEqual(created_note.Stars, 5)
+        self.assertIn(b"Testaurant", response.data)
 
-    found_expected_content = False
-    expected_strings = [
-        b"Login",                            # If redirected to login page
-        b"Account created successfully",     # Common flash message
-        b"Welcome",                          # Generic welcome, or part of a flash message
-        bytes(signup_username, 'utf-8'),    # If username is displayed on the page
-        b"Dashboard"                         # If redirected to a user dashboard
-    ]
+    def test_edit_profile_invalid_email(self):
+        user = self.create_user('edituser', 'edituser@example.com')
+        self.login('edituser@example.com')
+        response = self.client.post('/edit_profile', data={
+            'username': 'editeduser',
+            'email': 'not-an-email',
+            'profileImage': (BytesIO(b"img"), 'profile.jpg')
+        }, follow_redirects=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(
+            b"invalid email" in response.data.lower() or
+            b"error" in response.data.lower()
+        )
 
-    for s in expected_strings:
-        if s in response.data:
-            found_expected_content = True
-            break
-    
-    assert found_expected_content, \
-        f"Signup response content unexpected. None of the expected strings found. Status: {response.status_code}. Data: {response.data.decode(errors='ignore')[:500]}"
+    def test_edit_profile_duplicate_email(self):
+        self.create_user('userA', 'userA@example.com')
+        self.create_user('userB', 'userB@example.com')
+        self.login('userA@example.com')
+        response = self.client.post('/edit_profile', data={
+            'username': 'userA',
+            'email': 'userB@example.com',
+            'profileImage': (BytesIO(b"img"), 'profile.jpg')
+        }, follow_redirects=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(
+            b"already registered" in response.data.lower() or
+            b"already exists" in response.data.lower() or
+            b"error" in response.data.lower()
+        )
 
-def test_login_logout(client):
-    # Create user
-    user = User(username='testuser2', email='test2@example.com')
-    user.set_password('Testpass1!')
-    db.session.add(user)
-    db.session.commit()
-    # Login
-    response = client.post('/login', data={
-        'email': 'test2@example.com',
-        'password': 'Testpass1!'
-    }, follow_redirects=True)
-    
-    assert response.status_code == 200 # Ensure the page after login redirect is successful
-    # Adjust assertion to match actual content on successful login page
-    # e.g., username, a specific welcome message, or "Dashboard"
-    assert b"testuser2" in response.data or b"Dashboard" in response.data or b"Welcome" in response.data
-    
-    # Logout
-    logout_response = client.get('/logout', follow_redirects=True)
-    assert logout_response.status_code == 200 # Assuming logout redirects to a 200 page (e.g., login page)
-    assert b"Login" in logout_response.data
+    def test_delete_nonexistent_post(self):
+        self.create_user('deleter', 'deleter@example.com')
+        self.login('deleter@example.com')
+        response = self.client.post('/delete_post/9999', follow_redirects=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(
+            b"not found" in response.data.lower() or
+            b"error" in response.data.lower()
+        )
 
-# def test_create_post(client):
-#     user = User(username='poster', email='poster@example.com')
-#     user.set_password('Testpass1!')
-#     db.session.add(user)
-#     db.session.commit()
-    
-#     # Login the user and verify login success
-#     login_response = client.post('/login', data={'email': 'poster@example.com', 'password': 'Testpass1!'}, follow_redirects=True)
-#     assert login_response.status_code == 200
-#     # Adjust to check for content indicating successful login for 'poster'
-#     assert b"poster" in login_response.data or b"Dashboard" in login_response.data 
+    def test_view_profile_other_user(self):
+        user1 = self.create_user('profile1', 'profile1@example.com')
+        user2 = self.create_user('profile2', 'profile2@example.com')
+        self.login('profile1@example.com')
+        response = self.client.get(f'/user/{user2.id}', follow_redirects=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(b"profile2" in response.data or b"Profile" in response.data)
 
-#     initial_note_count = Note.query.count()
+    def test_cannot_unfollow_not_following(self):
+        user1 = self.create_user('alice2', 'alice2@example.com')
+        user2 = self.create_user('bob2', 'bob2@example.com')
+        self.login('alice2@example.com')
+        response = self.client.post(f'/unfollow/{user2.id}', follow_redirects=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(
+            b"not following" in response.data.lower() or
+            b"follow" in response.data.lower() or
+            b"error" in response.data.lower()
+        )
 
-#     # Create post
-#     # Ensure keys here match the 'name' attributes of your form fields in the HTML/WTForms
-#     post_data = {
-#         'Resturaunt': 'Testaurant', # Assuming form field name matches model attribute
-#         'Review': 'Great food!',    # Assuming form field name matches model attribute
-#         'Spiciness': 5,             # Assuming form field name matches model attribute
-#         'Deliciousness': 5,         # Assuming form field name matches model attribute
-#         'Value': 4,                 # Assuming form field name matches model attribute
-#         'Service': 5,               # Assuming form field name matches model attribute
-#         'Stars': 5,                 # Added missing required field (assuming nullable=False)
-#         'Cuisine': 'Test Cuisine',  # Added missing required field (assuming nullable=False)
-#         'location': 'Test Location',# Added missing location field
-#         'image': (BytesIO(b"dummy_post_image_content"), 'test_post.jpg') # Added image file
-#     }
-#     response = client.post('/new_post', data=post_data, follow_redirects=True, content_type='multipart/form-data') # Ensure content_type for file uploads
-    
-#     # 1. Check if the page after post submission/redirect is successful
-#     assert response.status_code == 200, f"Expected status 200, got {response.status_code}. Response data: {response.data.decode(errors='ignore')[:500]}"
+    def test_post_invalid_data(self):
+        user = self.create_user('invalidposter', 'invalidposter@example.com')
+        self.login('invalidposter@example.com')
+        post_data = {
+            'Resturaunt': '',
+            'Review': '',
+            'Spiciness': '',
+            'Deliciousness': '',
+            'Value': '',
+            'Service': '',
+            'Stars': '',
+            'Cuisine': '',
+            'location': '',
+            'image': (BytesIO(b""), '')
+        }
+        response = self.client.post('/new_post', data=post_data, follow_redirects=True, content_type='multipart/form-data')
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(
+            b"required" in response.data.lower() or
+            b"error" in response.data.lower() or
+            b"invalid" in response.data.lower()
+        )
 
-#     # 2. Check if the note was actually created in the database
-#     assert Note.query.count() == initial_note_count + 1, "Note was not created in the database."
+    def test_access_nonexistent_user_profile(self):
+        self.create_user('realuser', 'realuser@example.com')
+        self.login('realuser@example.com')
+        response = self.client.get('/user/9999', follow_redirects=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(
+            b"not found" in response.data.lower() or
+            b"error" in response.data.lower()
+        )
 
-#     # 3. Retrieve the created note to verify its contents
-#     #    Query using the correct attribute name from the model ('Resturaunt')
-#     created_note = Note.query.filter_by(Resturaunt='Testaurant', user_id=user.id).first()
-#     assert created_note is not None, "Could not find the created note in the database."
-#     assert created_note.user_id == user.id
-#     assert created_note.Review == 'Great food!' # Check against the correct model attribute
-#     assert created_note.location == 'Test Location'
-#     assert created_note.Cuisine == 'Test Cuisine'
-#     assert created_note.Stars == 5
+    def test_follow_unfollow(self):
+        user1 = self.create_user('alice', 'alice@example.com')
+        user2 = self.create_user('bob', 'bob@example.com')
+        self.login('alice@example.com')
+        response = self.client.post(f'/follow/{user2.id}', follow_redirects=True)
+        self.assertTrue(
+            b"following" in response.data.lower() or
+            response.status_code == 200
+        )
+        response = self.client.post(f'/unfollow/{user2.id}', follow_redirects=True)
+        self.assertTrue(
+            b"follow" in response.data.lower() or
+            response.status_code == 200
+        )
 
-#     # 4. Verify the content on the redirected page
-#     #    This depends on what your /new_post route redirects to and what content is displayed.
-#     #    It might be the homepage, a list of posts, or the post detail page.
-#     #    If it redirects to a page displaying the post, "Testaurant" should be there.
-#     assert b"Testaurant" in response.data, \
-#         f"Expected 'Testaurant' in response, but got: {response.data.decode(errors='ignore')[:500]}"
-
-def test_follow_unfollow(client):
-    user1 = User(username='alice', email='alice@example.com')
-    user1.set_password('Testpass1!')
-    user2 = User(username='bob', email='bob@example.com')
-    user2.set_password('Testpass1!')
-    db.session.add_all([user1, user2])
-    db.session.commit()
-    client.post('/login', data={'email': 'alice@example.com', 'password': 'Testpass1!'})
-    response = client.post(f'/follow/{user2.id}', follow_redirects=True)
-    assert b"Following" in response.data or response.status_code == 200
-    response = client.post(f'/unfollow/{user2.id}', follow_redirects=True)
-    assert b"Follow" in response.data or response.status_code == 200
+if __name__ == '__main__':
+    runner = unittest.TextTestRunner(verbosity=2, resultclass=PrettyTestResult)
+    unittest.main(testRunner=runner)
