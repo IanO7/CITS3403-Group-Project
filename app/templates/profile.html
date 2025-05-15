@@ -9,9 +9,9 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='css/profile.css') }}">
 
 <div id="profileHeader" class="container mt-2">
-    {% if user.profileImage %}
-    <img src="{{ url_for('views.uploaded_file', filename=user.profileImage) }}" class="profileImage" alt="profile image"> 
-    {% endif %} 
+    <img src="{% if user.profileImage %}{{ url_for('views.uploaded_file', filename=user.profileImage) }}{% else %}{{ url_for('static', filename='image/default-profile.png') }}{% endif %}" 
+         class="profileImage" 
+         alt="Profile image">
 </div>
 
 <div id="profileSub" class="container mt-1">

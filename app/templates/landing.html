@@ -103,9 +103,9 @@
 </section>
 
 <!-- Live Trending Dishes Section -->
-<section id="trending-dishes" class="py-5 bg-light">
+<section id="trending-dishes" class="py-5">
   <div class="container text-center">
-    <h2 class="mb-4">Trending Dishes Right Now</h2>
+    <h2 class="mb-4">⭐ Trending Tastes of the Day ⭐</h2>
     <div class="row">
       {% for dish in trending_dishes %}
       <div class="col-md-4">
@@ -123,8 +123,11 @@
 </section>    
     
 <!-- Stats Section -->
-<section id="stats" class="py-5 bg-light text-center">
+<section id="stats" class="py-5 text-center">
   <div class="container">
+
+    <h2 class="mb-4">📊 OZfoody by Numbers 📊</h2>
+
     <h2 class="mb-4">Community Stats</h2>
     <div class="info-box">
       
@@ -142,17 +145,18 @@
   
     <!-- Your globe logic -->
     <script src="{{ url_for('static', filename='JS/globe.js') }}"></script>
+
     <div class="row">
       <div class="col-md-6">
         <div class="stat-card">
-          <h3 class="display-4" id="total-posts">0</h3>
-          <p>Total Posts</p>
+          <h3 class="counter" id="total-posts">0</h3>
+          <p>Food Reviews Shared</p>
         </div>
       </div>
       <div class="col-md-6">
         <div class="stat-card">
-          <h3 class="display-4" id="total-users">0</h3>
-          <p>Registered Users</p>
+          <h3 class="counter" id="total-users">0</h3>
+          <p>Active Foodies</p>
         </div>
       </div>
     </div>
@@ -160,7 +164,7 @@
 </section>
 
 <!-- Interactive Progress Bar -->
-<section id="progress-bar-section" class="py-5 bg-light text-center">
+<section id="progress-bar-section" class="py-5 text-center">
   <div class="container">
     <h2 class="mb-4">Unlock Your Food Recommendation</h2>
     <div class="progress" style="height: 30px;">
