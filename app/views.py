@@ -680,8 +680,8 @@ def recommend_food():
     if not user:
         return jsonify(success=False, error='User not authenticated'), 401
 
-    # Fetch all food items
-    food_items = Note.query.all()
+    # Fetch all food items; ENSURE THAT OWN USER'S POSTS ARE NOT RECOMMENDED TO THEMSELVES!
+    food_items = Note.query.all().filter(Note.user_id != user.id).all()
 
     # Gather all unique cuisines and locations for one-hot encoding
     all_cuisines = sorted({food.Cuisine for food in food_items if food.Cuisine})
@@ -902,6 +902,7 @@ def location_suggestions():
 
 @views.route('/api/search_reviews', methods=['GET'])
 def search_reviews():
+    user = current_user()
     query = request.args.get('q', '').strip().lower()
     lat = request.args.get('lat', type=float)
     lng = request.args.get('lng', type=float)
@@ -1065,6 +1066,9 @@ def search_reviews():
                 (Note.Resturaunt.ilike(f"%{query}%")) | (Note.Review.ilike(f"%{query}%"))
             )
         results = notes_query.all()
+
+    if user:
+        results = [n for n in results if n.user_id != user.id]
 
     results_data = [{
         'id': n.id,
