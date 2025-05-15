@@ -55,24 +55,32 @@ document.addEventListener('DOMContentLoaded', function () {
         return;
     }
 
-    // Replace template variables with actual values
-    const postsTarget = parseInt(postsElem.dataset.target, 10) || 0; // Use data attributes for dynamic values
-    const usersTarget = parseInt(usersElem.dataset.target, 10) || 0;
-
     let animated = false;
 
     function onEntry(entries, observer) {
         entries.forEach(entry => {
             if (entry.isIntersecting && !animated) {
-                animateCountUp(postsElem, postsTarget);
-                animateCountUp(usersElem, usersTarget);
-                animated = true;
-                observer.disconnect();
+                // Fetch real stats from backend
+                fetch('/api/stats')
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            animateCountUp(postsElem, data.stats.posts);
+                            animateCountUp(usersElem, data.stats.users);
+                            animated = true;
+                            observer.disconnect();
+                        } else {
+                            console.error('Failed to load stats:', data.error);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error fetching stats:', error);
+                    });
             }
         });
     }
 
-    const observer = new IntersectionObserver(onEntry, { threshold: 0.5 });
+    const observer = new IntersectionObserver(onEntry, { threshold: 0.2 });
     observer.observe(statsElem);
 });
 

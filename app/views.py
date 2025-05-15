@@ -504,6 +504,8 @@ def unfollow(user_id):
     db.session.delete(follow)
     db.session.commit()
     return jsonify(success=True), 200
+
+
 @views.route("/settings", methods=["GET", "POST"])
 def settings():
     user = current_user()
@@ -556,14 +558,20 @@ def settings():
 
         # ──────────────── EXISTING ACTIONS ────────────────
         elif action == "update_password":
-            current_pw = request.form.get("current_password", "")
-            new_pw     = request.form.get("new_password", "")
-            if not check_password_hash(user.password, current_pw):
-                return jsonify(success=False, error="Current password is incorrect."), 401
-            if len(new_pw) < 8 or len(new_pw) > 128:
-                return jsonify(success=False, error="Password must be between 8 and 128 characters long."), 400
-            if new_pw.isalpha() or new_pw.isdigit():
-                return jsonify(success=False, error="Password must include at least one letter and one number/symbol."), 400
+            # Remove current password check
+            new_pw = request.form.get("new_password", "")
+            
+            # Just validate the new password
+            if len(new_pw) < 8:
+                return jsonify(success=False, error="Password must be at least 8 characters long."), 400
+            if not re.search(r'\d', new_pw):
+                return jsonify(success=False, error="Password must include at least one number."), 400
+            if not re.search(r'[A-Z]', new_pw):
+                return jsonify(success=False, error="Password must include at least one uppercase letter."), 400
+            if not re.search(r'[^a-zA-Z0-9]', new_pw):
+                return jsonify(success=False, error="Password must include at least one special character."), 400
+            
+            # Update password
             user.password = generate_password_hash(new_pw)
             db.session.commit()
             return jsonify(success=True, message="Password changed."), 200
@@ -580,6 +588,48 @@ def settings():
     # GET → render page
     return render_template("settings.html", user=user)
 
+'''
+@views.route('/verify_password', methods=['POST'])
+def verify_password():
+    # Check if user is authenticated
+    if not current_user.is_authenticated:
+        return jsonify({
+            'valid': False,
+            'error': 'Authentication required'
+        }), 401
+
+    try:
+        # Get JSON data with explicit content type check
+        if not request.is_json:
+            return jsonify({
+                'valid': False,
+                'error': 'Content-Type must be application/json'
+            }), 400
+
+        data = request.get_json()
+        current_password = data.get('current_password')
+        
+        if not current_password:
+            return jsonify({
+                'valid': False,
+                'error': 'Password is required'
+            }), 400
+        
+        # Use the same check method as password change
+        is_valid = check_password_hash(current_user.password, current_password)
+        
+        return jsonify({
+            'valid': is_valid,
+            'message': 'Password verified' if is_valid else 'Invalid password'
+        }), 200 if is_valid else 400
+    
+    except Exception as e:
+        print(f"Password verification error: {str(e)}")
+        return jsonify({
+            'valid': False,
+            'error': 'Server error during verification'
+        }), 500
+'''
 
 
 @views.route('/search', methods=['GET'])
@@ -1261,6 +1311,30 @@ def api_user_stats(user_id):
         posts=len(notes),
         username=user.username
     )
+    
+
+@views.route('/api/stats')
+def get_stats():
+    try:
+        # Count active users (users with accounts)
+        total_users = User.query.count()
+        
+        # Count total reviews (using Note model, not Reviews)
+        total_posts = Note.query.count()
+        
+        return jsonify({
+            'success': True,
+            'stats': {
+                'posts': total_posts,
+                'users': total_users
+            }
+        })
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': 'Failed to fetch statistics'
+        }), 500
+    
 
 @views.route('/api/globe_reviews')
 def api_globe_reviews():
