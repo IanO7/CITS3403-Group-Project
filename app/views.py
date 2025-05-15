@@ -12,6 +12,7 @@ import numpy as np
 from sklearn.neighbors import NearestNeighbors
 import re
 from collections import Counter, defaultdict
+import math
 
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 
@@ -919,109 +920,50 @@ def location_suggestions():
 
 @views.route('/api/search_reviews', methods=['GET'])
 def search_reviews():
-    query = request.args.get('q', '').strip()
-    if not query:
-        return jsonify(success=False, results=[])
+    query = request.args.get('q', '').strip().lower()
+    lat = request.args.get('lat', type=float)
+    lng = request.args.get('lng', type=float)
 
-    import re
-    stat_map = {
-        'spiciness': Note.Spiciness,
-        'service': Note.Service,
-        'value': Note.Value,
-        'deliciousness': Note.Deliciousness,
-        'stars': Note.Stars if hasattr(Note, 'Stars') else None
-    }
+    if 'near me' in query and lat is not None and lng is not None:
+        def haversine(lat1, lon1, lat2, lon2):
+            R = 6371  # Earth radius in km
+            phi1, phi2 = math.radians(lat1), math.radians(lat2)
+            dphi = math.radians(lat2 - lat1)
+            dlambda = math.radians(lon2 - lon1)
+            a = math.sin(dphi/2)**2 + math.cos(phi1)*math.cos(phi2)*math.sin(dlambda/2)**2
+            return R * 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
 
-    # Map natural language keywords to stat filters
-    keyword_stat_map = {
-        'spicy': Note.Spiciness >= 75,
-        'spiciness': Note.Spiciness >= 75,
-        'delicious': Note.Deliciousness >= 75,
-        'tasty': Note.Deliciousness >= 75,
-        'cheap': Note.Value >= 75,        # Assuming higher Value means cheaper/better value
-        'expensive': Note.Value <= 40,    # Adjust threshold as needed
-        'good service': Note.Service >= 75,
-        'bad service': Note.Service <= 40,
-        'highly rated': Note.Stars >= 4,
-        'low rated': Note.Stars <= 2,
-    }
+        # Only consider notes with valid lat/lng (not 0)
+        notes = Note.query.filter(
+            Note.latitude.isnot(None),
+            Note.longitude.isnot(None),
+            Note.latitude != 0,
+            Note.longitude != 0
+        ).all()
 
-    # Find all patterns like "spiciness 100"
-    stat_matches = re.findall(r'(spiciness|service|value|deliciousness|stars)\s*([0-9]+)', query, re.IGNORECASE)
-    stat_filters = []
-    used_numbers = set()
-    for stat, value in stat_matches:
-        column = stat_map.get(stat.lower())
-        if column is not None:
-            stat_filters.append(column == int(value))
-            used_numbers.add(value)
+        results = []
+        for n in notes:
+            # Check for exact match (within a very small epsilon)
+            if abs(n.latitude - lat) < 1e-5 and abs(n.longitude - lng) < 1e-5:
+                results.append(n)
+            else:
+                distance = haversine(lat, lng, n.latitude, n.longitude)
+                if distance <= 5:
+                    results.append(n)
 
-    # Remove stat-value pairs from the query to get remaining keywords
-    query_cleaned = re.sub(r'(spiciness|service|value|deliciousness|stars)\s*[0-9]+', '', query, flags=re.IGNORECASE).strip()
-
-    # Find any standalone numbers in the remaining query and match them to any stat field
-    number_matches = re.findall(r'\b([0-9]+)\b', query_cleaned)
-    for num in number_matches:
-        if num not in used_numbers:
-            stat_filters.append(
-                db.or_(
-                    Note.Spiciness == int(num),
-                    Note.Deliciousness == int(num),
-                    Note.Value == int(num),
-                    Note.Service == int(num)
-                )
-            )
-    # Remove numbers from keywords
-    query_cleaned = re.sub(r'\b[0-9]+\b', '', query_cleaned).strip()
-
-    # Split remaining keywords and build OR filters for text fields and stat filters for mapped keywords
-    keyword_filters = []
-    if query_cleaned:
-        words = query_cleaned.lower().split()
-        skip_next = False
-        for i, word in enumerate(words):
-            if skip_next:
-                skip_next = False
-                continue
-            # Handle two-word phrases in mapping (e.g., "good service")
-            if i + 1 < len(words):
-                two_word = f"{word} {words[i+1]}"
-                if two_word in keyword_stat_map:
-                    stat_filters.append(keyword_stat_map[two_word])
-                    skip_next = True
-                    continue
-            # Single word mapping
-            if word in keyword_stat_map:
-                stat_filters.append(keyword_stat_map[word])
-            # Always add text search for each word
-            keyword_filters.append(Note.Resturaunt.ilike(f"%{word}%"))
-            keyword_filters.append(Note.Review.ilike(f"%{word}%"))
-            keyword_filters.append(Note.Cuisine.ilike(f"%{word}%"))
-            keyword_filters.append(Note.location.ilike(f"%{word}%"))
-
-    # Combine filters: must match all stat-value pairs AND at least one keyword (if any)
-    query_obj = db.session.query(Note)
-    if stat_filters:
-        query_obj = query_obj.filter(*stat_filters)
-    if keyword_filters:
-        query_obj = query_obj.filter(db.or_(*keyword_filters))
-
-    results = query_obj.all()
-
-    results_data = [{
-        'id': post.id,
-        'restaurant': post.Resturaunt,
-        'review': post.Review,
-        'image': post.image,
-        'spiciness': post.Spiciness,
-        'deliciousness': post.Deliciousness,
-        'value': post.Value,
-        'service': post.Service,
-        'cuisine': post.Cuisine,
-        'location': post.location
-    } for post in results]
-
-    return jsonify(success=True, results=results_data)
+        results_data = [{
+            'id': n.id,
+            'restaurant': n.Resturaunt,
+            'review': n.Review,
+            'image': n.image,
+            'spiciness': n.Spiciness,
+            'deliciousness': n.Deliciousness,
+            'value': n.Value,
+            'service': n.Service,
+            'cuisine': n.Cuisine,
+            'location': n.location
+        } for n in results]
+        return jsonify(success=True, results=results_data)
 
 @views.route('/share_post', methods=['POST'])
 def share_post():
