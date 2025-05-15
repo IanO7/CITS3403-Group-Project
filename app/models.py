@@ -3,6 +3,11 @@ from flask import url_for
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
 
+class ReviewImage(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    filename = db.Column(db.String(255), nullable=False)
+    review_id = db.Column(db.Integer, db.ForeignKey('note.id'), nullable=False)
+
 class Comments (db.Model):
     id           = db.Column(db.Integer, primary_key=True)
     Comment      = db.Column(db.String(1000), nullable=False)
@@ -40,6 +45,8 @@ class Note(db.Model):
     comments        = db.relationship(Comments, backref='note', lazy=True)
     latitude        = db.Column(db.Float, nullable=True, index=True)
     longitude       = db.Column(db.Float, nullable=True, index=True)
+    images          = db.relationship('ReviewImage', backref='review', lazy=True, cascade="all, delete-orphan")
+
     
 class User(db.Model, UserMixin):
     id          = db.Column(db.Integer, primary_key=True)

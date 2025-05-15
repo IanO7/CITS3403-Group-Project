@@ -1,151 +1,175 @@
 {% block content %}
-        <div class="col">
-            
-            <div class="card mb-4 shadow-sm rounded-4 h-100" style="min-height: 500px;">
 
-                <input type="checkbox" class="multi-share-checkbox" id="checkbox" value="{{ review.id }}" style="position:absolute;top:10px;left:10px;z-index:2;display:none;">
+<div class="col"> 
+           
+    <div class="card mb-4 shadow-sm rounded-4 h-100" style="min-height: 500px;">
 
-                <div class="card-body">
+        <input type="checkbox" class="multi-share-checkbox" id="checkbox" value="{{ review.id }}" style="position:absolute;top:10px;left:10px;z-index:2;display:none;">
 
-                    <div class="d-flex align-items-center mb-3 w-100">
-                        {% if not request.endpoint == 'views.profile' %}
-                            <!-- Only show profile picture if NOT in profile page -->
-                            <img src="{% if user.profileImage %}{{ url_for('views.uploaded_file', filename=user.profileImage) }}{% else %}{{ url_for('static', filename='images/default-profile.png') }}{% endif %}"
-                                alt="{{ user.username }}'s profile picture"
-                                class="profile-image">
-                        {% endif %}
+        <div class="card-body">
 
-                        <h5 class="card-title mb-1">{{ review.Restaurant }}</h5>
+            <div class="d-flex align-items-center mb-3 w-100">
+                {% if not request.endpoint == 'views.profile' %}
+                    <!-- Only show profile picture if NOT in profile page -->
+                    <img src="{% if user.profileImage %}{{ url_for('views.uploaded_file', filename=user.profileImage) }}{% else %}{{ url_for('static', filename='images/default-profile.png') }}{% endif %}"
+                        alt="{{ user.username }}'s profile picture"
+                        class="profile-image">
+                {% endif %}
+                <h5 class="card-title mb-1">{{ review.Resturaunt }}</h5>
+
+                <div class="star-rating text-warning">
+                    {% set stars = review.Stars | int %}
+
+                    {# Render empty stars #}
+                    {% for _ in range(5 - stars) %}
+                    <i class="fa fa-star text-muted"></i>
+                    {% endfor %}
+
+                    {# Render filled stars #}
+                    {% for _ in range(stars) %}
+                    <i class="fa fa-star text-warning"></i>
+                    {% endfor %}
+
+                </div>
+            </div>
         
-                        <div class="star-rating text-warning">
-                            {% set stars = review.Stars | int %}
+            <div class="card-body d-flex flex-column p-3" style="overflow-y: auto; max-height: 150px;">
+                <p class="card-text mb-0">{{ review.Review }}</p>
+            </div> 
 
-                            {# Render filled stars #}
-                            {% for _ in range(stars) %}
-                            <i class="fa fa-star text-warning"></i>
-                            {% endfor %}
+            <h5 class="card-text">{{ review.Cuisine }}</h5>
 
-                            {# Render empty stars #}
-                            {% for _ in range(5 - stars) %}
-                            <i class="fa fa-star text-muted"></i>
-                            {% endfor %}
+            <p class="card-text"><strong>Location:</strong> {{ review.location or "Not specified"}}</p>
+        
+            <div id="carousel-{{ review.id }}" class="carousel slide" data-bs-ride="carousel">
+                <div class="carousel-inner">
+                    {% for image in review.images %}
+                        <div class="carousel-item {% if loop.first %}active{% endif %}">
+                            <img src="{{ url_for('views.uploaded_file', filename=image.filename) }}"
+                            class="d-block w-100 post-image"
+                            alt="Dish Image">
                         </div>
-                    </div>
-                    
-                    <div class="card-body d-flex flex-column p-3" style="overflow-y: auto; max-height: 150px;">
-                        <p class="card-text mb-0">{{ review.Review }}</p>
-                    </div> 
+                    {% endfor %}
+                </div>
+                {% if review.images|length > 1 %}
+                    <button class="carousel-control-prev" type="button" data-bs-target="#carousel-{{ review.id }}" data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Previous</span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#carousel-{{ review.id }}" data-bs-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Next</span>
+                    </button>
+                {% endif %}
+            </div>
 
-                    <h5 class="card-text">{{ review.Cuisine }}</h5>
 
-                    <p class="card-text"><strong>Location:</strong> {{ review.location or "Not specified"}}</p>
-                    
-                    {% if review.image %}
-                    <img src="{{ url_for('views.uploaded_file', filename=review.image) }}"
-                        class="post-image"
-                        alt="Dish Image">
-                    {% endif %}
-
-                    <div class="row text-center">
-                        <div class="col">  
-                            <h6>Deliciousness</h6>
-                            <div class="progress">
-                                <div class="progress-bar bg-warning"
-                                        role="progressbar"
-                                        style="width: {{ review.Deliciousness | default(0, true) }}%;"
-                                        aria-valuenow="{{ review.Deliciousness }}"
-                                        aria-valuemin="0"
-                                        aria-valuemax="100"></div>
-                            </div>
-                        </div>
-                        <div class="col">
-                            <h6>Spiciness</h6>
-                            <div class="progress" >
-                                <div class="progress-bar bg-danger"
-                                        role="progressbar"
-                                        style="width: {{ review.Spiciness }}%;"
-                                        aria-valuenow="{{ review.Spiciness }}"
-                                        aria-valuemin="0"
-                                        aria-valuemax="100"></div>
-                            </div>
-                        </div>
-                        <div class="col">
-                            <h6>Value</h6>
-                            <div class="progress" >
-                                <div class="progress-bar bg-success"
-                                        role="progressbar"
-                                        style="width: {{ review.Value }}%;"
-                                        aria-valuenow="{{ review.Value }}"
-                                        aria-valuemin="0"
-                                        aria-valuemax="100"></div>
-                            </div>
-                        </div>
-                        <div class="col">
-                            <h6>Service</h6>
-                            <div class="progress" >
-                                <div class="progress-bar bg-info"
-                                        role="progressbar"
-                                        style="width: {{ review.Service }}%;"
-                                        aria-valuenow="{{ review.Service }}"
-                                        aria-valuemin="0"
-                                        aria-valuemax="100"></div>
-                            </div>
-                        </div>
+            <div class="row text-center">
+                <div class="col">
+                    <h6>Deliciousness</h6>
+                    <div class="progress">
+                        <div class="progress-bar bg-warning"
+                                role="progressbar"
+                                style="width: {{ review.Deliciousness | default(0, true) }}%;"
+                                aria-valuenow="{{ review.Deliciousness }}"
+                                aria-valuemin="0"
+                                aria-valuemax="100"></div>
                     </div>
                 </div>
-                <div class="reaction-buttons">
-                    <button class="btn btn-outline-primary like-button" data-note-id="{{ review.id }}">
-                        <i class="bi bi-hand-thumbs-up"></i> 👍 <span class="action-count">{{ review.likes }}</span>
-                    </button>
-                    <button class="btn btn-outline-secondary comment-button" data-bs-toggle="modal" data-bs-target="#commentsModal">
-                        <i class="bi bi-chat"></i> 💬
-                    </button>
-                    {% if show_actions is not defined or show_actions %}
-                        <button class="btn btn-outline-success share-button" data-note-id="{{ review.id }}">
-                            <i class="bi bi-share"></i> 🔗
-                        </button>
-                        <button class="btn btn-outline-danger delete-button" data-note-id="{{ review.id }}">
-                            <i class="bi bi-trash"></i> 🗑️
-                        </button>
-                    {% endif %}
+                <div class="col">
+                    <h6>Spiciness</h6>
+                    <div class="progress" >
+                        <div class="progress-bar bg-danger"
+                                role="progressbar"
+                                style="width: {{ review.Spiciness }}%;"
+                                aria-valuenow="{{ review.Spiciness }}"
+                                aria-valuemin="0"
+                                aria-valuemax="100"></div>
+                    </div>
+                </div>
+                <div class="col">
+                    <h6>Value</h6>
+                    <div class="progress" >
+                        <div class="progress-bar bg-success"
+                                role="progressbar"
+                                style="width: {{ review.Value }}%;"
+                                aria-valuenow="{{ review.Value }}"
+                                aria-valuemin="0"
+                                aria-valuemax="100"></div>
+                    </div>
+                </div>
+                <div class="col">
+                    <h6>Service</h6>
+                    <div class="progress" >
+                        <div class="progress-bar bg-info"
+                                role="progressbar"
+                                style="width: {{ review.Service }}%;"
+                                aria-valuenow="{{ review.Service }}"
+                                aria-valuemin="0"
+                                aria-valuemax="100"></div>
+                    </div>
                 </div>
             </div>
         </div>
-    <div class="modal fade" id="commentsModal" tabindex="-1" aria-labelledby="commentsModalLabel" aria-hidden="true">
+
+        <div class="reaction-buttons">
+            <button class="btn btn-outline-primary like-button" data-note-id="{{ review.id }}">
+                <i class="bi bi-hand-thumbs-up"></i> 👍 <span class="action-count">{{ review.likes }}</span>
+            </button>
+            <button class="btn btn-outline-secondary comment-button" data-bs-toggle="modal" data-bs-target="#commentsModal-{{ review.id }}" data-comment-id="{{ review.id }}">
+                <i class="bi bi-chat"></i> 💬
+            </button>
+            {% if show_actions is not defined or show_actions %}
+                <button class="btn btn-outline-success share-button" data-note-id="{{ review.id }}">
+                    <i class="bi bi-share"></i> 🔗
+                </button>
+                <button class="btn btn-outline-danger delete-button" data-note-id="{{ review.id }}">
+                    <i class="bi bi-trash"></i> 🗑️
+                </button>
+            {% endif %}
+
+        </div> 
+
+    </div> 
+
+
+
+    <div class="modal fade" id="commentsModal-{{ review.id }}" tabindex="-1" aria-labelledby="commentsModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
-            
-            <div class="modal-header">
-                <h5 class="modal-title" id="commentsModalLabel">Comments</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                
+                <div class="modal-header">
+                    <h5 class="modal-title" id="commentsModalLabel">Comments</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                
+                <div class="modal-body">
+                    <form method="POST">
+                        <div class="form-group p-3">
+                            <input type="hidden" name="note_id" value="{{ review.id }}">
+                            <input type="hidden" name="parentID" value="0">
+                            <input type="hidden" name="user_id" value="{{current_user.id}}">
+                            <textarea class="form-control w-100" id="Comment" name="Comment" required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary" id="Comment_button">Comment</button>
+                    </form>
+                </div>
+                
+                <div id="comment-area-{{ review.id }}" class="mb-4 p-3 border rounded bg-light shadow-sm"> </div>
+
             </div>
-            
-            <div class="modal-body">
-                <form method="POST">
-                    <div class="form-group p-3">
-                        <input type="hidden" name="note_id" value="{{ review.id }}">
-                        <input type="hidden" name="parentID" value="0">
-                        <input type="hidden" name="user_id" value="{{current_user.id}}">
-                        <textarea class="form-control w-100" id="Comment" name="Comment" required></textarea>
-                    </div>
-                    <button type="submit" class="btn btn-primary" id="Comment_button">Comment</button>
-                </form>
-            </div>
-            
-            <div id="comment-area" class="mb-4 p-3 border rounded bg-light shadow-sm"> </div>
-        
         </div>
     </div>
 
     <script>
-        const comments = {{ comments_by_review[review.id] | tojson }};
+        const comments_{{ review.id }} = {{ comments_by_review[review.id] | tojson }};
 
-        function getComments() {
-            const commentContainer = document.getElementById("comment-area");
+        function getComments_{{ review.id }}() {
+            const commentContainer = document.getElementById("comment-area-{{ review.id }}");
 
             commentContainer.innerHTML = "";
 
-            comments.forEach(comment => {
+            comments_{{ review.id }}.forEach(comment => {
                 // Create comment wrapper
                 const commentWrapper = document.createElement("div");
                 commentWrapper.setAttribute("id", `comment-${comment.id}`);
@@ -210,43 +234,19 @@
         }
 
 
-        /*function displayForm(id) {
-            var form = document.getElementById(`reply-form-${id}`);
-            form.classList.toggle('d-none');
-
-        }*/ 
-
-
         document.addEventListener('DOMContentLoaded', () => {
-            document.querySelectorAll('.comment-button').forEach(button => {
+            document.querySelectorAll('.comment-button[data-comment-id="{{ review.id }}"]').forEach(button => {
                 button.addEventListener('click', () => {
-                    getComments()
+                    getComments_{{ review.id }}()
                     const commentId = button.dataset.commentId;
                     const replyForm = document.getElementById(`reply-form-${commentId}`);
                 });
             });
         }); 
 
-        /*document.querySelectorAll('.comment-form').forEach(form => {
-            form.addEventListener('submit', async (e) => {
-                e.preventDefault();
-                const formData = new FormData(form);
-
-                const response = await fetch('/api/comments', {
-                    method: 'POST',
-                    body: formData
-                });
-
-                if (response.ok) {
-                    const comments = await response.json();
-                    console.log(comments); // Use this to re-render the comment section dynamically
-                } else {
-                    alert('Error submitting comment.');
-                }
-            });
-        });*/ 
-
 
     </script>
-          
+
+
+</div>
 {% endblock %}
