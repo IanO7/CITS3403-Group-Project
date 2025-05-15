@@ -266,14 +266,11 @@ input[type="range"].service-slider {
 
 /* Card Layouts */
 .card {
-    background-color: #FFFFFF; /* White background */
-    border-radius: 0.5rem; /* Rounded corners */
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow */
-    padding: 1.5rem; /* Inner padding */
-    margin-bottom: 1.5rem; /* Spacing between cards */
-    display: flex;
-    flex-direction: column;
-    gap: 1rem; /* Spacing between elements */
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 1.5rem;
+    text-align: center;
 }
 
 .card-header {
@@ -409,21 +406,6 @@ input[type="range"].service-slider {
     gap: 20px;
 }
 
-.badge-card {
-    width: 150px;
-    height: 150px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    border: 2px solid #ddd;
-    border-radius: 10px;
-    background-color: #f9f9f9;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
 .badge-card h3 {
     font-size: 1.2rem;
     margin-bottom: 10px;
@@ -505,12 +487,18 @@ input[type="range"].service-slider {
     margin-bottom: 2rem;
 }
 
-.card {
+/* Responsive chart container */
+.chart-card {
+    width: 100%;
+    max-width: 350px;
+    margin: 0 auto;
+    padding: 1rem;
     background: #fff;
-    border-radius: 10px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    padding: 1.5rem;
-    text-align: center;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .chart-card canvas {
@@ -527,27 +515,6 @@ input[type="range"].service-slider {
     background: #fff;
     border-radius: 10px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-/* Responsive chart container */
-.chart-card {
-    width: 100%;
-    max-width: 350px;
-    margin: 0 auto;
-    padding: 1rem;
-    background: #fff;
-    border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-.chart-card canvas {
-    width: 100% !important;
-    max-width: 250px;
-    height: auto !important;
-    aspect-ratio: 1 / 1;
 }
 
 /* Reviews Grid */

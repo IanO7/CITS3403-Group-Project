@@ -29,22 +29,48 @@ document.querySelectorAll('.like-button').forEach(button => {
     });
 });
 
+let postToDeleteId = null;
+
 document.querySelectorAll('.delete-button').forEach(button => {
     button.addEventListener('click', () => {
-        const noteId = button.getAttribute('data-note-id');
-        if (confirm("Are you sure you want to delete this post?")) {
-            fetch(`/delete_post/${noteId}`, { method: 'POST' })
-                .then(response => {
-                    if (response.ok) {
-                        alert("Post deleted successfully!");
-                        location.reload();
-                    } else {
-                        alert("Failed to delete the post. Please try again.");
-                    }
-                })
-                .catch(error => console.error('Error:', error));
-        }
+        postToDeleteId = button.getAttribute('data-note-id');
+        // Show the Bootstrap modal
+        const modal = new bootstrap.Modal(document.getElementById('deletePostModal'));
+        modal.show();
     });
+});
+
+document.getElementById('confirmDeletePostBtn').addEventListener('click', function() {
+    if (!postToDeleteId) return;
+    fetch(`/delete_post/${postToDeleteId}`, { method: 'POST' })
+        .then(response => {
+            const alertDiv = document.getElementById('singleShareAlert');
+            if (response.ok) {
+                alertDiv.className = 'alert alert-success';
+                alertDiv.textContent = 'Post deleted successfully!';
+                alertDiv.classList.remove('d-none');
+                setTimeout(() => {
+                    alertDiv.classList.add('d-none');
+                    location.reload();
+                }, 1500);
+            } else {
+                alertDiv.className = 'alert alert-danger';
+                alertDiv.textContent = 'Failed to delete the post. Please try again.';
+                alertDiv.classList.remove('d-none');
+                setTimeout(() => alertDiv.classList.add('d-none'), 4000);
+            }
+        })
+        .catch(error => {
+            const alertDiv = document.getElementById('singleShareAlert');
+            alertDiv.className = 'alert alert-danger';
+            alertDiv.textContent = 'Failed to delete the post. Please try again.';
+            alertDiv.classList.remove('d-none');
+            setTimeout(() => alertDiv.classList.add('d-none'), 4000);
+        });
+    // Hide the modal after action
+    const modal = bootstrap.Modal.getInstance(document.getElementById('deletePostModal'));
+    modal.hide();
+    postToDeleteId = null;
 });
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -154,11 +180,41 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     window.closeMultiShareModal = closeMultiShareModal;
 
+    // Hide multi-share mode when clicking outside posts area or modals
+    document.addEventListener('mousedown', function(event) {
+        const posts = document.getElementById('Posts');
+        const shareModal = document.getElementById('shareModal');
+        const multiShareModal = document.getElementById('multiShareModal');
+        const shareSelectedBtn = document.getElementById('shareSelectedBtn');
+        const shareMultipleBtn = document.getElementById('shareMultipleBtn');
+
+        // If multi-share mode is active and click is outside posts, modals, and share buttons
+        if (
+            posts.classList.contains('multi-share-mode') &&
+            !posts.contains(event.target) &&
+            !shareModal.contains(event.target) &&
+            !multiShareModal.contains(event.target) &&
+            event.target !== shareSelectedBtn &&
+            event.target !== shareMultipleBtn
+        ) {
+            posts.classList.remove('multi-share-mode');
+            shareSelectedBtn.classList.add('d-none');
+            // Uncheck and hide all checkboxes
+            document.querySelectorAll('.multi-share-checkbox').forEach(cb => {
+                cb.checked = false;
+            });
+        }
+    });
+
     // When "Share Selected" is clicked, open modal if at least one post is checked
     document.getElementById('shareSelectedBtn').addEventListener('click', function() {
         const checked = document.querySelectorAll('.multi-share-checkbox:checked');
         if (checked.length === 0) {
-            alert('Please select at least one post to share.');
+            const alertDiv = document.getElementById('multiShareAlert');
+            alertDiv.className = 'alert alert-danger';
+            alertDiv.textContent = 'Please select at least one post to share.';
+            alertDiv.classList.remove('d-none');
+            setTimeout(() => alertDiv.classList.add('d-none'), 4000);
             return;
         }
         selectedMultiUserId = null;
@@ -194,12 +250,20 @@ document.addEventListener('DOMContentLoaded', function() {
 
     document.getElementById('confirmMultiShareBtn').addEventListener('click', function() {
         if (!selectedMultiUserId) {
-            alert('Please select a user to share with.');
+            const alertDiv = document.getElementById('multiShareAlert');
+            alertDiv.className = 'alert alert-danger';
+            alertDiv.textContent = 'Please select a user to share with.';
+            alertDiv.classList.remove('d-none');
+            setTimeout(() => alertDiv.classList.add('d-none'), 4000);
             return;
         }
         const checked = Array.from(document.querySelectorAll('.multi-share-checkbox:checked')).map(cb => cb.value);
         if (checked.length === 0) {
-            alert('Please select at least one post to share.');
+            const alertDiv = document.getElementById('multiShareAlert');
+            alertDiv.className = 'alert alert-danger';
+            alertDiv.textContent = 'Please select at least one post to share.';
+            alertDiv.classList.remove('d-none');
+            setTimeout(() => alertDiv.classList.add('d-none'), 4000);
             return;
         }
         fetch('/share_multiple_posts', {
