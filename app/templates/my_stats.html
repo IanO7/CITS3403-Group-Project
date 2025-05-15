@@ -112,7 +112,7 @@
     <div class="card stat-card mt-4">
         <h3 class="card-title">🔍 Search Reviews</h3>
         <div class="form-group">
-            <input type="text" id="search-query" class="form-control" placeholder="Search food near me......">
+            <input type="text" id="search-query" class="form-control" placeholder="Search food near me......or...spicy food">
         </div>
         <button id="search-button" class="btn btn-primary mt-3">Search</button>
         <div id="search-results" class="recommendation-box mt-3">
@@ -338,7 +338,7 @@
                             }
                         })
                         .catch(error => {
-                            searchResults.innerHTML = '<p class="text-danger">An error occurred while fetching search results.</p>';
+                            searchResults.innerHTML = '<p class="text-danger">No food recommendations 😢</p>';
                         });
                 });
             } else {
@@ -356,7 +356,7 @@
                         }
                     })
                     .catch(error => {
-                        searchResults.innerHTML = '<p class="text-danger">An error occurred while fetching search results.</p>';
+                        searchResults.innerHTML = '<p class="text-danger">No food recommendations 😢</p>';
                     });
             }
         });

@@ -36,8 +36,6 @@
     <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4">
     {% for item in posts %}
         <div class="card-header">
-            <strong>From: {{ item.sender.username }}</strong><br>
-            <em>{{ item.timestamp.strftime('%Y-%m-%d %H:%M') }}</em>
             {% set review = item.note %}
             {% set current_user = user %}
             {% include "post.html" %}
@@ -50,28 +48,5 @@
 {% endblock %}
 
 {% block scripts %}
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    document.querySelectorAll('.approve-follow-btn').forEach(btn => {
-        btn.addEventListener('click', function() {
-            fetch(`/approve_follow/${btn.dataset.id}`, {method: 'POST'})
-                .then(res => res.json())
-                .then(data => {
-                    showOzfoodyNotification(data.message || "Request approved.", "success");
-                    btn.closest('li').remove();
-                });
-        });
-    });
-    document.querySelectorAll('.reject-follow-btn').forEach(btn => {
-        btn.addEventListener('click', function() {
-            fetch(`/reject_follow/${btn.dataset.id}`, {method: 'POST'})
-                .then(res => res.json())
-                .then(data => {
-                    showOzfoodyNotification(data.message || "Request rejected.", "error");
-                    btn.closest('li').remove();
-                });
-        });
-    });
-});
-</script>
+    <script src="{{ url_for('static', filename='JS/inbox.js') }}"></script>
 {% endblock %}

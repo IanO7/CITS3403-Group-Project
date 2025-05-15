@@ -13,6 +13,7 @@ from sklearn.neighbors import NearestNeighbors
 import re
 from collections import Counter, defaultdict
 import math
+from difflib import get_close_matches
 
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 
@@ -925,46 +926,181 @@ def search_reviews():
     lat = request.args.get('lat', type=float)
     lng = request.args.get('lng', type=float)
 
-    if 'near me' in query and lat is not None and lng is not None:
+    ATTR_SYNONYMS = {
+        'spiciness': ['spicy', 'heat', 'hot', 'smpicy', 'spiciness'],
+        'deliciousness': ['delicious', 'tasty', 'yummy', 'delish', 'deliciousness'],
+        'value': ['cheap', 'affordable', 'value for money', 'cheep', 'value'],
+        'service': ['service', 'staff', 'waiter'],
+        'stars': ['rating', 'stars', 'starred', 'star'],
+        'location': ['near me', 'around here', 'nearby', 'close by', 'close to me'],
+    }
+    COMMON_CUISINES = [
+        'indian', 'korean', 'japanese', 'ramen', 'pizza', 'italian', 'thai', 'chinese', 'mexican', 'burger', 'curry', 'sushi', 'noodle', 'bbq', 'seafood', 'french', 'greek'
+    ]
+    MODIFIERS = {
+        'high': ['high', 'very', 'super', 'extreme', 'max', 'maximum', 'most'],
+        'low': ['low', 'little', 'not', 'no', 'none', 'minimal', 'least', 'zero'],
+    }
+
+    import re
+    tokens = re.findall(r'\w+', query)
+    matched_attrs = set()
+    attr_thresholds = {}
+    attr_ranges = {}
+    cuisine_match = None
+    location_trigger = False
+
+    def fuzzy_match(token, group):
+        matches = get_close_matches(token, group, n=1, cutoff=0.7)
+        return matches[0] if matches else None
+
+    def extract_number(text):
+        nums = re.findall(r'\d+', text)
+        return int(nums[0]) if nums else None
+
+    # Detect modifiers for each attribute
+    for attr, synonyms in ATTR_SYNONYMS.items():
+        for mod_type, mod_words in MODIFIERS.items():
+            for mod in mod_words:
+                for syn in synonyms:
+                    # e.g. "high spicy", "very spicy", "no stars"
+                    if f"{mod} {syn}" in query or f"{syn} {mod}" in query:
+                        matched_attrs.add(attr)
+                        if attr == 'stars':
+                            if mod_type == 'low':
+                                attr_ranges[attr] = ('<=', 1)
+                            elif mod_type == 'high':
+                                attr_ranges[attr] = ('>=', 4)
+                        else:
+                            if mod_type == 'low':
+                                attr_ranges[attr] = ('<=', 40)
+                            elif mod_type == 'high':
+                                attr_ranges[attr] = ('>=', 80)
+    # Detect "not" or "no" as negative for attributes
+    for attr, synonyms in ATTR_SYNONYMS.items():
+        for syn in synonyms:
+            if f"not {syn}" in query or f"no {syn}" in query:
+                matched_attrs.add(attr)
+                if attr == 'stars':
+                    attr_ranges[attr] = ('<=', 1)
+                else:
+                    attr_ranges[attr] = ('<=', 20)
+
+    # Fuzzy match tokens to attributes and cuisines, and extract numbers
+    for token in tokens:
+        for attr, synonyms in ATTR_SYNONYMS.items():
+            match = fuzzy_match(token, synonyms)
+            if match:
+                matched_attrs.add(attr)
+                num = extract_number(query)
+                if num is not None:
+                    attr_thresholds[attr] = num
+        cuisine = fuzzy_match(token, COMMON_CUISINES)
+        if cuisine:
+            cuisine_match = cuisine
+
+    # Fuzzy match for location trigger (multi-word)
+    for loc_kw in ATTR_SYNONYMS['location']:
+        if get_close_matches(loc_kw, [query], n=1, cutoff=0.7):
+            location_trigger = True
+            break
+
+    # Proximity search
+    if location_trigger and lat is not None and lng is not None:
         def haversine(lat1, lon1, lat2, lon2):
-            R = 6371  # Earth radius in km
+            R = 6371
             phi1, phi2 = math.radians(lat1), math.radians(lat2)
             dphi = math.radians(lat2 - lat1)
             dlambda = math.radians(lon2 - lon1)
             a = math.sin(dphi/2)**2 + math.cos(phi1)*math.cos(phi2)*math.sin(dlambda/2)**2
             return R * 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
-
-        # Only consider notes with valid lat/lng (not 0)
         notes = Note.query.filter(
             Note.latitude.isnot(None),
             Note.longitude.isnot(None),
             Note.latitude != 0,
             Note.longitude != 0
         ).all()
-
         results = []
         for n in notes:
-            # Check for exact match (within a very small epsilon)
-            if abs(n.latitude - lat) < 1e-5 and abs(n.longitude - lng) < 1e-5:
+            distance = haversine(lat, lng, n.latitude, n.longitude)
+            if distance <= 5:
                 results.append(n)
+    else:
+        notes_query = Note.query
+        # Apply attribute filters with modifiers and thresholds
+        if 'spiciness' in matched_attrs:
+            if 'spiciness' in attr_ranges:
+                op, val = attr_ranges['spiciness']
+                if op == '>=':
+                    notes_query = notes_query.filter(Note.Spiciness >= val)
+                else:
+                    notes_query = notes_query.filter(Note.Spiciness <= val)
             else:
-                distance = haversine(lat, lng, n.latitude, n.longitude)
-                if distance <= 5:
-                    results.append(n)
+                val = attr_thresholds.get('spiciness', 80)
+                notes_query = notes_query.filter(Note.Spiciness >= val)
+        if 'deliciousness' in matched_attrs:
+            if 'deliciousness' in attr_ranges:
+                op, val = attr_ranges['deliciousness']
+                if op == '>=':
+                    notes_query = notes_query.filter(Note.Deliciousness >= val)
+                else:
+                    notes_query = notes_query.filter(Note.Deliciousness <= val)
+            else:
+                val = attr_thresholds.get('deliciousness', 80)
+                notes_query = notes_query.filter(Note.Deliciousness >= val)
+        if 'value' in matched_attrs:
+            if 'value' in attr_ranges:
+                op, val = attr_ranges['value']
+                if op == '>=':
+                    notes_query = notes_query.filter(Note.Value >= val)
+                else:
+                    notes_query = notes_query.filter(Note.Value <= val)
+            else:
+                val = attr_thresholds.get('value', 80)
+                notes_query = notes_query.filter(Note.Value >= val)
+        if 'service' in matched_attrs:
+            if 'service' in attr_ranges:
+                op, val = attr_ranges['service']
+                if op == '>=':
+                    notes_query = notes_query.filter(Note.Service >= val)
+                else:
+                    notes_query = notes_query.filter(Note.Service <= val)
+            else:
+                val = attr_thresholds.get('service', 80)
+                notes_query = notes_query.filter(Note.Service >= val)
+        if 'stars' in matched_attrs:
+            if 'stars' in attr_ranges:
+                op, val = attr_ranges['stars']
+                if op == '>=':
+                    notes_query = notes_query.filter(Note.Stars >= val)
+                else:
+                    notes_query = notes_query.filter(Note.Stars <= val)
+            else:
+                val = attr_thresholds.get('stars', 4)
+                notes_query = notes_query.filter(Note.Stars >= val)
+        if cuisine_match:
+            notes_query = notes_query.filter(Note.Cuisine.ilike(f"%{cuisine_match}%"))
+        if not matched_attrs and not cuisine_match:
+            notes_query = notes_query.filter(
+                (Note.Resturaunt.ilike(f"%{query}%")) | (Note.Review.ilike(f"%{query}%"))
+            )
+        results = notes_query.all()
 
-        results_data = [{
-            'id': n.id,
-            'restaurant': n.Resturaunt,
-            'review': n.Review,
-            'image': n.image,
-            'spiciness': n.Spiciness,
-            'deliciousness': n.Deliciousness,
-            'value': n.Value,
-            'service': n.Service,
-            'cuisine': n.Cuisine,
-            'location': n.location
-        } for n in results]
-        return jsonify(success=True, results=results_data)
+    results_data = [{
+        'id': n.id,
+        'restaurant': n.Resturaunt,
+        'review': n.Review,
+        'image': n.image,
+        'spiciness': n.Spiciness,
+        'deliciousness': n.Deliciousness,
+        'value': n.Value,
+        'service': n.Service,
+        'cuisine': n.Cuisine,
+        'location': n.location,
+        'stars': getattr(n, 'Stars', 5)
+    } for n in results]
+    return jsonify(success=True, results=results_data)
+
 
 @views.route('/share_post', methods=['POST'])
 def share_post():
