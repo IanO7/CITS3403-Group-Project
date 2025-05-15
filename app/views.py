@@ -3,7 +3,7 @@ from flask import (
     url_for, session, jsonify, abort, flash, current_app, 
     send_from_directory )
 
-from .models import Note, User, Follow, Comments, SharedPost
+from .models import Note, User, Follow, Comments, SharedPost, ReviewImage
 from . import db
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
@@ -152,16 +152,9 @@ def new_post():
 
     if request.method == 'POST':
 
-        image_file = request.files.get('image')
+        images = request.files.getlist("images")
         image_path = None
 
-        if image_file:
-            filename = secure_filename(os.path.basename(image_file.filename))
-            upload_folder = current_app.config['UPLOAD_FOLDER']
-            os.makedirs(upload_folder, exist_ok=True)
-            image_path = os.path.join(upload_folder, filename)
-            image_file.save(image_path)
-            image_filename = filename
 
        
         note = Note(
@@ -173,9 +166,6 @@ def new_post():
             Stars=int(request.form['Stars']),
             Service=int(request.form['Service']),
             Review=request.form['Review'],
-
-            image=image_filename, 
-
             location=request.form.get('location'),
             latitude  = float(request.form.get('latitude') or 0),
             longitude = float(request.form.get('longitude') or 0),
@@ -184,6 +174,20 @@ def new_post():
 
         db.session.add(note)
         db.session.commit()
+
+        for image_file in images:
+            if image_file:
+                filename = secure_filename(os.path.basename(image_file.filename))
+                upload_folder = current_app.config['UPLOAD_FOLDER']
+                os.makedirs(upload_folder, exist_ok=True)
+                image_path = os.path.join(upload_folder, filename)
+                image_file.save(image_path)
+                image_filename = filename
+                review_image = ReviewImage(filename=image_filename, review_id=note.id)
+                db.session.add(review_image)
+        
+        db.session.commit()
+
         return redirect(url_for('views.profile'))
 
     return render_template('newPost.html')
