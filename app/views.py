@@ -112,7 +112,7 @@ def profile():
             'earned': len(reviews) > 0,
         },
         {
-            'name': 'Spice Master',
+            'name': 'Spice God',
             'earned': len(reviews) >= min_reviews_spice and stats['spiciness'] > 80,
         },
         {
@@ -235,7 +235,7 @@ def my_stats():
             'description': 'Write your first post!'
         },
         {
-            'name': '🌶️ Spice Master',
+            'name': '🌶️ Spice God',
             'earned': len(notes) >= min_reviews_spice and stats['spiciness'] > 80,
             'description': f'Average spiciness above 80% (at least {min_reviews_spice} reviews)'
         },
@@ -348,7 +348,7 @@ def friends():
         }
         badges = [
             {'name': 'First Post', 'earned': len(u_notes) > 0},
-            {'name': 'Spice Master', 'earned': stats['spiciness'] > 80},
+            {'name': 'Spice God', 'earned': stats['spiciness'] > 80},
             {'name': 'Service Perfectionist', 'earned': stats['service'] > 90},
             {'name': 'Value Hunter', 'earned': stats['value'] > 85},
             {'name': 'Food Critic', 'earned': len(u_notes) > 20},
@@ -679,7 +679,7 @@ def user_profile(user_id):
     # Calculate user level
     badges = [
         {'name': 'First Post', 'earned': len(posts) > 0},
-        {'name': 'Spice Master', 'earned': stats['spiciness'] > 80},
+        {'name': 'Spice God', 'earned': stats['spiciness'] > 80},
         {'name': 'Service Perfectionist', 'earned': stats['service'] > 90},
         {'name': 'Value Hunter', 'earned': stats['value'] > 85},
         {'name': 'Food Critic', 'earned': len(posts) > 20},
