@@ -47,6 +47,45 @@ def get_user_level(badges):
     else:
         return 1
 
+def get_badges_and_level(posts, stats):
+    min_reviews_spice = 5
+    min_reviews_service = 5
+    min_reviews_value = 5
+    min_reviews_critic = 20
+    min_reviews_allrounder = 10
+
+    badges = [
+        {
+            'name': 'First Post',
+            'earned': len(posts) > 0,
+        },
+        {
+            'name': 'Spice God',
+            'earned': len(posts) >= min_reviews_spice and stats['spiciness'] > 80,
+        },
+        {
+            'name': 'Service Perfectionist',
+            'earned': len(posts) >= min_reviews_service and stats['service'] > 90,
+        },
+        {
+            'name': 'Value Hunter',
+            'earned': len(posts) >= min_reviews_value and stats['value'] > 85,
+        },
+        {
+            'name': 'Food Critic',
+            'earned': len(posts) >= min_reviews_critic,
+        },
+        {
+            'name': 'All-Rounder',
+            'earned': (
+                len(posts) >= min_reviews_allrounder and
+                all(stat > 75 for stat in stats.values())
+            ),
+        },
+    ]
+    level = get_user_level(badges)
+    return badges, level
+
 @views.route('/uploads/<filename>')
 def uploaded_file(filename):
     return send_from_directory(current_app.config['UPLOAD_FOLDER'], filename)
@@ -667,25 +706,15 @@ def user_profile(user_id):
         'value': sum(n.Value for n in posts) / total_posts,
         'service': sum(n.Service for n in posts) / total_posts,
     }
+    badges, user_level = get_badges_and_level(posts, stats)
+
     average_ratings = [
         (n.Spiciness + n.Deliciousness + n.Value + n.Service) / 4 for n in posts
     ]
     overall_average_rating = sum(average_ratings) / total_posts
 
-    # Add follow status objects
     follow = Follow.query.filter_by(follower_id=user.id, followed_id=selected_user.id).first()
     incoming = Follow.query.filter_by(follower_id=selected_user.id, followed_id=user.id, status='pending').first()
-
-    # Calculate user level
-    badges = [
-        {'name': 'First Post', 'earned': len(posts) > 0},
-        {'name': 'Spice God', 'earned': stats['spiciness'] > 80},
-        {'name': 'Service Perfectionist', 'earned': stats['service'] > 90},
-        {'name': 'Value Hunter', 'earned': stats['value'] > 85},
-        {'name': 'Food Critic', 'earned': len(posts) > 20},
-        {'name': 'All-Rounder', 'earned': all(stat > 75 for stat in stats.values())}
-    ]
-    user_level = sum(1 for badge in badges if badge['earned'])
 
     if request.method == 'POST':
         comment = Comments(
@@ -700,7 +729,7 @@ def user_profile(user_id):
 
     comments_by_review = {
         review.id: [comment.to_dict() for comment in review.comments]
-        for review in posts  # or whatever your review list is called
+        for review in posts
     }
 
     return render_template(
@@ -713,9 +742,46 @@ def user_profile(user_id):
         follow=follow,
         incoming=incoming,
         user_level=user_level,
+        badges=badges,
         comments_by_review=comments_by_review
     )
 
+@views.route('/search_users', methods=['GET'])
+def search_users():
+    user = current_user()
+    if not user:
+        return redirect(url_for('auth.login'))
+
+    query = request.args.get('q', '').strip()
+    if not query:
+        flash("Please enter a search term.", "warning")
+        return redirect(url_for('views.friends'))
+
+    results = User.query.filter(User.username.ilike(f"%{query}%")).all()
+
+    user_levels = {}
+    user_badges = {}
+    for result in results:
+        notes = get_user_notes(result)
+        total = len(notes) or 1
+        stats = {
+            'spiciness': sum(n.Spiciness for n in notes) / total,
+            'deliciousness': sum(n.Deliciousness for n in notes) / total,
+            'value': sum(n.Value for n in notes) / total,
+            'service': sum(n.Service for n in notes) / total
+        }
+        badges, level = get_badges_and_level(notes, stats)
+        user_levels[result.id] = level
+        user_badges[result.id] = badges
+
+    return render_template(
+        'search_results.html',
+        user=user,
+        query=query,
+        results=results,
+        user_levels=user_levels,
+        user_badges=user_badges
+    )
 
 @views.route('/api/search_suggestions', methods=['GET'])
 def search_suggestions():
@@ -810,49 +876,6 @@ def recommend_food():
         })
 
     return jsonify(success=True, recommendations=recommendations)
-
-@views.route('/search_users', methods=['GET'])
-def search_users():
-    user = current_user()
-    if not user:
-        return redirect(url_for('auth.login'))
-
-    query = request.args.get('q', '').strip()
-    if not query:
-        flash("Please enter a search term.", "warning")
-        return redirect(url_for('views.friends'))
-
-    # Search for users by username
-    results = User.query.filter(User.username.ilike(f"%{query}%")).all()
-
-    # Calculate levels for search results
-    user_levels = {}
-    for result in results:
-        notes = get_user_notes(result)
-        total = len(notes) or 1
-        stats = {
-            'spiciness': sum(n.Spiciness for n in notes) / total,
-            'deliciousness': sum(n.Deliciousness for n in notes) / total,
-            'value': sum(n.Value for n in notes) / total,
-            'service': sum(n.Service for n in notes) / total
-        }
-        badges = [
-            {'name': 'First Post', 'earned': len(notes) > 0},
-            {'name': 'Spice Master', 'earned': stats['spiciness'] > 80},
-            {'name': 'Service Perfectionist', 'earned': stats['service'] > 90},
-            {'name': 'Value Hunter', 'earned': stats['value'] > 85},
-            {'name': 'Food Critic', 'earned': len(notes) > 20},
-            {'name': 'All-Rounder', 'earned': all(stat > 75 for stat in stats.values())}
-        ]
-        user_levels[result.id] = sum(1 for badge in badges if badge['earned'])
-
-    return render_template(
-        'search_results.html',
-        user=user,
-        query=query,
-        results=results,
-        user_levels=user_levels
-    )
 
 @views.route('/trending_dishes', methods=['GET'])
 def trending_dishes():
