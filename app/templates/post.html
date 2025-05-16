@@ -15,6 +15,9 @@
                         alt="{{ user.username }}'s profile picture"
                         class="profile-image">
                 {% endif %}
+
+                <p> {{ user.id }} </p>
+
                 
                 <h5 class="card-title mb-1">{{ review.Restaurant }}</h5>
 
@@ -149,7 +152,6 @@
                 <div class="modal-body">
                     <form method="POST">
                         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-
                         <div class="form-group p-3">
                             <input type="hidden" name="note_id" value="{{ review.id }}">
                             <input type="hidden" name="parentID" value="0">
@@ -171,5 +173,6 @@
 
 </div>
 <script src="{{ url_for('static', filename='js/post.js') }}"></script>
+<script> const commentsByReview = {{ comments_by_review | tojson }}; </script>
 {% endblock %}
 
