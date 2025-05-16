@@ -207,6 +207,7 @@ def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 @views.route('/new_post', methods=['GET', 'POST'])
+@login_required
 def new_post():
     user = current_user
     if not user:
@@ -255,6 +256,7 @@ def new_post():
     return render_template('newPost.html')
 
 @views.route('/my_stats')
+@login_required
 def my_stats():
     user = current_user
     if not user:
@@ -566,6 +568,7 @@ def unfollow(user_id):
 
 
 @views.route("/settings", methods=["GET", "POST"])
+@login_required
 def settings():
     user = current_user
     if not user:
@@ -929,6 +932,7 @@ def merged_posts():
     return jsonify(success=True, posts=posts_data)
 
 @views.route('/friend_posts', methods=['GET'])
+@login_required
 def friend_posts():
     user = current_user
     if not user:
@@ -1233,6 +1237,7 @@ def share_multiple_posts():
     )
 
 @views.route('/inbox')
+@login_required
 def inbox():
     user = current_user
     if not user:
