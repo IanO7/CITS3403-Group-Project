@@ -3,10 +3,14 @@ const csrfToken = document
   .querySelector('meta[name="csrf-token"]')
   .getAttribute('content');
 
-// Helper to POST a form via AJAX, using getAttribute to avoid name shadowing
-function ajaxPost(form) {
+// Updated ajaxPost with extra parameter support
+function ajaxPost(form, extra) {
   const url = form.getAttribute('action');
   const formData = new FormData(form);
+  // lets us add or override fields in a single place
+  if (extra) {
+    Object.entries(extra).forEach(([k, v]) => formData.set(k, v));
+  }
   return fetch(url, {
     method: 'POST',
     headers: { 'X-CSRFToken': csrfToken },
@@ -36,42 +40,46 @@ emailForm?.addEventListener('submit', function(event) {
 
 // Extra confirmation for delete account
 const deleteForm = document.getElementById('delete-account-form');
-deleteForm?.addEventListener('submit', function(event) {
-  event.preventDefault();
-  showOzfoodyNotification(
-    `Are you sure you want to delete your account? This action cannot be undone.<br>
-     <button id="confirm-delete-btn" class="btn btn-danger mt-3 me-2">Yes, delete my account</button>
-     <button id="cancel-delete-btn" class="btn btn-secondary mt-3">No, keep my account</button>`,
-    'error',
-    10000
-  );
+deleteForm?.addEventListener('submit', e => {
+    e.preventDefault();
+    showOzfoodyNotification(
+        `Are you sure you want to delete your account? This action cannot be undone.<br>
+         <button id="confirm-delete-btn" class="btn btn-danger mt-3 me-2">Yes, delete my account</button>
+         <button id="cancel-delete-btn"  class="btn btn-secondary mt-3">No, keep my account</button>`,
+        'error',
+        10000
+    );
 
-  setTimeout(() => {
-    const yesBtn = document.getElementById('confirm-delete-btn');
-    const noBtn = document.getElementById('cancel-delete-btn');
+    // Wait for the buttons to exist in the DOM, then wire them up
+    setTimeout(() => {
+        const yes = document.getElementById('confirm-delete-btn');
+        const no  = document.getElementById('cancel-delete-btn');
 
-    yesBtn?.addEventListener('click', () => {
-      ajaxPost(deleteForm)
-        .then(data => {
-          if (data.success) {
-            showOzfoodyNotification(data.message, 'success');
-            window.location.href = '/landing';
-          } else {
-            showOzfoodyNotification(data.error || 'An unexpected error occurred.', 'error');
-          }
-        })
-        .catch(err => {
-          showOzfoodyNotification('A network error occurred.', 'error');
-          console.error('Fetch error:', err);
+        yes?.addEventListener('click', () => {
+            // Pass an extra field to let the server know this is a delete account action
+            ajaxPost(deleteForm, { action: 'delete_account' })
+                .then(data => {
+                    if (data.success) {
+                        showOzfoodyNotification(data.message, 'success');
+                        window.location.href = '/landing';
+                    } else {
+                        showOzfoodyNotification(data.error || 'Unexpected error', 'error');
+                    }
+                })
+                .catch(err => {
+                    showOzfoodyNotification('Network error', 'error');
+                    console.error('delete fetch', err);
+                });
         });
-    });
 
-    noBtn?.addEventListener('click', () => {
-      const notif = document.getElementById('ozfoody-notification');
-      notif.classList.remove('show');
-      setTimeout(() => { notif.style.display = 'none'; }, 300);
-    });
-  }, 100);
+        no?.addEventListener('click', () => {
+            const notif = document.getElementById('ozfoody-notification');
+            notif.classList.remove('show');
+            setTimeout(() => {
+                notif.style.display = 'none';
+            }, 300);
+        });
+    }, 100);
 });
 
 // Attach AJAX to all other forms

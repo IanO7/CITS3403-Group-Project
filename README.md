@@ -17,6 +17,12 @@ OZfoody is a social restaurant review platform for discovering, sharing, and dis
 
 ## Project Structure
 
+Name            Student number  Github Username
+Divyank Sharma  23810783        divxsharma
+Ian Oon         23722317        IanO7
+Vanilla Tran    24060828        cipherbunnie
+Isabel Newlands 23803298        eye4c
+
 ```
 app/
     __init__.py
