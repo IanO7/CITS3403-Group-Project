@@ -51,7 +51,7 @@ function renderComments(reviewId) {
     wrapper.className = 'p-3 border rounded bg-light shadow-sm';
     wrapper.innerHTML = `
       <div>
-        <img src="${comment.profileImage}" class="profileImageSmaller" />
+        <img src="${comment.profileImage}" class="profileImageSmaller" alt="profile pic"/>
         <strong>${comment.username}</strong>
       </div>
       <p>${comment.Comment}</p>
