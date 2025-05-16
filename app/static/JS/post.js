@@ -41,9 +41,7 @@ document.addEventListener('DOMContentLoaded', () => {
 // 2. Render comments (unchanged)
 // ─────────────────────────────────────────────────────────────────────────────
 function renderComments(reviewId) {
-  // Get current user ID from the main comment form in the modal
-  const currentUserId = document.querySelector(`#commentsModal-${reviewId} input[name="user_id"]`).value;
-  const comments = window[`comments_${reviewId}`] || [];
+  const comments = commentsByReview[reviewId] || [];;
   const container = document.getElementById(`comment-area-${reviewId}`);
   container.innerHTML = '';
 
@@ -57,37 +55,12 @@ function renderComments(reviewId) {
         <strong>${comment.username}</strong>
       </div>
       <p>${comment.Comment}</p>
-      <button class="btn btn-sm btn-outline-primary reply-toggle" data-id="${comment.id}">Reply</button>
-      <div id="reply-form-${comment.id}" class="d-none">
-        <form method="POST">
-          <input type="hidden" name="csrf_token" value="${window.CSRF_TOKEN}" />
-          <input type="hidden" name="note_id" value="${reviewId}" />
-          <input type="hidden" name="parentID" value="${comment.id}" />
-          **<input type="hidden" name="user_id" value="${currentUserId}" />**
-          <textarea name="Comment" class="form-control mb-2" required></textarea>
-          <button type="submit" class="btn btn-primary btn-sm">Reply</button>
-        </form>
-      </div>
     `;
     container.appendChild(wrapper);
-  });
-
- 
-
-
-
-  // Toggle reply forms
-  container.querySelectorAll('.reply-toggle').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const id = btn.dataset.id;
-      document.getElementById(`reply-form-${id}`).classList.toggle('d-none');
-    });
-  });
+  })
 }
 
-
-
-
+  // Toggle reply forms after all comments are rendered
 
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -112,4 +85,4 @@ function handleLike(evt) {
     }
   })
   .catch(err => console.error('Network error:', err));
-}
+}; 
