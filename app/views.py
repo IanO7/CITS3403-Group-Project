@@ -736,7 +736,7 @@ def recommend_food():
         return jsonify(success=False, error='User not authenticated'), 401
 
     # Fetch all food items; ENSURE THAT OWN USER'S POSTS ARE NOT RECOMMENDED TO THEMSELVES!
-    food_items = Note.query.all().filter(Note.user_id != user.id).all()
+    food_items = Note.query.filter(Note.user_id != user.id).all()
 
     # Gather all unique cuisines and locations for one-hot encoding
     all_cuisines = sorted({food.Cuisine for food in food_items if food.Cuisine})
