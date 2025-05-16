@@ -46,6 +46,10 @@ README.md
 
 ## Getting Started
 
+> **Note for Windows users:**  
+> Make sure to open your Ubuntu (WSL) terminal before running the following commands.  
+> All setup and `flask run` commands should be executed inside your Ubuntu (WSL) environment, not in Windows CMD or PowerShell.
+
 ### Prerequisites
 
 - Python 3.8+

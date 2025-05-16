@@ -182,6 +182,7 @@ def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 @views.route('/new_post', methods=['GET', 'POST'])
+@login_required
 def new_post():
     user = current_user
     if not user:
@@ -230,6 +231,7 @@ def new_post():
     return render_template('newPost.html')
 
 @views.route('/my_stats')
+@login_required
 def my_stats():
     user = current_user
     if not user:
@@ -318,6 +320,7 @@ def global_stats():
     return render_template('others_stats.html')
 
 @views.route('/friends', methods=['GET', 'POST'])
+@login_required
 def friends():
     user = current_user
     if not user:
@@ -423,6 +426,7 @@ def friends():
     )
 
 @views.route('/like/<int:note_id>', methods=['POST'])
+@login_required
 def like(note_id):
     user = current_user
     if not user:
@@ -450,6 +454,7 @@ def like(note_id):
     return jsonify(success=True, likes=note.likes), 200
 
 @views.route('/edit_post/<int:note_id>', methods=['GET','POST'])
+@login_required
 def edit_post(note_id):
     user = current_user
     if not user:
@@ -471,6 +476,7 @@ def edit_post(note_id):
     return render_template('editPost.html', note=note)
 
 @views.route('/delete_post/<int:note_id>', methods=['POST'])
+@login_required
 def delete_post(note_id):
     user = current_user
     if not user:
@@ -494,6 +500,7 @@ def api_reviews():
     ])
 
 @views.route('/follow/<int:user_id>', methods=['POST'])
+@login_required
 def follow(user_id):
     user = current_user
     if not user or user.id == user_id:
@@ -513,6 +520,7 @@ def follow(user_id):
     return jsonify(success=True, message="Follow request sent."), 200
 
 @views.route('/approve_follow/<int:follow_id>', methods=['POST'])
+@login_required
 def approve_follow(follow_id):
     user = current_user
     follow = Follow.query.get_or_404(follow_id)
@@ -523,6 +531,7 @@ def approve_follow(follow_id):
     return jsonify(success=True, message="Follow request approved.")
 
 @views.route('/reject_follow/<int:follow_id>', methods=['POST'])
+@login_required
 def reject_follow(follow_id):
     user = current_user
     follow = Follow.query.get_or_404(follow_id)
@@ -533,6 +542,7 @@ def reject_follow(follow_id):
     return jsonify(success=True, message="Follow request rejected.")
 
 @views.route('/unfollow/<int:user_id>', methods=['POST'])
+@login_required
 def unfollow(user_id):
     user = current_user
     if not user:
@@ -548,6 +558,7 @@ def unfollow(user_id):
 
 
 @views.route("/settings", methods=["GET", "POST"])
+@login_required
 def settings():
     user = current_user
     if not user:
@@ -630,6 +641,7 @@ def settings():
     return render_template("settings.html", user=user)
 
 @views.route('/search', methods=['GET'])
+@login_required
 def search():
     user = current_user
     if not user:
@@ -646,6 +658,7 @@ def search():
 
 
 @views.route('/user/<int:user_id>', methods=['GET', 'POST'])
+@login_required
 def user_profile(user_id):
     user = current_user
     if not user:
@@ -701,6 +714,7 @@ def user_profile(user_id):
     )
 
 @views.route('/search_users', methods=['GET'])
+@login_required
 def search_users():
     user = current_user
     if not user:
@@ -750,6 +764,7 @@ def search_suggestions():
     return jsonify(success=True, suggestions=[user.username for user in suggestions])
 
 @views.route('/recommend_food', methods=['GET'])
+@login_required
 def recommend_food():
     user = current_user
     if not user:
@@ -852,6 +867,7 @@ def trending_dishes():
     return jsonify(success=True, dishes=trending_data)
 
 @views.route('/merged_posts', methods=['GET'])
+@login_required
 def merged_posts():
     user = current_user
     if not user:
@@ -896,6 +912,7 @@ def merged_posts():
     return jsonify(success=True, posts=posts_data)
 
 @views.route('/friend_posts', methods=['GET'])
+@login_required
 def friend_posts():
     user = current_user
     if not user:
@@ -1119,6 +1136,7 @@ def search_reviews():
 
 
 @views.route('/share_post', methods=['POST'])
+@login_required
 def share_post():
     user = current_user
     if not user:
@@ -1158,6 +1176,7 @@ def share_post():
     return jsonify(success=True, message="Post shared successfully!"), 200
 
 @views.route('/share_multiple_posts', methods=['POST'])
+@login_required
 def share_multiple_posts():
     user = current_user
     if not user:
@@ -1200,6 +1219,7 @@ def share_multiple_posts():
     )
 
 @views.route('/inbox')
+@login_required
 def inbox():
     user = current_user
     if not user:
@@ -1262,6 +1282,7 @@ def inbox():
 
 
 @views.route('/api/users')
+@login_required
 def api_users():
     user = current_user
     if not user:
