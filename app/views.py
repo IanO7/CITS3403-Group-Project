@@ -383,15 +383,8 @@ def friends():
             'value': sum(n.Value for n in u_notes) / total,
             'service': sum(n.Service for n in u_notes) / total
         }
-        badges = [
-            {'name': 'First Post', 'earned': len(u_notes) > 0},
-            {'name': 'Spice God', 'earned': stats['spiciness'] > 80},
-            {'name': 'Service Perfectionist', 'earned': stats['service'] > 90},
-            {'name': 'Value Hunter', 'earned': stats['value'] > 85},
-            {'name': 'Food Critic', 'earned': len(u_notes) > 20},
-            {'name': 'All-Rounder', 'earned': all(stat > 75 for stat in stats.values())}
-        ]
-        user_levels[u.id] = sum(1 for badge in badges if badge['earned'])
+        badges, level = get_badges_and_level(u_notes, stats)
+        user_levels[u.id] = level
     
     if request.method == 'POST':
         comment = Comments(
@@ -641,6 +634,21 @@ def search():
 
     # Search for users whose username contains the query (case-insensitive)
     search_results = User.query.filter(User.username.ilike(f"%{query}%")).all()
+
+    user_levels = {}
+    user_badges = {}
+    for result in search_results:
+        notes = get_user_notes(result)
+        total = len(notes) or 1
+        stats = {
+            'spiciness': sum(n.Spiciness for n in notes) / total,
+            'deliciousness': sum(n.Deliciousness for n in notes) / total,
+            'value': sum(n.Value for n in notes) / total,
+            'service': sum(n.Service for n in notes) / total
+        }
+        badges, level = get_badges_and_level(notes, stats)
+        user_levels[result.id] = level
+        user_badges[result.id] = badges
 
     return render_template('search_results.html', user=user, query=query, search_results=search_results)
 
