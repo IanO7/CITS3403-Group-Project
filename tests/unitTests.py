@@ -51,7 +51,7 @@ class AuthTestCase(BaseTestCase):
             'username': 'u2', 'email': 'u@example.com',
             'password': 'pass', 'confirm_password': 'pass'
         }, follow_redirects=True)
-        self.assertIn(b'already registered', resp.data)
+        self.assertIn(b'Email already registered', resp.data)
 
 # tests/models.py
 
