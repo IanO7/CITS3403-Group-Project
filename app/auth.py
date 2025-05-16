@@ -55,7 +55,7 @@ def sign_up():
             db.session.add(new_user)
             db.session.commit()
 
-            session['user_id'] = new_user.id
+            login_user(new_user)
             flash(f'Welcome, {username}! Your account has been created.', 'success')
             return redirect(url_for('views.profile'))
 

@@ -14,6 +14,7 @@ import re
 from collections import Counter, defaultdict
 import math
 from difflib import get_close_matches
+from flask_login import current_user, login_required
 
 
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
@@ -25,10 +26,6 @@ views = Blueprint('views', __name__)
 def get_user_notes(user):
     """Fetch all notes for a given user."""
     return Note.query.filter_by(user_id=user.id).all()
-    
-def current_user():
-    uid = session.get('user_id')
-    return User.query.get(uid) if uid else None
 
 # Helper to fetch reviews for a user
 def getReviews(user):
@@ -106,8 +103,9 @@ def landing():
 
 
 @views.route('/profile', methods=['GET', 'POST'])
+@login_required
 def profile():
-    user = current_user()
+    user = current_user
     if not user:
         return redirect(url_for('auth.login')) 
 
@@ -185,7 +183,7 @@ def allowed_file(filename):
 
 @views.route('/new_post', methods=['GET', 'POST'])
 def new_post():
-    user = current_user()
+    user = current_user
     if not user:
         return redirect(url_for('auth.login'))
 
@@ -233,7 +231,7 @@ def new_post():
 
 @views.route('/my_stats')
 def my_stats():
-    user = current_user()
+    user = current_user
     if not user:
         return redirect(url_for('auth.login'))
 
@@ -321,7 +319,7 @@ def global_stats():
 
 @views.route('/friends', methods=['GET', 'POST'])
 def friends():
-    user = current_user()
+    user = current_user
     if not user:
         return redirect(url_for('auth.login'))
 
@@ -426,7 +424,7 @@ def friends():
 
 @views.route('/like/<int:note_id>', methods=['POST'])
 def like(note_id):
-    user = current_user()
+    user = current_user
     if not user:
         return jsonify(success=False, error='User not authenticated'), 401
 
@@ -453,7 +451,7 @@ def like(note_id):
 
 @views.route('/edit_post/<int:note_id>', methods=['GET','POST'])
 def edit_post(note_id):
-    user = current_user()
+    user = current_user
     if not user:
         return redirect(url_for('auth.login'))
 
@@ -474,7 +472,7 @@ def edit_post(note_id):
 
 @views.route('/delete_post/<int:note_id>', methods=['POST'])
 def delete_post(note_id):
-    user = current_user()
+    user = current_user
     if not user:
         return redirect(url_for('auth.login'))
 
@@ -497,7 +495,7 @@ def api_reviews():
 
 @views.route('/follow/<int:user_id>', methods=['POST'])
 def follow(user_id):
-    user = current_user()
+    user = current_user
     if not user or user.id == user_id:
         return jsonify(success=False, error="Invalid request"), 400
 
@@ -516,7 +514,7 @@ def follow(user_id):
 
 @views.route('/approve_follow/<int:follow_id>', methods=['POST'])
 def approve_follow(follow_id):
-    user = current_user()
+    user = current_user
     follow = Follow.query.get_or_404(follow_id)
     if follow.followed_id != user.id:
         return jsonify(success=False, error="Not authorized"), 403
@@ -526,7 +524,7 @@ def approve_follow(follow_id):
 
 @views.route('/reject_follow/<int:follow_id>', methods=['POST'])
 def reject_follow(follow_id):
-    user = current_user()
+    user = current_user
     follow = Follow.query.get_or_404(follow_id)
     if follow.followed_id != user.id:
         return jsonify(success=False, error="Not authorized"), 403
@@ -536,7 +534,7 @@ def reject_follow(follow_id):
 
 @views.route('/unfollow/<int:user_id>', methods=['POST'])
 def unfollow(user_id):
-    user = current_user()
+    user = current_user
     if not user:
         return jsonify(success=False, error='User not authenticated'), 401
 
@@ -551,7 +549,7 @@ def unfollow(user_id):
 
 @views.route("/settings", methods=["GET", "POST"])
 def settings():
-    user = current_user()
+    user = current_user
     if not user:
         return redirect(url_for("auth.login"))
 
@@ -631,53 +629,9 @@ def settings():
     # GET → render page
     return render_template("settings.html", user=user)
 
-'''
-@views.route('/verify_password', methods=['POST'])
-def verify_password():
-    # Check if user is authenticated
-    if not current_user.is_authenticated:
-        return jsonify({
-            'valid': False,
-            'error': 'Authentication required'
-        }), 401
-
-    try:
-        # Get JSON data with explicit content type check
-        if not request.is_json:
-            return jsonify({
-                'valid': False,
-                'error': 'Content-Type must be application/json'
-            }), 400
-
-        data = request.get_json()
-        current_password = data.get('current_password')
-        
-        if not current_password:
-            return jsonify({
-                'valid': False,
-                'error': 'Password is required'
-            }), 400
-        
-        # Use the same check method as password change
-        is_valid = check_password_hash(current_user.password, current_password)
-        
-        return jsonify({
-            'valid': is_valid,
-            'message': 'Password verified' if is_valid else 'Invalid password'
-        }), 200 if is_valid else 400
-    
-    except Exception as e:
-        print(f"Password verification error: {str(e)}")
-        return jsonify({
-            'valid': False,
-            'error': 'Server error during verification'
-        }), 500
-'''
-
-
 @views.route('/search', methods=['GET'])
 def search():
-    user = current_user()
+    user = current_user
     if not user:
         return redirect(url_for('auth.login'))
 
@@ -693,7 +647,7 @@ def search():
 
 @views.route('/user/<int:user_id>', methods=['GET', 'POST'])
 def user_profile(user_id):
-    user = current_user()
+    user = current_user
     if not user:
         return redirect(url_for('auth.login'))
 
@@ -748,7 +702,7 @@ def user_profile(user_id):
 
 @views.route('/search_users', methods=['GET'])
 def search_users():
-    user = current_user()
+    user = current_user
     if not user:
         return redirect(url_for('auth.login'))
 
@@ -797,7 +751,7 @@ def search_suggestions():
 
 @views.route('/recommend_food', methods=['GET'])
 def recommend_food():
-    user = current_user()
+    user = current_user
     if not user:
         return jsonify(success=False, error='User not authenticated'), 401
 
@@ -899,7 +853,7 @@ def trending_dishes():
 
 @views.route('/merged_posts', methods=['GET'])
 def merged_posts():
-    user = current_user()
+    user = current_user
     if not user:
         return jsonify(success=False, error='User not authenticated'), 401
 
@@ -943,7 +897,7 @@ def merged_posts():
 
 @views.route('/friend_posts', methods=['GET'])
 def friend_posts():
-    user = current_user()
+    user = current_user
     if not user:
         return jsonify(success=False, error='User not authenticated'), 401
 
@@ -980,7 +934,7 @@ def location_suggestions():
 
 @views.route('/api/search_reviews', methods=['GET'])
 def search_reviews():
-    user = current_user()
+    user = current_user
     query = request.args.get('q', '').strip().lower()
     lat = request.args.get('lat', type=float)
     lng = request.args.get('lng', type=float)
@@ -1166,7 +1120,7 @@ def search_reviews():
 
 @views.route('/share_post', methods=['POST'])
 def share_post():
-    user = current_user()
+    user = current_user
     if not user:
         return jsonify(success=False, error='User not authenticated'), 401
 
@@ -1205,7 +1159,7 @@ def share_post():
 
 @views.route('/share_multiple_posts', methods=['POST'])
 def share_multiple_posts():
-    user = current_user()
+    user = current_user
     if not user:
         return jsonify(success=False, error='User not authenticated'), 401
 
@@ -1247,7 +1201,7 @@ def share_multiple_posts():
 
 @views.route('/inbox')
 def inbox():
-    user = current_user()
+    user = current_user
     if not user:
         return redirect(url_for('auth.login'))
 
@@ -1309,7 +1263,7 @@ def inbox():
 
 @views.route('/api/users')
 def api_users():
-    user = current_user()
+    user = current_user
     if not user:
         return jsonify(users=[])
     q = request.args.get('q', '').strip()
