@@ -17,11 +17,13 @@ OZfoody is a social restaurant review platform for discovering, sharing, and dis
 
 ## Project Structure
 
-Name            Student number  Github Username
-Divyank Sharma  23810783        divxsharma
-Ian Oon         23722317        IanO7
-Vanilla Tran    24060828        cipherbunnie
-Isabel Newlands 23803298        eye4c
+| Name            | Student Number | GitHub Username |
+|-----------------|----------------|------------------|
+| Divyank Sharma  | 23810783       | divxsharma       |
+| Ian Oon         | 23722317       | IanO7            |
+| Vanilla Tran    | 24060828       | cipherbunnie     |
+| Isabel Newlands | 23803298       | eye4c            |
+
 
 ```
 app/
@@ -112,7 +114,6 @@ README.md
 1. **Clone the repository:**
     ```sh
     git clone https://github.com/IanO7/CITS3403-Group-Project.git
-    cd OZfoody
     ```
 
 2. **(Recommended) Create and activate a virtual environment:**
