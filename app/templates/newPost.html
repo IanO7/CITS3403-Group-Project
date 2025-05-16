@@ -1,5 +1,4 @@
-{% extends "base.html" %} 
-{% block title %} post {% endblock %} 
+{% extends "base.html" %} {% block title %} post {% endblock %} 
 
 {% block content %}
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -85,8 +84,6 @@
         </form>
     </div>
 </div>
-{% endblock %}   <!-- <-- Add this line to close the content block -->
-
 {% block scripts %}
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="{{ url_for('static', filename='js/new_post.js') }}"></script>

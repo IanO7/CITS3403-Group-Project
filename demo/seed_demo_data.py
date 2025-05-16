@@ -14,7 +14,7 @@ db.drop_all()
 db.create_all()
 
 # Use the burger demo image for all users and reviews
-burger_demo_image = "Burgerdemo.png"  # Make sure this matches the actual filename in your demo folder
+burger_demo_image = "Burgerdemo.jpg"  # Make sure this matches the actual filename in your demo folder
 
 # Demo users (8 users, various names)
 users = [
