@@ -74,6 +74,11 @@ README.md
 > ```
 > Your `venv/` folder is local!
 > After cloning a new repo, always create and activate a new virtual environment, then install dependencies.
+> 
+> **IDE Tip:**  
+> After creating and activating your virtual environment, make sure your code editor (e.g., VS Code, PyCharm) is using the Python interpreter from your `venv` folder.  
+> In VS Code, open the Command Palette (`Ctrl+Shift+P`), search for `Python: Select Interpreter`, and choose the one from your project's `venv` directory.  
+> This ensures all installed packages are recognized and avoids import errors.
 
 ---
 
