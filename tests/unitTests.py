@@ -1,7 +1,6 @@
-# tests/base.py
-import os
+import sys, os
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 import unittest
-import sys
 import io
 from io import BytesIO
 import json
@@ -153,3 +152,6 @@ class ViewsTestCase(BaseTestCase):
         resp2 = self.client.get('/api/reviews?offset=10')
         data2 = json.loads(resp2.data)
         self.assertEqual(len(data2), 2)
+
+if __name__ == "__main__":
+    unittest.main(verbosity=2)
