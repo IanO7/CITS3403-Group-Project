@@ -73,8 +73,7 @@ function renderComments(reviewId) {
   });
 
  
-  
-}
+
 
 
   // Toggle reply forms
