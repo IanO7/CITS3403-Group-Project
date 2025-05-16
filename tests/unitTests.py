@@ -33,7 +33,7 @@ class AuthTestCase(BaseTestCase):
             'username': 'user1', 'email': 'u@example.com',
             'password': 'pass1', 'confirm_password': 'pass2'
         }, follow_redirects=True)
-        self.assertIn(b'Passwords do not match', resp.data)
+        self.assertIn(b'Both passwords must be the same', resp.data)
 
     def test_sign_up_duplicate_email(self):
         user = User(username='u1', email='u@example.com')
