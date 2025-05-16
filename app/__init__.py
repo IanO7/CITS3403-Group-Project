@@ -6,11 +6,13 @@ from flask_login import LoginManager
 from os import path
 import os  # Import os to access environment variables
 from datetime import timedelta  # Import timedelta for session configuration
+from flask_wtf import CSRFProtect
 
 db = SQLAlchemy()
 migrate = Migrate()
 login_manager = LoginManager()
 DB_NAME = "database.db"
+csrf = CSRFProtect()
 
 from .views import views
 
@@ -34,6 +36,9 @@ def create_app():
     db.init_app(app)
     migrate.init_app(app, db)  # Initialize Flask-Migrate
 
+    # Initialize CSRF protection
+    csrf.init_app(app)
+
     # Initialize Flask-Login with stronger configuration
     login_manager.init_app(app)
     login_manager.login_view = 'auth.login'
@@ -41,6 +46,7 @@ def create_app():
     login_manager.session_protection = 'strong'
     login_manager.refresh_view = 'auth.login'
     login_manager.needs_refresh_message = 'Please login again to verify your identity'
+
 
     @login_manager.user_loader
     def load_user(user_id):

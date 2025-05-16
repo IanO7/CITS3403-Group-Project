@@ -3,11 +3,17 @@ document.querySelectorAll('.follow-button').forEach(button => {
     button.addEventListener('click', () => {
         const userId = button.getAttribute('data-user-id');
         const isFollowing = button.classList.contains('btn-danger');
-        const url = isFollowing ? `/unfollow/${userId}` : `/follow/${userId}`;
-        const method = 'POST';
+const url = isFollowing ? `/unfollow/${userId}` : `/follow/${userId}`;
+const method = 'POST';
 
-        fetch(url, { method })
-            .then(response => response.json())
+fetch(url, {
+    method,
+    headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': csrfToken
+    }
+})
+    .then(response => response.json())
             .then(data => {
                 if (data.success) {
                     // Toggle button appearance and text
@@ -31,17 +37,23 @@ document.querySelectorAll('.follow-button').forEach(button => {
 document.querySelectorAll('.like-button').forEach(button => {
     button.addEventListener('click', () => {
         const noteId = button.getAttribute('data-note-id');
-        fetch(`/like/${noteId}`, { method: 'POST' })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    const likeCount = button.querySelector('.action-count');
-                    likeCount.textContent = data.likes; // Update the likes count dynamically
-                } else {
-                    console.error(data.error);
-                }
-            })
-            .catch(error => console.error('Error:', error));
+fetch(`/like/${noteId}`, {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': csrfToken
+    }
+})
+.then(response => response.json())
+.then(data => {
+    if (data.success) {
+        const likeCount = button.querySelector('.action-count');
+        likeCount.textContent = data.likes; // Update the likes count dynamically
+    } else {
+        console.error(data.error);
+    }
+})
+.catch(error => console.error('Error:', error));
     });
 });
 

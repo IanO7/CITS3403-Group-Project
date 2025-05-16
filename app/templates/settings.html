@@ -2,6 +2,7 @@
 {% block title %}OZfoody - Settings{% endblock %}
 
 {% block content %}
+<meta name="csrf-token" content="{{ csrf_token() }}">
 <link rel="stylesheet" href="{{ url_for('static', filename='css/general_styles.css') }}">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">      
 <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
@@ -16,6 +17,8 @@
 
     <!-- ────────────────  Update Username  ──────────────── -->
     <form id="update-username-form" method="POST" action="{{ url_for('views.settings') }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
         <h3>Update Username</h3>
         <div class="mb-3">
             <label for="username" class="form-label">Username</label>
@@ -28,6 +31,8 @@
 
     <!-- ────────────────  Update Email  ──────────────── -->
     <form id="update-email-form" method="POST" action="{{ url_for('views.settings') }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
         <h3>Update Email</h3>
         <div class="mb-3">
             <label for="email" class="form-label">Email</label>
@@ -40,6 +45,8 @@
 
     <!-- ────────────────  Update Profile Picture  ──────────────── -->
     <form id="update-profile-form" method="POST" action="{{ url_for('views.settings') }}" enctype="multipart/form-data">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
         <h3>Update Profile Picture</h3>
         <div class="mb-3">
             <label for="profileImage" id="pictureStatus">
@@ -58,6 +65,8 @@
 
     <!-- ────────────────  Update Password  ──────────────── -->
     <form id="update-password-form" method="POST" action="{{ url_for('views.settings') }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
         <h3>Change Password</h3>
 
         <!-- New Password -->
@@ -103,6 +112,8 @@
 
     <!-- ────────────────  Delete Account  ──────────────── -->
     <form id="delete-account-form" method="POST" action="{{ url_for('views.settings') }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
         <h3>Delete Account</h3>
         <p class="text-danger">Warning: This action cannot be undone.</p>
         <button type="submit" class="btn btn-danger" name="action" value="delete_account">Delete Account</button>

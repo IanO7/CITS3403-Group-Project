@@ -2,6 +2,7 @@
 {% block title %}{{ selected_user.username }}'s Profile{% endblock %}
 
 {% block head %}
+<meta name="csrf-token" content="{{ csrf_token() }}">
 <link rel="stylesheet" href="{{ url_for('static', filename='css/badge.css') }}">
 <link rel="stylesheet" href="{{ url_for('static', filename='css/my_friends.css') }}">
 <link rel="stylesheet" href="{{ url_for('static', filename='css/alert.css') }}">
@@ -111,59 +112,5 @@
     {{ super() }}
     <script src="{{ url_for('static', filename='JS/stats.js') }}"></script>
     <script src="{{ url_for('static', filename='JS/my_friends.js') }}"></script>
-    <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const followAction = document.getElementById('follow-action');
-        if (!followAction) return;
-
-        // Send Follow Request
-        followAction.addEventListener('click', function(e) {
-            if (e.target && e.target.id === 'follow-btn') {
-                fetch('{{ url_for("views.follow", user_id=selected_user.id) }}', {method: 'POST'})
-                    .then(res => res.json())
-                    .then(data => {
-                        showOzfoodyNotification(data.message || data.error || "Request sent.", data.success ? "success" : "error");
-                        if (data.success) {
-                            followAction.innerHTML = '<button class="btn btn-secondary" disabled>Request Sent</button>';
-                        }
-                    });
-            }
-            // Unfollow
-            if (e.target && e.target.id === 'unfollow-btn') {
-                fetch('{{ url_for("views.unfollow", user_id=selected_user.id) }}', {method: 'POST'})
-                    .then(res => res.json())
-                    .then(data => {
-                        showOzfoodyNotification(data.message || data.error || "Unfollowed.", data.success ? "success" : "error");
-                        if (data.success) {
-                            followAction.innerHTML = '<button class="btn btn-primary" id="follow-btn">Send Follow Request</button>';
-                        }
-                    });
-            }
-            // Approve
-            if (e.target && e.target.id === 'approve-btn') {
-                const followId = e.target.getAttribute('data-id');
-                fetch(`/approve_follow/${followId}`, {method: 'POST'})
-                    .then(res => res.json())
-                    .then(data => {
-                        showOzfoodyNotification(data.message || data.error || "Approved.", data.success ? "success" : "error");
-                        if (data.success) {
-                            followAction.innerHTML = '<button class="btn btn-success" id="unfollow-btn">Following</button>';
-                        }
-                    });
-            }
-            // Reject
-            if (e.target && e.target.id === 'reject-btn') {
-                const followId = e.target.getAttribute('data-id');
-                fetch(`/reject_follow/${followId}`, {method: 'POST'})
-                    .then(res => res.json())
-                    .then(data => {
-                        showOzfoodyNotification(data.message || data.error || "Rejected.", data.success ? "success" : "error");
-                        if (data.success) {
-                            followAction.innerHTML = '<button class="btn btn-primary" id="follow-btn">Send Follow Request</button>';
-                        }
-                    });
-            }
-        });
-    });
-    </script>
+    <script defer src="{{ url_for('static', filename='JS/user_profile.js') }}"></script>
 {% endblock %}
