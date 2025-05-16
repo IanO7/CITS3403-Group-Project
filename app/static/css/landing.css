@@ -115,6 +115,8 @@
 
 .card-img-wrapper {
   width: 100%;
+  border-radius: 10px;
+  margin: 0 auto 20px;
   height: 200px; /* Fixed height for consistency */
   position: relative;
   overflow: hidden;
