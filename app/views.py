@@ -491,7 +491,7 @@ def api_reviews():
     offset = int(request.args.get('offset', 0))
     notes = Note.query.order_by(Note.id.desc()).offset(offset).limit(10).all()
     return jsonify([
-        {'restaurant': n.restaurant, 'review': n.review, 'user': n.user.username}
+        {'restaurant': n.Restaurant, 'review': n.Review, 'user': n.user.username}
         for n in notes
     ])
 

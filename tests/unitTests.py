@@ -1,7 +1,18 @@
 # tests/base.py
 import os
 import unittest
+import sys
+import io
+from io import BytesIO
+import json
+
+
+project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
+if project_root not in sys.path:
+    sys.path.insert(0, project_root)
+
 from app import create_app, db
+from app.models import User, Note
 
 class BaseTestCase(unittest.TestCase):
     def setUp(self):
@@ -22,10 +33,6 @@ class BaseTestCase(unittest.TestCase):
         self.ctx.pop()
 
 # tests/test_auth.py
-import unittest
-from app import db
-from app.models import User
-
 
 class AuthTestCase(BaseTestCase):
     def test_sign_up_password_mismatch(self):
@@ -33,7 +40,7 @@ class AuthTestCase(BaseTestCase):
             'username': 'user1', 'email': 'u@example.com',
             'password': 'pass1', 'confirm_password': 'pass2'
         }, follow_redirects=True)
-        self.assertIn(b'Passwords do not match', resp.data)
+        self.assertIn(b'Both passwords must be the same', resp.data)
 
     def test_sign_up_duplicate_email(self):
         user = User(username='u1', email='u@example.com')
@@ -46,10 +53,7 @@ class AuthTestCase(BaseTestCase):
         }, follow_redirects=True)
         self.assertIn(b'already registered', resp.data)
 
-# tests/test_models.py
-import unittest
-from app.models import User
-
+# tests/models.py
 
 class ModelTestCase(BaseTestCase):
     def test_password_hash_and_check(self):
@@ -60,13 +64,22 @@ class ModelTestCase(BaseTestCase):
         self.assertFalse(u.check_password('wrong'))
 
 # tests/test_views.py
-import unittest
-import json
-
-from app.models import User, Note
 
 class ViewsTestCase(BaseTestCase):
-    import io
+    def setUp(self):
+        self.app = create_app()
+        self.app.config['WTF_CSRF_ENABLED'] = False
+        self.app.config['TESTING'] = True
+        self.app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'
+        self.client = self.app.test_client()
+        with self.app.app_context():
+            db.create_all()
+
+    def tearDown(self):
+        with self.app.app_context():
+            db.session.remove()
+            db.drop_all()
+
     def create_user_and_login(self):
         self.client.post('/sign_up', data={
             'username': 'testu', 'email': 'test@x.com',
@@ -95,14 +108,16 @@ class ViewsTestCase(BaseTestCase):
         self.assertIn('/login', resp.headers['Location'])
         self.create_user_and_login()
         # include dummy image upload to avoid UnboundLocalError
-        image = (self.io.BytesIO(b"fake image"), 'test.jpg')
+        image = (io.BytesIO(b"fake image"), 'test.jpg')
         resp_post = self.client.post('/new_post', data={
             'Restaurant':'R1','Cuisine':'C','Spiciness':'10',
             'Deliciousness':'20','Value':'30','Stars':'3','Service':'40','Review':'Nice',
             'image': image
         }, follow_redirects=True, content_type='multipart/form-data')
-        user = User.query.filter_by(username='testu').first()
-        note = Note.query.filter_by(user_id=user.id).first()
+        with self.app.app_context():
+            user = User.query.filter_by(username='testu').first()
+            note = Note.query.filter_by(user_id=user.id).first()
+
         resp2 = self.client.post('/profile', data={
             'Comment':'Great','user_id':user.id,'note_id':note.id,'parentID':0
         }, follow_redirects=True)
@@ -114,7 +129,7 @@ class ViewsTestCase(BaseTestCase):
         self.assertEqual(resp.status_code, 302)
         self.assertIn('/login', resp.headers['Location'])
         self.create_user_and_login()
-        image = (self.io.BytesIO(b"fake image"), 'test2.jpg')
+        image = (io.BytesIO(b"fake image"), 'test2.jpg')
         resp2 = self.client.post('/new_post', data={
             'Restaurant':'R2','Cuisine':'C2','Spiciness':'50',
             'Deliciousness':'60','Value':'70','Stars':'4','Service':'80','Review':'Good',
@@ -126,7 +141,7 @@ class ViewsTestCase(BaseTestCase):
     def test_api_reviews_pagination(self):
         self.create_user_and_login()
         for i in range(12):
-            image = (self.io.BytesIO(b"fake"), f'{i}.jpg')
+            image = (io.BytesIO(b"fake"), f'{i}.jpg')
             self.client.post('/new_post', data={
                 'Restaurant':f'R{i}','Cuisine':'X','Spiciness':'10',
                 'Deliciousness':'10','Value':'10','Stars':'1','Service':'10','Review':'R',
