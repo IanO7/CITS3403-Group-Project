@@ -55,6 +55,28 @@ README.md
 - Python 3.8+
 - [pip](https://pip.pypa.io/en/stable/)
 
+---
+
+> **🔥 Hot Tip:**  
+> For best results and to avoid Python system errors, always use a virtual environment for your project dependencies.  
+> This is now required on modern Ubuntu/WSL.
+>
+> **First time only (if not already installed):**
+> ```sh
+> sudo apt update
+> sudo apt install python3-venv
+> ```
+> **Then, for every new project or fresh clone:**
+> ```sh
+> python3 -m venv venv
+> source venv/bin/activate
+> pip install -r requirements.txt
+> ```
+> Your `venv/` folder is local!
+> After cloning a new repo, always create and activate a new virtual environment, then install dependencies.
+
+---
+
 ### Installation
 
 1. **Clone the repository:**
@@ -63,55 +85,37 @@ README.md
     cd OZfoody
     ```
 
-2. **Install dependencies:**
+2. **(Recommended) Create and activate a virtual environment:**
+    ```sh
+    python3 -m venv venv
+    source venv/bin/activate
+    ```
+
+3. **Install dependencies:**
     ```sh
     pip install -r requirements.txt
     ```
 
-3. **Set up the database:**
+4. **Set up the database:**
     ```sh
     flask db upgrade
     ```
 
-4. **Run the app:**
+5. **(Optional) Load demo users and posts:**
+    ```sh
+    python demo/seed_demo_data.py
+    ```
+    This will create several demo users and posts. You can log in as any demo user, view their posts, share posts, and make friends with other demo accounts.
+
+6. **(Optional) Clean demo data before closing or for a fresh start:**
+    ```sh
+    python demo/clean_demo_data.py
+    ```
+    This will remove all demo users and their posts.
+
+7. **Run the app:**
     ```sh
     flask run
     ```
-    Or, if using `main.py`:
-    ```sh
-    python main.py
-    ```
-
-5. **Visit:**  
-    Open [http://localhost:5000](http://localhost:5000) in your browser.
-
-## Demo Data
-
-To populate the database with demo users and reviews (with images):
-
-```sh
-python3 demo/seed_demo_data.py
-```
-
-To clean/remove the demo data:
-
-```sh
-python3 demo/clean_demo_data.py
-```
-
-## Usage
-
-- **Sign up** for a new account.
-- **Create reviews** for restaurants you visit.
-- **Follow friends** to see their food adventures.
-- **Earn badges** and show it off.
-- **Search** for users or reviews.
-- **Share posts** with your friends.
-
-## License
-
-[MIT](LICENSE)
-
----
 
 *Made for CITS3403 at UWA.*
