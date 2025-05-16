@@ -21,11 +21,9 @@ OZfoody is a social restaurant review platform for discovering, sharing, and dis
 app/
     __init__.py
     auth.py
-    config.py
     models.py
     views.py
-    routes/
-        auth.py
+    
     static/
         css/
         image/
@@ -36,9 +34,30 @@ app/
         my_stats.html
         my_friends.html
         profile.html
+        editpost.html
+        login.html
+        signup.html
+        my_friends.html
+        my_stats.html
+        settings.html
+        user_profile.html
+        inbox.html
+        newpost.html
+        others_stats.html
+        post.html
+        search_results.html
         ...
     uploads/
+instance/
+    database.db
 migrations/
+tests/
+    selenium/
+       ... 
+    __init__.py
+    test_app.py
+    unitTests.py
+.gitignore
 main.py
 requirements.txt
 README.md
