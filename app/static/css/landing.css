@@ -112,6 +112,28 @@
 }
 
   /* Feature Cards */
+
+.card-img-wrapper {
+  width: 100%;
+  border-radius: 10px;
+  margin: 0 auto 20px;
+  height: 200px; /* Fixed height for consistency */
+  position: relative;
+  overflow: hidden;
+}
+
+.card-img-wrapper img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* This ensures image covers the area without distortion */
+  display: block;
+  transition: transform 0.3s ease;
+}
+
+.feature-card:hover .card-img-wrapper img {
+    transform: scale(1.05); /* Subtle zoom effect on hover */
+}
+
   .feature-card {
     background: #fff;
     border-radius: 15px;
@@ -215,12 +237,14 @@ h3,
 }
 
   .trend-card {
-    background-color: #FCF7F0;  /* Match theme background */
+    background-color: #FCF7F0;
     border-radius: 15px;
     overflow: hidden;
-    margin-bottom: 20px;
+    height: 100%; /* Make all cards same height */
     transition: transform 0.3s ease, box-shadow 0.3s ease;
-    border: 1px solid rgba(223, 111, 27, 0.1);  /* Subtle orange border */
+    border: 1px solid rgba(223, 111, 27, 0.1);
+    display: flex;
+    flex-direction: column;
   }
 
   .trend-card:hover {
@@ -228,10 +252,20 @@ h3,
     box-shadow: 0 8px 24px rgba(223, 111, 27, 0.15);  /* Theme-colored shadow */
   }
 
+  .trend-card img {
+    width: 100%;
+    height: 200px; /* Fixed height for images */
+    object-fit: cover;
+}
+
   .trend-info {
     padding: 20px;
     background: linear-gradient(to bottom, #FCF7F0, #fff);
-  }
+    flex-grow: 1; /* Allow info section to grow */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
 
   .trend-info h3 {
     font-family: 'Lato', sans-serif;
@@ -253,7 +287,7 @@ h3,
     color: #DF6F1B;
     font-weight: 500;
     margin: 0.5rem 0;
-}
+  }
 
   .trend-metadata {
     font-family: 'Lato', sans-serif;
