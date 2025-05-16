@@ -2,26 +2,27 @@
 {% block title %}{{ selected_user.username }}'s Profile{% endblock %}
 
 {% block head %}
-<meta name="csrf-token" content="{{ csrf_token() }}">
-<link rel="stylesheet" href="{{ url_for('static', filename='css/badge.css') }}">
-<link rel="stylesheet" href="{{ url_for('static', filename='css/my_friends.css') }}">
-<link rel="stylesheet" href="{{ url_for('static', filename='css/alert.css') }}">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/badge.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/my_friends.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/alert.css') }}">
 {% endblock %}
 
-{% block content %} 
+{% block content %}
 <div class="container mt-5">
     <!-- Back Button -->
     <a href="{{ url_for('views.friends') }}" class="back-to-friends-btn mb-4">
         ← Back to Friends
     </a>
+
     <!-- User Stats Section -->
     <div class="dashboard-header mb-4">
         <div class="profile-info d-flex align-items-center">
             {% if selected_user.profileImage %}
-            <img src="{{ url_for('views.uploaded_file', filename=selected_user.profileImage) }}" 
-                 alt="{{ selected_user.username }}" 
-                 class="profileImage" 
-                 style="width: 100px; height: 100px; object-fit: cover; margin-right: 20px;">
+                <img src="{{ url_for('views.uploaded_file', filename=selected_user.profileImage) }}" 
+                     alt="{{ selected_user.username }}" 
+                     class="profileImage" 
+                     style="width: 100px; height: 100px; object-fit: cover; margin-right: 20px;">
             {% endif %}
             <div>
                 <h1>
@@ -32,21 +33,33 @@
                 <p>Statistics based on their reviews.</p>
             </div>
         </div>
-        {% if user.id != selected_user.id %}
-            <div id="follow-action">
-                {% if follow and follow.status == 'approved' %}
-                    <button class="btn btn-success" id="unfollow-btn">Following</button>
-                {% elif follow and follow.status == 'pending' %}
-                    <button class="btn btn-secondary" disabled>Request Sent</button>
-                {% elif incoming %}
-                    <button class="btn btn-primary" id="approve-btn" data-id="{{ incoming.id }}">Approve</button>
-                    <button class="btn btn-danger" id="reject-btn" data-id="{{ incoming.id }}">Reject</button>
-                {% else %}
-                    <button class="btn btn-primary" id="follow-btn">Send Follow Request</button>
-                {% endif %}
-            </div>
-        {% endif %}
+
     </div>
+    {% if user.id != selected_user.id %}
+    <div id="follow-action"
+        data-follow-url="{{ url_for('views.follow',   user_id=selected_user.id) }}"
+        data-unfollow-url="{{ url_for('views.unfollow', user_id=selected_user.id) }}"
+        {% if incoming %}
+        data-approve-url="{{ url_for('views.approve_follow', follow_id=incoming.id) }}"
+        data-reject-url="{{ url_for('views.reject_follow',  follow_id=incoming.id) }}"
+        {% endif %}>
+
+    {% if follow and follow.status == 'approved' %}
+        <button class="btn btn-success" id="unfollow-btn">Following</button>
+
+    {% elif follow and follow.status == 'pending' %}
+        <button class="btn btn-secondary" disabled>Request Sent</button>
+
+    {% elif incoming %}
+        <button class="btn btn-primary" id="approve-btn" data-id="{{ incoming.id }}">Approve</button>
+        <button class="btn btn-danger"  id="reject-btn"  data-id="{{ incoming.id }}">Reject</button>
+
+    {% else %}
+        <button class="btn btn-primary" id="follow-btn">Send Follow Request</button>
+    {% endif %}
+    </div>
+    {% endif %}
+    
 
     <div class="stats-grid mb-5">
         <div class="card stat-card">
@@ -54,7 +67,7 @@
             <div class="progress custom-progress">
                 <div class="progress-bar bg-danger animated-bar" style="width: {{ stats.spiciness | default(0) }}%;" data-target="{{ stats.spiciness | default(0) }}"></div>
             </div>
-            <p>{{ stats.spiciness | default(0) | round(0) |int }}% spicy dishes rated</p>
+            <p>{{ stats.spiciness | default(0) | round(0) | int }}% spicy dishes rated</p>
         </div>
 
         <div class="card stat-card">
@@ -62,7 +75,7 @@
             <div class="progress custom-progress">
                 <div class="progress-bar bg-success animated-bar" style="width: {{ stats.deliciousness | default(0) }}%;" data-target="{{ stats.deliciousness | default(0) }}"></div>
             </div>
-            <p>{{ stats.deliciousness | default(0) | round(0) |int }}% delicious dishes rated</p>
+            <p>{{ stats.deliciousness | default(0) | round(0) | int }}% delicious dishes rated</p>
         </div>
 
         <div class="card stat-card">
@@ -70,7 +83,7 @@
             <div class="progress custom-progress">
                 <div class="progress-bar bg-warning animated-bar" style="width: {{ stats.value | default(0) }}%;" data-target="{{ stats.value | default(0) }}"></div>
             </div>
-            <p>{{ stats.value | default(0) | round(0) |int }}% value-rated dishes</p>
+            <p>{{ stats.value | default(0) | round(0) | int }}% value-rated dishes</p>
         </div>
 
         <div class="card stat-card">
@@ -78,7 +91,7 @@
             <div class="progress custom-progress">
                 <div class="progress-bar bg-info animated-bar" style="width: {{ stats.service | default(0) }}%;" data-target="{{ stats.service | default(0) }}"></div>
             </div>
-            <p>{{ stats.service | default(0) | round(0) |int }}% service-rated dishes</p>
+            <p>{{ stats.service | default(0) | round(0) | int }}% service-rated dishes</p>
         </div>
     </div>
 
@@ -87,7 +100,7 @@
         <div class="progress custom-progress">
             <div class="progress-bar bg-primary animated-bar" style="width: {{ overall_average_rating | default(0) }}%;" data-target="{{ overall_average_rating | default(0) }}"></div>
         </div>
-        <p>{{ overall_average_rating | default(0) | round(0) |int }}% average rating across all reviews</p>
+        <p>{{ overall_average_rating | default(0) | round(0) | int }}% average rating across all reviews</p>
     </div>
 
     <!-- User Posts Section -->
@@ -112,5 +125,5 @@
     {{ super() }}
     <script src="{{ url_for('static', filename='JS/stats.js') }}"></script>
     <script src="{{ url_for('static', filename='JS/my_friends.js') }}"></script>
-    <script defer src="{{ url_for('static', filename='JS/user_profile.js') }}"></script>
+    <script src="{{ url_for('static', filename='JS/user_profile.js') }}"></script>
 {% endblock %}
