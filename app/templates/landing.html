@@ -108,20 +108,24 @@
 <section id="trending-dishes" class="py-5">
   <div class="container text-center">
     <h2 class="mb-4">⭐ Trending Tastes of the Day ⭐</h2>
-    <div class="row">
+    <div class="row g-4"> <!-- Added g-4 for grid gap -->
       {% for dish in trending_dishes %}
-      <div class="col-md-4">
-        <div class="trend-card">
-          <img src="{{ url_for('static', filename=dish.image) if dish.image else 'https://via.placeholder.com/350x200' }}" alt="Dish Image" class="img-fluid">
-          <div class="trend-info">
-            <h5>{{ dish.Restaurant or 'Unknown Restaurant' }}</h5>
-            <p class="mb-1"><i class="fas fa-map-marker-alt"></i> {{ dish.location or 'Unknown' }}</p>
-            <span class="emoji-rating">&#x1F44D; {{ dish.likes or 0 }} Likes</span>
-            <div class="text-muted" style="font-size:0.9em;">by Anonymous</div>
+        <div class="col-md-4 mb-4"> <!-- Added mb-4 for bottom margin -->
+          <div class="trend-card">
+            <img src="{{ url_for('static', filename=dish.image) if dish.image else 'https://via.placeholder.com/350x200' }}" 
+                 alt="Dish Image" 
+                 class="img-fluid">
+            <div class="trend-info">
+              <h5>{{ dish.Restaurant or 'Unknown Restaurant' }}</h5>
+              <p class="mb-1"><i class="fas fa-map-marker-alt"></i> {{ dish.location or 'Unknown' }}</p>
+              <span class="emoji-rating">👍 {{ dish.likes or 0 }} Likes</span>
+              <div class="text-muted" style="font-size:0.9em;">by Anonymous</div>
+            </div>
           </div>
         </div>
-       {% endfor %}
-      </div>      
+      {% endfor %}
+    </div>      
+  </div>
 </section>    
     
 <!-- Stats Section -->
