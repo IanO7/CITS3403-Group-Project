@@ -111,6 +111,9 @@
                 {% set show_actions = False %}
                 {% set current_user = user %}
                 {% include "post.html" with context %}
+                 <form action="{{ url_for('views.inbox') }}" method="POST" class="mt-2">
+                    
+                  </form>
             {% endfor %}
         </div>
     {% else %}
