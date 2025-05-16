@@ -13,20 +13,26 @@ document.getElementById('shareSelectedBtn').addEventListener('click', function (
 });
 
 document.querySelectorAll('.like-button').forEach(button => {
-    button.addEventListener('click', () => {
-        const noteId = button.getAttribute('data-note-id');
-        fetch(`/like/${noteId}`, { method: 'POST' })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    const likeCount = button.querySelector('.action-count');
-                    likeCount.textContent = data.likes;
-                } else {
-                    console.error(data.error);
-                }
-            })
-            .catch(error => console.error('Error:', error));
-    });
+button.addEventListener('click', () => {
+    const noteId = button.getAttribute('data-note-id');
+    fetch(`/like/${noteId}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': csrfToken
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            const likeCount = button.querySelector('.action-count');
+            likeCount.textContent = data.likes;
+        } else {
+            console.error(data.error);
+        }
+    })
+    .catch(error => console.error('Error:', error));
+});
 });
 
 let postToDeleteId = null;
@@ -42,10 +48,16 @@ document.querySelectorAll('.delete-button').forEach(button => {
 
 document.getElementById('confirmDeletePostBtn').addEventListener('click', function() {
     if (!postToDeleteId) return;
-    fetch(`/delete_post/${postToDeleteId}`, { method: 'POST' })
-        .then(response => {
-            const alertDiv = document.getElementById('singleShareAlert');
-            if (response.ok) {
+fetch(`/delete_post/${postToDeleteId}`, {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': csrfToken
+    }
+})
+.then(response => {
+    const alertDiv = document.getElementById('singleShareAlert');
+    if (response.ok) {
                 alertDiv.className = 'alert alert-success';
                 alertDiv.textContent = 'Post deleted successfully!';
                 alertDiv.classList.remove('d-none');
@@ -130,11 +142,14 @@ document.addEventListener('DOMContentLoaded', function() {
             setTimeout(() => alertDiv.classList.add('d-none'), 4000);
             return;
         }
-        fetch('/share_post', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({note_id: shareNoteId, recipient_id: selectedUserId})
-        })
+fetch('/share_post', {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': csrfToken
+    },
+    body: JSON.stringify({note_id: shareNoteId, recipient_id: selectedUserId})
+})
         .then(response => response.json())
         .then(data => {
             const alertDiv = document.getElementById('singleShareAlert');
@@ -266,11 +281,14 @@ document.addEventListener('DOMContentLoaded', function() {
             setTimeout(() => alertDiv.classList.add('d-none'), 4000);
             return;
         }
-        fetch('/share_multiple_posts', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({note_ids: checked, recipient_id: selectedMultiUserId})
-        })
+fetch('/share_multiple_posts', {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': csrfToken
+    },
+    body: JSON.stringify({note_ids: checked, recipient_id: selectedMultiUserId})
+})
         .then(response => response.json())
         .then(data => {
             const alertDiv = document.getElementById('multiShareAlert');

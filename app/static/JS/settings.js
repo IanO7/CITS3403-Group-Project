@@ -47,10 +47,13 @@ document.getElementById('delete-account-form').addEventListener('submit', functi
                 }
                 // Submit via fetch
                 const formData = new FormData(form);
-                fetch('/settings', {
-                    method: 'POST',
-                    body: formData
-                })
+fetch('/settings', {
+    method: 'POST',
+    headers: {
+        'X-CSRFToken': csrfToken
+    },
+    body: formData
+})
                 .then(r => r.json())
                 .then(data => {
                     if (data.success) {
@@ -84,10 +87,14 @@ document.querySelectorAll('form').forEach(form => {
         if (!form.checkValidity()) return;
         event.preventDefault();
         const formData = new FormData(form, event.submitter);
-        fetch('/settings', {
-            method: 'POST',
-            body: formData
-        })
+fetch('/settings', {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': csrfToken
+    },
+    body: formData
+})
         .then(r => r.json())
         .then(data => {
             if (data.success) {

@@ -2,6 +2,8 @@
 {% block title %}OZfoody - Discover{% endblock %}
 
 {% block content %}
+
+<meta name="csrf-token" content="{{ csrf_token() }}">
 <link rel="stylesheet" href="{{ url_for('static', filename='css/general_styles.css') }}"/>
 <link rel="stylesheet" href="{{ url_for('static', filename='css/landing.css') }}"/>
 

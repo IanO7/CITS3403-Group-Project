@@ -148,6 +148,8 @@
                 
                 <div class="modal-body">
                     <form method="POST">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
                         <div class="form-group p-3">
                             <input type="hidden" name="note_id" value="{{ review.id }}">
                             <input type="hidden" name="parentID" value="0">
@@ -164,92 +166,11 @@
         </div>
     </div>
 
-    <script>
-        const comments_{{ review.id }} = {{ comments_by_review[review.id] | tojson }};
-
-        function getComments_{{ review.id }}() {
-            const commentContainer = document.getElementById("comment-area-{{ review.id }}");
-
-            commentContainer.innerHTML = "";
-
-            comments_{{ review.id }}.forEach(comment => {
-                // Create comment wrapper
-                const commentWrapper = document.createElement("div");
-                commentWrapper.setAttribute("id", `comment-${comment.id}`);
-                commentWrapper.classList.add("p-3", "border", "rounded", "bg-light", "shadow-sm");
-                
-                commentWrapper.innerHTML = `
-                    <div> 
-                    <img src="${comment.profileImage}" alt="Profile Avatar" class="profileImageSmaller"> 
-                    <strong> ${comment.username} </strong> 
-                    </div> 
-                    <p> ${comment.Comment}</p>
-                    <button class="btn btn-sm btn-outline-primary reply-toggle" data-comment-id="${comment.id}" onClick='displayForm(${comment.id})'> reply </button> 
-                    <div class="d-none" id="reply-form-${comment.id}"> 
-                    <form method="POST">
-                        <div class="form-group p-3">
-                            <input type="hidden" name="note_id" value="{{review.id}}">
-                            <input type="hidden" name="parentID" value="${comment.id}">
-                            <input type="hidden" name="user_id" value="{{current_user.id}}">
-                            <input type="text-area" class="form-control" id="Comment" name="Comment" required>
-                        </div>
-                    <button type="submit" class="btn btn-primary" id="Comment_button">Reply</button>
-                    </form>
-                    </div> 
-                `;
-
-                if (comment.parentID === 0) {
-                    commentContainer.appendChild(commentWrapper);
-                } 
-                else {
-                    var parent = document.getElementById(`comment-${comment.parentID}`)
-                    let commentDetails = parent.querySelector('details')
-
-                    if (!commentDetails) {
-                        // Create one only if it doesn't already exist
-                        commentDetails = document.createElement("details");
-                        commentDetails.classList.add("mt-3", "ms-4");
-
-                        var commentSummary = document.createElement("summary");
-                        commentSummary.textContent = "Replies";
-                        commentDetails.appendChild(commentSummary);
-                        parent.appendChild(commentDetails);
-                    }
-                    if (parent) {
-                        commentWrapper.classList.add("mt-3", "ms-4");
-                        parent.appendChild(commentDetails);
-                        commentDetails.appendChild(commentWrapper);
-                    } else {
-                        commentContainer.appendChild(commentWrapper); // fallback
-                    }
-                }
-            });
-
-            document.querySelectorAll('.reply-toggle').forEach(button => {
-                button.addEventListener('click', () => {
-                    const commentId = button.dataset.commentId;
-                    const form = document.getElementById(`reply-form-${commentId}`);
-                    if (form) {
-                        form.classList.toggle('d-none');
-                    }
-                });
-            });
-        }
-
-
-        document.addEventListener('DOMContentLoaded', () => {
-            document.querySelectorAll('.comment-button[data-comment-id="{{ review.id }}"]').forEach(button => {
-                button.addEventListener('click', () => {
-                    getComments_{{ review.id }}()
-                    const commentId = button.dataset.commentId;
-                    const replyForm = document.getElementById(`reply-form-${commentId}`);
-                });
-            });
-        }); 
-
-
-    </script>
+    
 
 
 </div>
+{% block scripts %}
+  {{ super() }}
+  <script src="{{ url_for('static', filename='js/post.js') }}"></script>
 {% endblock %}
