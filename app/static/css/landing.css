@@ -112,6 +112,28 @@
 }
 
   /* Feature Cards */
+
+.card-img-wrapper {
+  width: 100%;
+  border-radius: 10px;
+  margin: 0 auto 20px;
+  height: 200px; /* Fixed height for consistency */
+  position: relative;
+  overflow: hidden;
+}
+
+.card-img-wrapper img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* This ensures image covers the area without distortion */
+  display: block;
+  transition: transform 0.3s ease;
+}
+
+.feature-card:hover .card-img-wrapper img {
+    transform: scale(1.05); /* Subtle zoom effect on hover */
+}
+
   .feature-card {
     background: #fff;
     border-radius: 15px;
