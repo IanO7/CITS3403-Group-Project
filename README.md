@@ -46,10 +46,41 @@ README.md
 
 ## Getting Started
 
+> **Note for Windows users:**  
+> Make sure to open your Ubuntu (WSL) terminal before running the following commands.  
+> All setup and `flask run` commands should be executed inside your Ubuntu (WSL) environment, not in Windows CMD or PowerShell.
+
 ### Prerequisites
 
 - Python 3.8+
 - [pip](https://pip.pypa.io/en/stable/)
+
+---
+
+> **🔥 Hot Tip:**  
+> For best results and to avoid Python system errors, always use a virtual environment for your project dependencies.  
+> This is now required on modern Ubuntu/WSL.
+>
+> **First time only (if not already installed):**
+> ```sh
+> sudo apt update
+> sudo apt install python3-venv
+> ```
+> **Then, for every new project or fresh clone:**
+> ```sh
+> python3 -m venv venv
+> source venv/bin/activate
+> pip install -r requirements.txt
+> ```
+> Your `venv/` folder is local!
+> After cloning a new repo, always create and activate a new virtual environment, then install dependencies.
+> 
+> **IDE Tip:**  
+> After creating and activating your virtual environment, make sure your code editor (e.g., VS Code, PyCharm) is using the Python interpreter from your `venv` folder.  
+> In VS Code, open the Command Palette (`Ctrl+Shift+P`), search for `Python: Select Interpreter`, and choose the one from your project's `venv` directory.  
+> This ensures all installed packages are recognized and avoids import errors.
+
+---
 
 ### Installation
 
@@ -59,40 +90,67 @@ README.md
     cd OZfoody
     ```
 
-2. **Install dependencies:**
+2. **(Recommended) Create and activate a virtual environment:**
+    ```sh
+    python3 -m venv venv
+    source venv/bin/activate
+    ```
+
+3. **Install dependencies:**
     ```sh
     pip install -r requirements.txt
     ```
 
-3. **Set up the database:**
+4. **Set up the database:**
     ```sh
     flask db upgrade
     ```
 
-4. **Run the app:**
+5. **(Optional) Load demo users and posts:**
+    ```sh
+    python demo/seed_demo_data.py
+    ```
+    This will create several demo users and posts. You can log in as any demo user, view their posts, share posts, and make friends with other demo accounts.
+
+6. **(Optional) Clean demo data before closing or for a fresh start:**
+    ```sh
+    python demo/clean_demo_data.py
+    ```
+    This will remove all demo users and their posts.
+
+7. **Run the app:**
     ```sh
     flask run
     ```
-    Or, if using `main.py`:
+
+---
+
+## Selenium Testing
+
+Automated UI tests are provided using Selenium IDE and Python scripts.
+
+**To run Selenium tests:**
+
+1. **Always clean and reseed demo data before running Selenium tests:**
     ```sh
-    python main.py
+    python demo/clean_demo_data.py
+    python demo/seed_demo_data.py
     ```
 
-5. **Visit:**  
-    Open [http://localhost:5000](http://localhost:5000) in your browser.
+2. **Start the Flask app:**
+    ```sh
+    flask run
+    ```
 
-## Usage
+3. **Open Selenium IDE** (install from [selenium.dev](https://www.selenium.dev/selenium-ide/)).
 
-- **Sign up** for a new account.
-- **Create reviews** for restaurants you visit.
-- **Follow friends** to see their food adventures.
-- **Earn badges** and show it off.
-- **Search** for users or reviews.
-- **Share posts** with your friends.
+4. **Open the `.side` test file** provided in the repo.
 
-## License
+5. **Run all tests** in Selenium IDE.
 
-[MIT](LICENSE)
+- If you want to repeat the tests, always clean and reseed demo data first, as some tests (like password change) will permanently alter the database.
+
+- Python-based Selenium test scripts and reports are also included in the repo for reference.
 
 ---
 
