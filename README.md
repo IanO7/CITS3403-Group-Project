@@ -144,7 +144,7 @@ Automated UI tests are provided using Selenium IDE and Python scripts.
 
 3. **Open Selenium IDE** (install from [selenium.dev](https://www.selenium.dev/selenium-ide/)).
 
-4. **Open the `.side` test file** provided in the repo.
+4. **Open the `CITS3403 Group Project.side` test file** provided in the repo.
 
 5. **Run all tests** in Selenium IDE.
 

@@ -87,6 +87,11 @@ def get_badges_and_level(posts, stats):
 def uploaded_file(filename):
     return send_from_directory(current_app.config['UPLOAD_FOLDER'], filename)
 
+@views.route('/app/uploads/<filename>')
+def serve_upload(filename):
+    uploads_dir = os.path.join(current_app.root_path, 'uploads')
+    return send_from_directory(uploads_dir, filename)
+
 @views.route('/')
 def home():
     if session.get('user_id'):
@@ -98,9 +103,29 @@ def landing():
     notes = Note.query.order_by(Note.id.desc()).limit(10).all()
     total_posts = Note.query.count()
     total_users = User.query.count()
+# Get trending dishes with proper image handling
     trending_dishes = Note.query.order_by(Note.likes.desc()).limit(5).all()
-    return render_template('landing.html', notes=notes, total_posts=total_posts, total_users=total_users, trending_dishes=trending_dishes)
+    
+    # Process each dish to get the correct image URL
+    for dish in trending_dishes:
+        if dish.images and len(dish.images) > 0:
+            # If dish has images, use the first one
+            dish.display_image = url_for('views.uploaded_file', 
+                                       filename=dish.images[0].filename)
+        elif dish.image:
+            # Fall back to legacy image field if it exists
+            dish.display_image = url_for('views.uploaded_file', 
+                                       filename=dish.image)
+        else:
+            # Use default image if no images available
+            dish.display_image = url_for('static', 
+                                       filename='image/default-dish.jpg')
 
+    return render_template('landing.html', 
+                         notes=notes, 
+                         total_posts=total_posts, 
+                         total_users=total_users, 
+                         trending_dishes=trending_dishes)
 
 @views.route('/profile', methods=['GET', 'POST'])
 @login_required
