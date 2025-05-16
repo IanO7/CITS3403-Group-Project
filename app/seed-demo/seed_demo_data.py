@@ -1,5 +1,7 @@
 import os
 import shutil
+import sys
+
 from app import db, create_app
 from app.models import User, Note
 from werkzeug.security import generate_password_hash
