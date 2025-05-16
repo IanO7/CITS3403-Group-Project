@@ -1,6 +1,10 @@
 //keep code from here
 // Username validation
+const csrfToken = document
+  .querySelector('meta[name="csrf-token"]')
+  .getAttribute('content');
 document.getElementById('update-username-form').addEventListener('submit', function(event) {
+    
     const username = document.getElementById('username').value.trim();
     if (username.length < 3) {
         showOzfoodyNotification("Username must be at least 3 characters long.", "error");
@@ -55,7 +59,7 @@ fetch('/settings', {
     body: formData
 })
                 .then(r => r.json())
-                .then(data => {
+                .then(data => {we
                     if (data.success) {
                         showOzfoodyNotification(data.message, "success");
                         window.location.href = '/landing';
