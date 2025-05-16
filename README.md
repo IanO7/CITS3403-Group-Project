@@ -85,6 +85,20 @@ README.md
 5. **Visit:**  
     Open [http://localhost:5000](http://localhost:5000) in your browser.
 
+## Demo Data
+
+To populate the database with demo users and reviews (with images):
+
+```sh
+python3 demo/seed_demo_data.py
+```
+
+To clean/remove the demo data:
+
+```sh
+python3 demo/clean_demo_data.py
+```
+
 ## Usage
 
 - **Sign up** for a new account.
