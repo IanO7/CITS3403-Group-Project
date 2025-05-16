@@ -104,7 +104,7 @@ def landing():
     total_posts = Note.query.count()
     total_users = User.query.count()
 # Get trending dishes with proper image handling
-    trending_dishes = Note.query.order_by(Note.likes.desc()).limit(5).all()
+    trending_dishes = Note.query.order_by(Note.likes.desc()).limit(3).all()
     
     # Process each dish to get the correct image URL
     for dish in trending_dishes:
