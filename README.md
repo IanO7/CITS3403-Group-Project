@@ -111,7 +111,7 @@ README.md
 
 1. **Clone the repository:**
     ```sh
-    git clone https://github.com/yourusername/OZfoody.git
+    git clone https://github.com/IanO7/CITS3403-Group-Project.git
     cd OZfoody
     ```
 
