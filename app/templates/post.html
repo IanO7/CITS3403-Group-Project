@@ -170,7 +170,5 @@
 
 
 </div>
-{% block scripts %}
-  {{ super() }}
-  <script src="{{ url_for('static', filename='js/post.js') }}"></script>
 {% endblock %}
+<script src="{{ url_for('static', filename='js/post.js') }}"></script>

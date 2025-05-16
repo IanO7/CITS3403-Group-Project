@@ -13,8 +13,11 @@ instance/
 # VSCode settings 
 .vscode/
 
-# Ignore user image uploads, could be private food review images, not part of code! Part of DBS!
-uploads/
+# Ignore everything in uploads
+uploads/*
+
+# But do NOT ignore Burgerdemo.png
+!uploads/Burgerdemo.png
 
 # Ignore database files
 *.db
