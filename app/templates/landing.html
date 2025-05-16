@@ -31,8 +31,8 @@
       <!-- Personalised Recommendations -->
       <div class="col-md-4">
         <div class="feature-card shadow-lg" data-bs-toggle="tooltip" title="personalized recommendations">
-          <div class="feature-icon">
-            <i class="fas fa-star fa-3x text-primary"></i>
+          <div class="card-img-wrapper">
+            <img src="{{ url_for('static', filename='image/feature1.jpg') }}" class="img-fluid" alt="feature image">
           </div>
           <h3>Smart Food Suggestions</h3>
           <p>Get restaurant recommendations tailored just for you. Our system learns your taste to suggest the best places to dine.</p>
@@ -42,8 +42,8 @@
       <!-- Friends' Reviews -->
       <div class="col-md-4">
         <div class="feature-card shadow-lg" data-bs-toggle="tooltip" title="friends reviews">
-          <div class="feature-icon">
-            <i class="fas fa-users fa-3x text-success"></i>
+          <div class="card-img-wrapper">
+            <img src="{{ url_for('static', filename='image/feature2.jpg') }}" class="img-fluid" alt="feature image">
           </div>
           <h3>See Where Friends Dine</h3>
           <p>Explore reviews from people you know and trust. Get real opinions and discover trending spots based on what your friends love.
@@ -54,8 +54,8 @@
       <!-- Easy Sharing -->
       <div class="col-md-4">
         <div class="feature-card shadow-lg" data-bs-toggle="tooltip" title="Share restaurants">
-          <div class="feature-icon">
-            <i class="fas fa-share-alt fa-3x text-danger"></i>
+          <div class="card-img-wrapper">
+            <img src="{{ url_for('static', filename='image/feature3.jpg') }}" class="img-fluid" alt="feature image">
           </div>
           <h3>Share Your Food Adventures</h3>
           <p>Post your dining experiences with ease. Use fun visuals like ratings, emojis, and photos to tell your story and inspire others.</p>
@@ -78,25 +78,25 @@
       <!-- First Review -->
       <div class="col-md-4">
         <div class="badge-card shadow-lg" data-bs-toggle="tooltip" title="first review">
-          <i class="fas fa-pen-nib fa-3x text-warning mb-3"></i>
-          <h3>First Bite Reviewer</h3>
+          <div class="emoji-icon mb-3" style="font-size: 2.5rem;">👨‍🍳</div>
+          <h3>First Post</h3>
           <p>Claim your very first badge by posting your first review. Every journey starts with one bite!</p>
         </div>
       </div>
       <!-- Spicy Explorer -->
       <div class="col-md-4">
         <div class="badge-card shadow-lg" data-bs-toggle="tooltip" title="spicy food">
-          <i class="fas fa-fire fa-3x text-danger mb-3"></i>
-          <h3>Spicy Food Challenger</h3>
-          <p>Love a little heat? Review 10 spicy dishes to earn this badge and prove you can handle the fire!</p>
+          <div class="emoji-icon mb-3" style="font-size: 2.5rem;">🌶️</div>
+          <h3>Spicy God</h3>
+          <p>Love a little heat? Review 5 spicy dishes (higher than 80% spicy rate!) to earn this badge and prove you can handle the fire!</p>
         </div>
       </div>
       <!-- Foodie Influencer -->
       <div class="col-md-4">
         <div class="badge-card shadow-lg" data-bs-toggle="tooltip" title="foodie influencer">
-          <i class="fas fa-users fa-3x text-success mb-3"></i>
-          <h3>Foody Influencer</h3>
-          <p>Gain 50 likes from fellow food lovers and earn this badge as a foody influencer.</p>
+          <div class="emoji-icon mb-3" style="font-size: 2.5rem;">🍽️</div>
+          <h3>Service Perfectionist</h3>
+          <p>Consistently rated over 90% for service (based on 5+ reviews).</p>
         </div>
       </div>
     </div>
@@ -127,12 +127,8 @@
 <!-- Stats Section -->
 <section id="stats" class="py-5 text-center">
   <div class="container">
-
-    <h2 class="mb-4">📊 OZfoody by Numbers 📊</h2>
-
-    <h2 class="mb-4">Community Stats</h2>
+    <h2 class="mb-4">Community Statistic</h2>
     <div class="info-box">
-      
       <p>Explore global food statistics on the interactive globe below.</p>
     </div>
   
