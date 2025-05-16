@@ -1,114 +1,126 @@
 {% extends "base.html" %}
+
 {% block title %}OZfoody - Settings{% endblock %}
 
-{% block content %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/general_styles.css') }}">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">      
-<link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
-<link rel="stylesheet" href="{{ url_for('static', filename='css/settings.css') }}">
-<link rel="stylesheet" href="{{ url_for('static', filename='css/alert.css') }}">
+{% block head %}
+  <meta name="csrf-token" content="{{ csrf_token() }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/general_styles.css') }}">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/settings.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/alert.css') }}">
+{% endblock %}
 
-<!-- Ozfoody notification element -->
+{% block content %}
 <div id="ozfoody-notification" class="ozfoody-notification"></div>
 
 <div class="container mt-5">
-    <h1 class="text-center mb-4">Settings</h1>
+  <h1 class="text-center mb-4">Settings</h1>
 
-    <!-- ────────────────  Update Username  ──────────────── -->
-    <form id="update-username-form" method="POST" action="{{ url_for('views.settings') }}">
-        <h3>Update Username</h3>
-        <div class="mb-3">
-            <label for="username" class="form-label">Username</label>
-            <input type="text" class="form-control" id="username" name="username" value="{{ user.username }}" required>
-        </div>
-        <button type="submit" class="btn btn-primary" name="action" value="update_username">Update Username</button>
-    </form>
+  <!-- Update Username -->
+  <form id="update-username-form" method="POST" action="{{ url_for('views.settings') }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <input type="hidden" name="action" value="update_username">
 
-    <hr>
+    <h3>Update Username</h3>
+    <div class="mb-3">
+      <label for="username" class="form-label">Username</label>
+      <input type="text" class="form-control" id="username" name="username" value="{{ user.username }}" required>
+    </div>
+    <button type="submit" class="btn btn-primary">Update Username</button>
+  </form>
 
-    <!-- ────────────────  Update Email  ──────────────── -->
-    <form id="update-email-form" method="POST" action="{{ url_for('views.settings') }}">
-        <h3>Update Email</h3>
-        <div class="mb-3">
-            <label for="email" class="form-label">Email</label>
-            <input type="email" class="form-control" id="email" name="email" value="{{ user.email }}" required>
-        </div>
-        <button type="submit" class="btn btn-primary" name="action" value="update_email">Update Email</button>
-    </form>
+  <hr>
 
-    <hr>
+  <!-- Update Email -->
+  <form id="update-email-form" method="POST" action="{{ url_for('views.settings') }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <input type="hidden" name="action" value="update_email">
 
-    <!-- ────────────────  Update Profile Picture  ──────────────── -->
-    <form id="update-profile-form" method="POST" action="{{ url_for('views.settings') }}" enctype="multipart/form-data">
-        <h3>Update Profile Picture</h3>
-        <div class="mb-3">
-            <label for="profileImage" id="pictureStatus">
-                {% if user.profileImage %}
-                Change Profile Picture
-                {% else %}
-                Add Profile Picture
-                {% endif %}
-            </label>
-            <input type="file" class="form-control" id="profileImage" name="profileImage" placeholder="Enter an image URL">
-        </div>
-        <button type="submit" class="btn btn-primary" name="action" value="update_profile">Update Picture</button>
-    </form>
+    <h3>Update Email</h3>
+    <div class="mb-3">
+      <label for="email" class="form-label">Email</label>
+      <input type="email" class="form-control" id="email" name="email" value="{{ user.email }}" required>
+    </div>
+    <button type="submit" class="btn btn-primary">Update Email</button>
+  </form>
 
-    <hr>
+  <hr>
 
-    <!-- ────────────────  Update Password  ──────────────── -->
-    <form id="update-password-form" method="POST" action="{{ url_for('views.settings') }}">
-        <h3>Change Password</h3>
+  <!-- Update Profile Picture -->
+  <form id="update-profile-form" method="POST" action="{{ url_for('views.settings') }}" enctype="multipart/form-data">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <input type="hidden" name="action" value="update_profile">
 
-        <!-- New Password -->
-        <div class="mb-3" style="position:relative;">
-            <label for="new_password" class="form-label">New Password</label>
-            <div class="password-input-group">
-                <input id="new-password" name="new_password" type="password" class="form-control" required>
-                <span id="toggle-new-password" style="position:absolute;right:0.75rem;top:50%;transform:translateY(-50%);cursor:pointer;">
-                <svg id="eye-icon-new" xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" viewBox="0 0 24 24">
-                    <path stroke="#888" stroke-width="2" d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12Z"/>
-                    <circle cx="12" cy="12" r="3.5" stroke="#888" stroke-width="2"/>
-                </svg>
-                </span>
-            </div>
-        </div>
+    <h3>Update Profile Picture</h3>
+    <div class="mb-3">
+      <label for="profileImage" class="form-label" id="pictureStatus">
+        {% if user.profileImage %} Change Profile Picture {% else %} Add Profile Picture {% endif %}
+      </label>
+      <input type="file" class="form-control" id="profileImage" name="profileImage" accept="image/*">
+    </div>
+    <button type="submit" class="btn btn-primary">Update Picture</button>
+  </form>
 
-        <!-- Confirm New Password -->
-        <div class="mb-3" style="position:relative;">
-            <label for="confirm_password" class="form-label">Confirm New Password</label>
-            <div class="password-input-group">
-                <input id="confirm-password" name="confirm_password" type="password" class="form-control" required>
-                <span id="toggle-confirm-password" style="position:absolute;right:0.75rem;top:50%;transform:translateY(-50%);cursor:pointer;">
-                <svg id="eye-icon-confirm" xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" viewBox="0 0 24 24">
-                    <path stroke="#888" stroke-width="2" d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12Z"/>
-                    <circle cx="12" cy="12" r="3.5" stroke="#888" stroke-width="2"/>
-                </svg>
-                </span>
-            </div>
-        </div>
+  <hr>
 
-        <!-- Password validation rules -->
-        <ul class="password-rules mb-3 ps-4">
-            <li id="length-rule" class="invalid">❌ At least 8 characters</li>
-            <li id="number-rule" class="invalid">❌ At least one number (0-9)</li>
-            <li id="uppercase-rule" class="invalid">❌ At least one uppercase letter (A-Z)</li>
-            <li id="special-rule" class="invalid">❌ At least one special character (!@#$%)</li>
-            <li id="match-rule" class="invalid">❌ Both passwords must be the same</li>
-        </ul>
-        <button type="submit" id="updateBtn" class="btn btn-warning" name="action" value="update_password" disabled>Change Password</button>
-    </form>
+  <!-- Change Password -->
+  <form id="update-password-form" method="POST" action="{{ url_for('views.settings') }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <input type="hidden" name="action" value="update_password">
 
-    <hr>
+    <h3>Change Password</h3>
+    <div class="mb-3 position-relative">
+      <label for="new-password" class="form-label">New Password</label>
+      <div class="password-input-group">
+        <input id="new-password" name="new_password" type="password" class="form-control" required>
+        <span id="toggle-new-password" class="password-toggle">
+          <svg id="eye-icon-new" xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" viewBox="0 0 24 24">
+            <path stroke="#888" stroke-width="2" d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12Z"/>
+            <circle cx="12" cy="12" r="3.5" stroke="#888" stroke-width="2"/>
+          </svg>
+        </span>
+      </div>
+    </div>
 
-    <!-- ────────────────  Delete Account  ──────────────── -->
-    <form id="delete-account-form" method="POST" action="{{ url_for('views.settings') }}">
-        <h3>Delete Account</h3>
-        <p class="text-danger">Warning: This action cannot be undone.</p>
-        <button type="submit" class="btn btn-danger" name="action" value="delete_account">Delete Account</button>
-    </form>
+    <div class="mb-3 position-relative">
+      <label for="confirm-password" class="form-label">Confirm New Password</label>
+      <div class="password-input-group">
+        <input id="confirm-password" name="confirm_password" type="password" class="form-control" required>
+        <span id="toggle-confirm-password" class="password-toggle">
+          <svg id="eye-icon-confirm" xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" viewBox="0 0 24 24">
+            <path stroke="#888" stroke-width="2" d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12Z"/>
+            <circle cx="12" cy="12" r="3.5" stroke="#888" stroke-width="2"/>
+          </svg>
+        </span>
+      </div>
+    </div>
+
+    <ul class="password-rules mb-3 ps-4">
+      <li id="length-rule" class="invalid">❌ At least 8 characters</li>
+      <li id="number-rule" class="invalid">❌ At least one number (0-9)</li>
+      <li id="uppercase-rule" class="invalid">❌ At least one uppercase letter (A-Z)</li>
+      <li id="special-rule" class="invalid">❌ At least one special character (!@#$%)</li>
+      <li id="match-rule" class="invalid">❌ Both passwords must be the same</li>
+    </ul>
+    <button type="submit" id="updateBtn" class="btn btn-warning" disabled>Change Password</button>
+  </form>
+
+  <hr>
+
+  <!-- Delete Account -->
+  <form id="delete-account-form" method="POST" action="{{ url_for('views.settings') }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <input type="hidden" name="action" value="delete_account">
+
+    <h3>Delete Account</h3>
+    <p class="text-danger">Warning: This action cannot be undone.</p>
+    <button type="submit" class="btn btn-danger">Delete Account</button>
+  </form>
 </div>
+{% endblock %}
 
-<script src="{{ url_for('static', filename='JS/alert.js') }}"></script>
-<script src="{{ url_for('static', filename='JS/settings.js') }}"></script>
+{% block scripts %}
+  <script src="{{ url_for('static', filename='JS/alert.js') }}"></script>
+  <script src="{{ url_for('static', filename='JS/settings.js') }}"></script>
 {% endblock %}

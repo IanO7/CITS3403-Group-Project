@@ -3,6 +3,7 @@
 
 {% block content %}
 <form method="POST" class="mt-4">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
   <h3>Edit Review</h3><br>
   <input type="text" name="restaurant" value="{{ note.restaurant }}" placeholder="Restaurant Name" required><br>
   <input type="text" name="price"      value="{{ note.price }}"      placeholder="Price"           required><br>

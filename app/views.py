@@ -14,6 +14,7 @@ import re
 from collections import Counter, defaultdict
 import math
 from difflib import get_close_matches
+from flask_login import current_user, login_required
 
 
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
@@ -25,10 +26,6 @@ views = Blueprint('views', __name__)
 def get_user_notes(user):
     """Fetch all notes for a given user."""
     return Note.query.filter_by(user_id=user.id).all()
-    
-def current_user():
-    uid = session.get('user_id')
-    return User.query.get(uid) if uid else None
 
 # Helper to fetch reviews for a user
 def getReviews(user):
@@ -46,6 +43,45 @@ def get_user_level(badges):
         return 2
     else:
         return 1
+
+def get_badges_and_level(posts, stats):
+    min_reviews_spice = 5
+    min_reviews_service = 5
+    min_reviews_value = 5
+    min_reviews_critic = 20
+    min_reviews_allrounder = 10
+
+    badges = [
+        {
+            'name': 'First Post',
+            'earned': len(posts) > 0,
+        },
+        {
+            'name': 'Spice God',
+            'earned': len(posts) >= min_reviews_spice and stats['spiciness'] > 80,
+        },
+        {
+            'name': 'Service Perfectionist',
+            'earned': len(posts) >= min_reviews_service and stats['service'] > 90,
+        },
+        {
+            'name': 'Value Hunter',
+            'earned': len(posts) >= min_reviews_value and stats['value'] > 85,
+        },
+        {
+            'name': 'Food Critic',
+            'earned': len(posts) >= min_reviews_critic,
+        },
+        {
+            'name': 'All-Rounder',
+            'earned': (
+                len(posts) >= min_reviews_allrounder and
+                all(stat > 75 for stat in stats.values())
+            ),
+        },
+    ]
+    level = get_user_level(badges)
+    return badges, level
 
 @views.route('/uploads/<filename>')
 def uploaded_file(filename):
@@ -67,8 +103,9 @@ def landing():
 
 
 @views.route('/profile', methods=['GET', 'POST'])
+@login_required
 def profile():
-    user = current_user()
+    user = current_user
     if not user:
         return redirect(url_for('auth.login')) 
 
@@ -112,7 +149,7 @@ def profile():
             'earned': len(reviews) > 0,
         },
         {
-            'name': 'Spice Master',
+            'name': 'Spice God',
             'earned': len(reviews) >= min_reviews_spice and stats['spiciness'] > 80,
         },
         {
@@ -146,7 +183,7 @@ def allowed_file(filename):
 
 @views.route('/new_post', methods=['GET', 'POST'])
 def new_post():
-    user = current_user()
+    user = current_user
     if not user:
         return redirect(url_for('auth.login'))
 
@@ -194,7 +231,7 @@ def new_post():
 
 @views.route('/my_stats')
 def my_stats():
-    user = current_user()
+    user = current_user
     if not user:
         return redirect(url_for('auth.login'))
 
@@ -235,7 +272,7 @@ def my_stats():
             'description': 'Write your first post!'
         },
         {
-            'name': '🌶️ Spice Master',
+            'name': '🌶️ Spice God',
             'earned': len(notes) >= min_reviews_spice and stats['spiciness'] > 80,
             'description': f'Average spiciness above 80% (at least {min_reviews_spice} reviews)'
         },
@@ -282,7 +319,7 @@ def global_stats():
 
 @views.route('/friends', methods=['GET', 'POST'])
 def friends():
-    user = current_user()
+    user = current_user
     if not user:
         return redirect(url_for('auth.login'))
 
@@ -346,15 +383,8 @@ def friends():
             'value': sum(n.Value for n in u_notes) / total,
             'service': sum(n.Service for n in u_notes) / total
         }
-        badges = [
-            {'name': 'First Post', 'earned': len(u_notes) > 0},
-            {'name': 'Spice Master', 'earned': stats['spiciness'] > 80},
-            {'name': 'Service Perfectionist', 'earned': stats['service'] > 90},
-            {'name': 'Value Hunter', 'earned': stats['value'] > 85},
-            {'name': 'Food Critic', 'earned': len(u_notes) > 20},
-            {'name': 'All-Rounder', 'earned': all(stat > 75 for stat in stats.values())}
-        ]
-        user_levels[u.id] = sum(1 for badge in badges if badge['earned'])
+        badges, level = get_badges_and_level(u_notes, stats)
+        user_levels[u.id] = level
     
     if request.method == 'POST':
         comment = Comments(
@@ -387,7 +417,7 @@ def friends():
 
 @views.route('/like/<int:note_id>', methods=['POST'])
 def like(note_id):
-    user = current_user()
+    user = current_user
     if not user:
         return jsonify(success=False, error='User not authenticated'), 401
 
@@ -414,7 +444,7 @@ def like(note_id):
 
 @views.route('/edit_post/<int:note_id>', methods=['GET','POST'])
 def edit_post(note_id):
-    user = current_user()
+    user = current_user
     if not user:
         return redirect(url_for('auth.login'))
 
@@ -435,7 +465,7 @@ def edit_post(note_id):
 
 @views.route('/delete_post/<int:note_id>', methods=['POST'])
 def delete_post(note_id):
-    user = current_user()
+    user = current_user
     if not user:
         return redirect(url_for('auth.login'))
 
@@ -458,7 +488,7 @@ def api_reviews():
 
 @views.route('/follow/<int:user_id>', methods=['POST'])
 def follow(user_id):
-    user = current_user()
+    user = current_user
     if not user or user.id == user_id:
         return jsonify(success=False, error="Invalid request"), 400
 
@@ -477,7 +507,7 @@ def follow(user_id):
 
 @views.route('/approve_follow/<int:follow_id>', methods=['POST'])
 def approve_follow(follow_id):
-    user = current_user()
+    user = current_user
     follow = Follow.query.get_or_404(follow_id)
     if follow.followed_id != user.id:
         return jsonify(success=False, error="Not authorized"), 403
@@ -487,7 +517,7 @@ def approve_follow(follow_id):
 
 @views.route('/reject_follow/<int:follow_id>', methods=['POST'])
 def reject_follow(follow_id):
-    user = current_user()
+    user = current_user
     follow = Follow.query.get_or_404(follow_id)
     if follow.followed_id != user.id:
         return jsonify(success=False, error="Not authorized"), 403
@@ -497,7 +527,7 @@ def reject_follow(follow_id):
 
 @views.route('/unfollow/<int:user_id>', methods=['POST'])
 def unfollow(user_id):
-    user = current_user()
+    user = current_user
     if not user:
         return jsonify(success=False, error='User not authenticated'), 401
 
@@ -512,7 +542,7 @@ def unfollow(user_id):
 
 @views.route("/settings", methods=["GET", "POST"])
 def settings():
-    user = current_user()
+    user = current_user
     if not user:
         return redirect(url_for("auth.login"))
 
@@ -592,53 +622,9 @@ def settings():
     # GET → render page
     return render_template("settings.html", user=user)
 
-'''
-@views.route('/verify_password', methods=['POST'])
-def verify_password():
-    # Check if user is authenticated
-    if not current_user.is_authenticated:
-        return jsonify({
-            'valid': False,
-            'error': 'Authentication required'
-        }), 401
-
-    try:
-        # Get JSON data with explicit content type check
-        if not request.is_json:
-            return jsonify({
-                'valid': False,
-                'error': 'Content-Type must be application/json'
-            }), 400
-
-        data = request.get_json()
-        current_password = data.get('current_password')
-        
-        if not current_password:
-            return jsonify({
-                'valid': False,
-                'error': 'Password is required'
-            }), 400
-        
-        # Use the same check method as password change
-        is_valid = check_password_hash(current_user.password, current_password)
-        
-        return jsonify({
-            'valid': is_valid,
-            'message': 'Password verified' if is_valid else 'Invalid password'
-        }), 200 if is_valid else 400
-    
-    except Exception as e:
-        print(f"Password verification error: {str(e)}")
-        return jsonify({
-            'valid': False,
-            'error': 'Server error during verification'
-        }), 500
-'''
-
-
 @views.route('/search', methods=['GET'])
 def search():
-    user = current_user()
+    user = current_user
     if not user:
         return redirect(url_for('auth.login'))
 
@@ -649,12 +635,27 @@ def search():
     # Search for users whose username contains the query (case-insensitive)
     search_results = User.query.filter(User.username.ilike(f"%{query}%")).all()
 
+    user_levels = {}
+    user_badges = {}
+    for result in search_results:
+        notes = get_user_notes(result)
+        total = len(notes) or 1
+        stats = {
+            'spiciness': sum(n.Spiciness for n in notes) / total,
+            'deliciousness': sum(n.Deliciousness for n in notes) / total,
+            'value': sum(n.Value for n in notes) / total,
+            'service': sum(n.Service for n in notes) / total
+        }
+        badges, level = get_badges_and_level(notes, stats)
+        user_levels[result.id] = level
+        user_badges[result.id] = badges
+
     return render_template('search_results.html', user=user, query=query, search_results=search_results)
 
 
 @views.route('/user/<int:user_id>', methods=['GET', 'POST'])
 def user_profile(user_id):
-    user = current_user()
+    user = current_user
     if not user:
         return redirect(url_for('auth.login'))
 
@@ -667,25 +668,15 @@ def user_profile(user_id):
         'value': sum(n.Value for n in posts) / total_posts,
         'service': sum(n.Service for n in posts) / total_posts,
     }
+    badges, user_level = get_badges_and_level(posts, stats)
+
     average_ratings = [
         (n.Spiciness + n.Deliciousness + n.Value + n.Service) / 4 for n in posts
     ]
     overall_average_rating = sum(average_ratings) / total_posts
 
-    # Add follow status objects
     follow = Follow.query.filter_by(follower_id=user.id, followed_id=selected_user.id).first()
     incoming = Follow.query.filter_by(follower_id=selected_user.id, followed_id=user.id, status='pending').first()
-
-    # Calculate user level
-    badges = [
-        {'name': 'First Post', 'earned': len(posts) > 0},
-        {'name': 'Spice Master', 'earned': stats['spiciness'] > 80},
-        {'name': 'Service Perfectionist', 'earned': stats['service'] > 90},
-        {'name': 'Value Hunter', 'earned': stats['value'] > 85},
-        {'name': 'Food Critic', 'earned': len(posts) > 20},
-        {'name': 'All-Rounder', 'earned': all(stat > 75 for stat in stats.values())}
-    ]
-    user_level = sum(1 for badge in badges if badge['earned'])
 
     if request.method == 'POST':
         comment = Comments(
@@ -700,7 +691,7 @@ def user_profile(user_id):
 
     comments_by_review = {
         review.id: [comment.to_dict() for comment in review.comments]
-        for review in posts  # or whatever your review list is called
+        for review in posts
     }
 
     return render_template(
@@ -713,9 +704,46 @@ def user_profile(user_id):
         follow=follow,
         incoming=incoming,
         user_level=user_level,
+        badges=badges,
         comments_by_review=comments_by_review
     )
 
+@views.route('/search_users', methods=['GET'])
+def search_users():
+    user = current_user
+    if not user:
+        return redirect(url_for('auth.login'))
+
+    query = request.args.get('q', '').strip()
+    if not query:
+        flash("Please enter a search term.", "warning")
+        return redirect(url_for('views.friends'))
+
+    results = User.query.filter(User.username.ilike(f"%{query}%")).all()
+
+    user_levels = {}
+    user_badges = {}
+    for result in results:
+        notes = get_user_notes(result)
+        total = len(notes) or 1
+        stats = {
+            'spiciness': sum(n.Spiciness for n in notes) / total,
+            'deliciousness': sum(n.Deliciousness for n in notes) / total,
+            'value': sum(n.Value for n in notes) / total,
+            'service': sum(n.Service for n in notes) / total
+        }
+        badges, level = get_badges_and_level(notes, stats)
+        user_levels[result.id] = level
+        user_badges[result.id] = badges
+
+    return render_template(
+        'search_results.html',
+        user=user,
+        query=query,
+        results=results,
+        user_levels=user_levels,
+        user_badges=user_badges
+    )
 
 @views.route('/api/search_suggestions', methods=['GET'])
 def search_suggestions():
@@ -731,12 +759,12 @@ def search_suggestions():
 
 @views.route('/recommend_food', methods=['GET'])
 def recommend_food():
-    user = current_user()
+    user = current_user
     if not user:
         return jsonify(success=False, error='User not authenticated'), 401
 
     # Fetch all food items; ENSURE THAT OWN USER'S POSTS ARE NOT RECOMMENDED TO THEMSELVES!
-    food_items = Note.query.all().filter(Note.user_id != user.id).all()
+    food_items = Note.query.filter(Note.user_id != user.id).all()
 
     # Gather all unique cuisines and locations for one-hot encoding
     all_cuisines = sorted({food.Cuisine for food in food_items if food.Cuisine})
@@ -811,49 +839,6 @@ def recommend_food():
 
     return jsonify(success=True, recommendations=recommendations)
 
-@views.route('/search_users', methods=['GET'])
-def search_users():
-    user = current_user()
-    if not user:
-        return redirect(url_for('auth.login'))
-
-    query = request.args.get('q', '').strip()
-    if not query:
-        flash("Please enter a search term.", "warning")
-        return redirect(url_for('views.friends'))
-
-    # Search for users by username
-    results = User.query.filter(User.username.ilike(f"%{query}%")).all()
-
-    # Calculate levels for search results
-    user_levels = {}
-    for result in results:
-        notes = get_user_notes(result)
-        total = len(notes) or 1
-        stats = {
-            'spiciness': sum(n.Spiciness for n in notes) / total,
-            'deliciousness': sum(n.Deliciousness for n in notes) / total,
-            'value': sum(n.Value for n in notes) / total,
-            'service': sum(n.Service for n in notes) / total
-        }
-        badges = [
-            {'name': 'First Post', 'earned': len(notes) > 0},
-            {'name': 'Spice Master', 'earned': stats['spiciness'] > 80},
-            {'name': 'Service Perfectionist', 'earned': stats['service'] > 90},
-            {'name': 'Value Hunter', 'earned': stats['value'] > 85},
-            {'name': 'Food Critic', 'earned': len(notes) > 20},
-            {'name': 'All-Rounder', 'earned': all(stat > 75 for stat in stats.values())}
-        ]
-        user_levels[result.id] = sum(1 for badge in badges if badge['earned'])
-
-    return render_template(
-        'search_results.html',
-        user=user,
-        query=query,
-        results=results,
-        user_levels=user_levels
-    )
-
 @views.route('/trending_dishes', methods=['GET'])
 def trending_dishes():
     # Fetch all dishes sorted by likes in descending order
@@ -876,7 +861,7 @@ def trending_dishes():
 
 @views.route('/merged_posts', methods=['GET'])
 def merged_posts():
-    user = current_user()
+    user = current_user
     if not user:
         return jsonify(success=False, error='User not authenticated'), 401
 
@@ -920,7 +905,7 @@ def merged_posts():
 
 @views.route('/friend_posts', methods=['GET'])
 def friend_posts():
-    user = current_user()
+    user = current_user
     if not user:
         return jsonify(success=False, error='User not authenticated'), 401
 
@@ -957,7 +942,7 @@ def location_suggestions():
 
 @views.route('/api/search_reviews', methods=['GET'])
 def search_reviews():
-    user = current_user()
+    user = current_user
     query = request.args.get('q', '').strip().lower()
     lat = request.args.get('lat', type=float)
     lng = request.args.get('lng', type=float)
@@ -1143,7 +1128,7 @@ def search_reviews():
 
 @views.route('/share_post', methods=['POST'])
 def share_post():
-    user = current_user()
+    user = current_user
     if not user:
         return jsonify(success=False, error='User not authenticated'), 401
 
@@ -1182,7 +1167,7 @@ def share_post():
 
 @views.route('/share_multiple_posts', methods=['POST'])
 def share_multiple_posts():
-    user = current_user()
+    user = current_user
     if not user:
         return jsonify(success=False, error='User not authenticated'), 401
 
@@ -1224,7 +1209,7 @@ def share_multiple_posts():
 
 @views.route('/inbox')
 def inbox():
-    user = current_user()
+    user = current_user
     if not user:
         return redirect(url_for('auth.login'))
 
@@ -1286,7 +1271,7 @@ def inbox():
 
 @views.route('/api/users')
 def api_users():
-    user = current_user()
+    user = current_user
     if not user:
         return jsonify(users=[])
     q = request.args.get('q', '').strip()
